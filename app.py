@@ -25,11 +25,11 @@ def listing():
 @app.route('/challenge', methods=['POST'])
 def save_diary():
 
+
     title_receive = request.form["title_give"]
     decs_receive = request.form["desc_give"]
     period_receive = request.form["period_give"]
     image_receive = request.files["image_give"]
-
 
     extension = image_receive.filename.split('.')[-1]
     today = datetime.now()
@@ -45,7 +45,11 @@ def save_diary():
         'challenge_title': title_receive,
         'challenge_desc': decs_receive,
         'challenge_img':f'{filename}.{extension}',
-        'challenge_period' : period_receive
+        'challenge_startTime' : period_receive.split(',')[0],
+        'challenge_endTime': period_receive.split(',')[1],
+        'challenge_host': 'admin'
+
+
 
     }
 

@@ -69,7 +69,8 @@
                     for (let i = 0; i < challenges.length; i++) {
                         let image = challenges[i]['challenge_img']
                         let title = challenges[i]['challenge_title']
-                        let period = challenges[i]['challenge_period']
+                        let startTime = challenges[i]['challenge_startTime']
+                        let endTime = challenges[i]['challenge_endTime']
                         let desc = challenges[i]['challenge_desc']
                         let host = challenges[i]['challenge_host']
 
@@ -81,7 +82,7 @@
                                                     <p class="card-text">${host}</p>
                                                     <a target="_blank" href="" class="card-title" style="font-size: 30px">${title}</a>
                                                     <p class="card-text">${desc}</p>
-                                                    <p class="card-text comment">${period}</p>
+                                                    <p class="card-text comment">${startTime} ~ ${endTime}</p>
                                                 </div>
                                             </div>`
                         $('#cards-box').append(temp_html)
@@ -94,9 +95,9 @@
         function posting() {
             let title = $('#title').val()
             let decs = $("#desc").val()
-            let period = [document.querySelector('#period1').value+' ~ '+document.querySelector('#period2').value]
+            let period = [document.querySelector('#period1').value,document.querySelector('#period2').value]
             let image = $('#image')[0].files[0]
-            console.log(period)
+            console.log(image)
 
              let form_data = new FormData()
 
