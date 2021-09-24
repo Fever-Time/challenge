@@ -31,7 +31,7 @@
         }
 
         .posting {
-            width: 500px;
+            width: 520px;
             margin-top: 20px;
         }
 
@@ -45,6 +45,10 @@
         }
 
         .custom-file {
+            margin-bottom: 15px;
+        }
+        .period {
+            width: 250px;
             margin-bottom: 15px;
         }
 
@@ -90,8 +94,9 @@
         function posting() {
             let title = $('#title').val()
             let decs = $("#desc").val()
-            let period = $('#period').val()
+            let period = [document.querySelector('#period1').value,document.querySelector('#period2').value]
             let image = $('#image')[0].files[0]
+            console.log(period)
 
              let form_data = new FormData()
 
@@ -99,6 +104,7 @@
             form_data.append("title_give", title)
             form_data.append("desc_give", decs)
             form_data.append("period_give", period)
+            console.log(form_data)
 
 
              $.ajax({
@@ -135,8 +141,11 @@
                 <div class="form-group">
                     <textarea class="form-control" id="desc" rows="3" placeholder="내용 입력"></textarea>
                 </div>
-                <input type="email" class="form-control" id="period" aria-describedby="emailHelp"
-                           placeholder="기간">
+                <div id="period">
+                    <input type="date" class="period" id="period1" aria-describedby="emailHelp"> ~
+                    <input type="date" class="period" id="period2" aria-describedby="emailHelp">
+
+                </div>
                 <button type="button" class="btn btn-info" onclick="posting()">저장하기</button>
             </div>
         </div>

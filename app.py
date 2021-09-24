@@ -24,6 +24,7 @@ def listing():
 
 @app.route('/challenge', methods=['POST'])
 def save_diary():
+
     title_receive = request.form["title_give"]
     decs_receive = request.form["desc_give"]
     period_receive = request.form["period_give"]
