@@ -73,6 +73,8 @@
                         let desc = challenges[i]['challenge_desc']
                         let host = challenges[i]['challenge_host']
 
+
+
                         let temp_html = `<div class="card">
                                                 <img src="../static/${image}" class="card-img-top">
                                                 <div class="card-body">
@@ -92,7 +94,7 @@
         function posting() {
             let title = $('#title').val()
             let decs = $("#desc").val()
-            let period = [document.querySelector('#period1').value,document.querySelector('#period2').value]
+            let period = [document.querySelector('#period1').value+' ~ '+document.querySelector('#period2').value]
             let image = $('#image')[0].files[0]
             console.log(period)
 
