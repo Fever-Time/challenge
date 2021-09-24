@@ -1,32 +1,55 @@
 from flask import Flask, render_template, jsonify, request
-
 app = Flask(__name__)
 
-from pymongo import MongoClient
+import requests
+from bs4 import BeautifulSoup
 
-client = MongoClient('mongodb://test:test@13.124.151.213:27017')
+from pymongo import MongoClient
+client = MongoClient('13.124.151.213', 27017, username = 'test', password = 'test')
 db = client.ftime
 
-
+## HTML을 주는 부분
 @app.route('/')
 def home():
-    return render_template('index.html')
+   return render_template('index.html')
+
+@app.route('/challenge', methods=['GET'])
+def listing():
+    challenges = list(db.challenge.find({},{'_id':False}))
+    return jsonify({'all_challenges': challenges})
+
+## API 역할을 하는 부분
+@app.route('/memo', methods=['POST'])
+def saving():
+    url_receive = request.form['url_give']
+    comment_receive = request.form['comment_give']
 
 
-# 준호님 code start
 
 
-# 준호님 code end
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+    data = requests.get(url_receive, headers=headers)
 
-# 수빈님 code start
+    soup = BeautifulSoup(data.text, 'html.parser')
+
+    title = soup.select_one('meta[property="og:title"]')['content']
+    image = soup.select_one('meta[property="og:image"]')['content']
+    desc = soup.select_one('meta[property="og:description"]')['content']
+
+    doc = {
+            'title' : title,
+            'image' : image,
+            'desc' : desc,
+            'url' : url_receive,
+            'comment' : comment_receive
+
+    }
+    db.articles.insert_one(doc)
 
 
-# 수빈님 code end
 
-# 현규님 code start
-
-
-# 현규님 code end
+    return jsonify({'msg':'저장 완료!'})
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+   app.run('0.0.0.0',port=5000,debug=True)
