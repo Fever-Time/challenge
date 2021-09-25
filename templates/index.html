@@ -9,6 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -47,19 +48,21 @@
         .custom-file {
             margin-bottom: 15px;
         }
+
         .period {
             width: 250px;
             margin-bottom: 15px;
         }
 
+
     </style>
     <script>
         $(document).ready(function () {
             bsCustomFileInput.init()
-            showArticles();
+            showChallenge();
         });
 
-        function showArticles() {
+        function showChallenge() {
             $.ajax({
                 type: "GET",
                 url: "/challenge",
@@ -75,7 +78,6 @@
                         let host = challenges[i]['challenge_host']
 
 
-
                         let temp_html = `<div class="card">
                                                 <img src="../static/${image}" class="card-img-top">
                                                 <div class="card-body">
@@ -83,6 +85,8 @@
                                                     <a target="_blank" href="" class="card-title" style="font-size: 30px">${title}</a>
                                                     <p class="card-text">${desc}</p>
                                                     <p class="card-text comment">${startTime} ~ ${endTime}</p>
+                                                    <button type="button" class="btn btn-outline-info" id="img_btn" onclick="deleteChallenge('${title}')"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+
                                                 </div>
                                             </div>`
                         $('#cards-box').append(temp_html)
@@ -92,14 +96,27 @@
             })
         }
 
+        function deleteChallenge(title) {
+            $.ajax({
+                type: 'POST',
+                url: '/challenge/delete',
+                data: {title_give: title},
+                success: function (response) {
+                    alert(response['msg']);
+                    window.location.reload()
+                }
+            });
+
+        }
+
         function posting() {
             let title = $('#title').val()
             let decs = $("#desc").val()
-            let period = [document.querySelector('#period1').value,document.querySelector('#period2').value]
+            let period = [document.querySelector('#period1').value, document.querySelector('#period2').value]
             let image = $('#image')[0].files[0]
             console.log(image)
 
-             let form_data = new FormData()
+            let form_data = new FormData()
 
             form_data.append("image_give", image)
             form_data.append("title_give", title)
@@ -108,18 +125,21 @@
             console.log(form_data)
 
 
-             $.ajax({
-                    type: "POST",
-                    url: "/challenge",
-                    data: form_data,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) { // 성공하면
-                        alert(response["msg"]);
-                        window.location.reload()
-                    }
-                })
+            $.ajax({
+                type: "POST",
+                url: "/challenge",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (response) { // 성공하면
+                    alert(response["msg"]);
+                    window.location.reload()
+                }
+
+
+            })
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
