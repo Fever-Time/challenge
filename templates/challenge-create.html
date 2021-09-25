@@ -9,7 +9,7 @@
           content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
     <!-- title -->
-    <title>Main</title>
+    <title>Challenge Create</title>
 
     <!-- favicon -->
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.ico') }}">
@@ -34,19 +34,33 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
 
     <style>
-        #add-btn {
-            background-color: white;
-            border: solid #F28123;
-            color: #F28123;
+        #create-form-container {
+            padding-top: 20px;
         }
 
-        #add-btn:hover {
-            background-color: #F28123;
-            border: solid white;
-            color: white;
+        #create-btn-container {
+            display: flex;
+            justify-content: right;
+        }
+
+        #create-cancel-btn {
+            margin-left: 20px;
+        }
+
+        .create-form input {
+            height: 40px;
+        }
+
+        .create-form .input-group-text {
+            width: 120px
         }
     </style>
 
+    <script>
+        function onClickCancelBtnHandler() {
+            location.href = "/";
+        }
+    </script>
 </head>
 
 <body>
@@ -78,19 +92,12 @@
                         <ul>
                             <li>
                                 <div class="header-icons">
-                                    <a class="mobile-hide search-bar-icon" href="#"><i
-                                            class="fas fa-search"></i></a>
                                     <a class="shopping-cart" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
                                 </div>
                             </li>
                         </ul>
                     </nav>
-
-                    <div class="nav-mobile-show-container">
-                        <a class="mobile-show search-bar-icon" style="right: 100px;" href="#"><i
-                                class="fas fa-search"></i></a>
-                        <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
-                    </div>
+                    <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
                     <!-- menu end -->
                 </div>
             </div>
@@ -133,123 +140,56 @@
 </div>
 <!-- end breadcrumb section -->
 
-<!-- products -->
-<div class="product-section mt-150 mb-150">
+
+<!-- single product -->
+<div class="single-product mt-150 mb-150">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <div class="product-filters">
-                    <ul>
-                        <li class="active" data-filter="*">All</li>
-                        <li data-filter=".strawberry">공부</li>
-                        <li data-filter=".berry">운동</li>
-                        <li data-filter=".lemon">취미</li>
-                    </ul>
+            <div class="col-md-5">
+                <div class="single-product-img">
+                    <img src="{{ url_for('static', filename='assets/img/default/challenge.jfif') }}" alt="">
                 </div>
             </div>
-        </div>
+            <div class="col-md-7">
+                <div class="single-product-content">
+                    <h3>새로운 챌린지 만들기</h3>
 
-        <div class="row product-lists">
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>운동하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        85명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center berry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>산책하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        70명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center lemon">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default3.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>코딩하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        35명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>공부하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        50명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>수영하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        45명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default6.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>놀기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        80명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-        </div>
+                    <div id="create-form-container">
+                        <div class="input-group mb-3 create-form">
+                            <span for="formFile" class="input-group-text">챌린지 이미지</span>
+                            <input class="form-control" type="file" id="formFile">
+                        </div>
 
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <div class="pagination-wrap">
-                    <ul>
-                        <li><a href="#">Prev</a></li>
-                        <li><a href="#">1</a></li>
-                        <li><a class="active" href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">Next</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                        <div class="input-group mb-3 create-form">
+                            <span for="title" class="input-group-text">챌린지 이름</span>
+                            <input class="form-control" type="text" id="title">
+                        </div>
 
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <div class="pagination-wrap">
-                    <a href="{{ '/challenge/create' }}" id="add-btn" class="cart-btn"><i class="fas fa-plus"></i> Add
-                        new
-                        Challenge</a>
+                        <div class="input-group mb-3 create-form">
+                            <span for="desc" class="input-group-text">상세 내용</span>
+                            <input class="form-control" type="text" id="desc">
+                        </div>
+
+                        <div class="input-group mb-3 create-form">
+                            <span class="input-group-text">진행 기간</span>
+                            <input class="form-control" type="date" id="start-period">
+                            <input class="form-control" type="date" id="end-period">
+                        </div>
+
+                        <div id="create-btn-container">
+                            <button type="button" class="btn btn-primary btn-lg">챌린지 등록</button>
+                            <button type="button" id="create-cancel-btn" onclick="onClickCancelBtnHandler()"
+                                    class="btn btn-secondary btn-lg">등록
+                                취소
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- end products -->
+<!-- end single product -->
 
 <!-- copyright -->
 <div class="copyright">
