@@ -10,7 +10,6 @@
 
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-
     <!-- title -->
     <title>Challenge Detail</title>
 
@@ -159,15 +158,19 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="single-product-img">
-                    <img src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt="">
+                    <img src="{{ url_for('static', filename='assets/img/'+challenge.challenge_img) }}" alt="">
                 </div>
             </div>
             <div class="col-md-7">
                 <div class="single-product-content">
-                    <h3>열심히 코딩하기</h3>
-                    <p class="single-product-pricing"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~
-								21-10-10</span> 50명 참가</p>
-                    <p>매일 심은 잔디를 인증하는 챌린지 입니다!</p>
+                    <h3>{{ challenge.challenge_title }}</h3>
+                    <p class="single-product-pricing">
+                        <span>
+                            <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                        </span>
+                        50명 참가
+                    </p>
+                    <p>{{ challenge.challenge_desc }}</p>
                     <div class="single-product-form">
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
                             Go to
@@ -209,40 +212,23 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>운동하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        85명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center berry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>산책하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        70명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
             <div class="col-lg-4 col-md-6 text-center lemon">
                 <div class="single-product-item">
                     <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt=""></a>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt="">
+                        </a>
                     </div>
-                    <h3>코딩하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        35명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
+                    <h3>예시</h3>
+                    <p class="product-price">
+                        <span>
+                            <i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
+                        </span>
+                        35명 참가
+                    </p>
+                    <a href="#" class="cart-btn">
+                        <i class="fas fa-bolt"></i> Go to Challenge
+                    </a>
                 </div>
             </div>
         </div>
@@ -255,8 +241,9 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-12">
-                <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-                    Reserved.</p>
+                <p>
+                    Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights Reserved.
+                </p>
             </div>
             <div class="col-lg-6 text-right col-md-12">
                 <div class="social-icons">
