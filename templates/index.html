@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
           content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
 
     <!-- title -->
     <title>Main</title>
@@ -45,7 +48,58 @@
             border: solid white;
             color: white;
         }
+
+        .product-image img {
+            width: 250px;
+            height: 200px;
+        }
     </style>
+    <script>
+        $(document).ready(function ($) {
+            bsCustomFileInput.init()
+            showChallenge();
+        });
+
+        function showChallenge() {
+            $.ajax({
+                type: "GET",
+                url: "/cc",
+                data: {},
+                success: function (response) {
+
+                    let challenges = JSON.parse(response['all_challenges'])
+                    console.log(challenges)
+                    for (let i = 0; i < challenges.length; i++) {
+                        let image = challenges[i]['challenge_img']
+                        let title = challenges[i]['challenge_title']
+                        let startTime = challenges[i]['challenge_startTime']
+                        let endTime = challenges[i]['challenge_endTime']
+                        let desc = challenges[i]['challenge_desc']
+                        let host = challenges[i]['challenge_host']
+                        let challengeId = challenges[i]['_id']['$oid']
+
+                        console.log(challengeId)
+
+
+                        let temp_html = `<div class="col-lg-4 col-md-6 text-center strawberry">
+                                <div class="single-product-item">
+                                    <div class="product-image">
+                                        <a href="{{ '/challenge' }}"><img
+                                                src="/static/assets/img/${image}" alt=""></a>
+                                    </div>
+                                    <h3>${title}</h3>
+                                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> ${startTime} ~ ${endTime}</span>
+                                        80명 참가 </p>
+                                    <a href="/challenge/${challengeId}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
+                                </div>
+                            </div>`
+                        $('#product-lists').append(temp_html)
+                    }
+
+                }
+            })
+        }
+    </script>
 
 </head>
 
@@ -150,78 +204,27 @@
         </div>
 
         <div class="row product-lists">
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt=""></a>
+            {% for challenge in challenges %}
+                <div class="col-lg-4 col-md-6 text-center strawberry">
+                    <div class="single-product-item">
+                        <div class="product-image">
+                            <a href="{{ '/challenge/'+challenge._id }}"><img
+                                    src="{{ url_for('static', filename='assets/img/'+challenge.challenge_img) }}"
+                                    alt=""></a>
+                        </div>
+                        <h3>{{ challenge.challenge_title }}</h3>
+                        <p class="product-price">
+                            <span>
+                                <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_startTime }}
+                            </span>
+                            85명 참가
+                        </p>
+                        <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                            <i class="fas fa-bolt"></i> Go to Challenge
+                        </a>
                     </div>
-                    <h3>운동하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        85명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
                 </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center berry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>산책하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        70명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center lemon">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default3.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>코딩하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        35명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>공부하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        50명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>수영하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        45명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default6.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>놀기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        80명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
+            {% endfor %}
         </div>
 
         <div class="row">
@@ -241,9 +244,9 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <div class="pagination-wrap">
-                    <a href="{{ '/challenge/create' }}" id="add-btn" class="cart-btn"><i class="fas fa-plus"></i> Add
-                        new
-                        Challenge</a>
+                    <a href="{{ '/challenge/create' }}" id="add-btn" class="cart-btn">
+                        <i class="fas fa-plus"></i> Add new Challenge
+                    </a>
                 </div>
             </div>
         </div>
@@ -256,8 +259,9 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-12">
-                <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-                    Reserved.</p>
+                <p>
+                    Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights Reserved.
+                </p>
             </div>
             <div class="col-lg-6 text-right col-md-12">
                 <div class="social-icons">

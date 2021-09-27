@@ -8,6 +8,8 @@
     <meta name="description"
           content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
     <!-- title -->
     <title>Challenge Detail</title>
 
@@ -54,6 +56,20 @@
             } else {
                 $("#join-form-container").show();
             }
+        }
+
+        function onClickdeleteChallenge() {
+            $.ajax({
+                type: "POST",
+                url: `/challenge/delete`,
+                data: {
+                    host_give: "admin"
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.href = '/'
+                }
+            });
         }
     </script>
 
@@ -142,19 +158,25 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="single-product-img">
-                    <img src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt="">
+                    <img src="{{ url_for('static', filename='assets/img/'+challenge.challenge_img) }}" alt="">
                 </div>
             </div>
             <div class="col-md-7">
                 <div class="single-product-content">
-                    <h3>열심히 코딩하기</h3>
-                    <p class="single-product-pricing"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~
-								21-10-10</span> 50명 참가</p>
-                    <p>매일 심은 잔디를 인증하는 챌린지 입니다!</p>
+                    <h3>{{ challenge.challenge_title }}</h3>
+                    <p class="single-product-pricing">
+                        <span>
+                            <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                        </span>
+                        50명 참가
+                    </p>
+                    <p>{{ challenge.challenge_desc }}</p>
                     <div class="single-product-form">
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
                             Go to
                             Challenge</a>
+                        <a onclick="onClickdeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
+                            Delete</a>
                         <p><strong>Categories: </strong>공부, 운동</p>
                     </div>
 
@@ -178,6 +200,22 @@
 </div>
 <!-- end single product -->
 
+{% if challenge.challenge_address != 'online' %}
+    <div class="more-products mb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 offset-lg-2 text-center">
+                    <div class="section-title">
+                        <h3><span class="orange-text"></span> 장소</h3>
+
+                        <div id="map" style="width:100%;height:350px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
 <!-- more products -->
 <div class="more-products mb-150">
     <div class="container">
@@ -190,37 +228,23 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-6 text-center strawberry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>운동하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        85명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6 text-center berry">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt=""></a>
-                    </div>
-                    <h3>산책하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        70명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                </div>
-            </div>
             <div class="col-lg-4 col-md-6 text-center lemon">
                 <div class="single-product-item">
                     <div class="product-image">
-                        <a href="{{ '/challenge' }}"><img src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt=""></a>
+                        <a href="#">
+                            <img src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt="">
+                        </a>
                     </div>
-                    <h3>코딩하기</h3>
-                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
-                        35명 참가 </p>
-                    <a href="{{ '/challenge' }}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
+                    <h3>예시</h3>
+                    <p class="product-price">
+                        <span>
+                            <i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
+                        </span>
+                        35명 참가
+                    </p>
+                    <a href="#" class="cart-btn">
+                        <i class="fas fa-bolt"></i> Go to Challenge
+                    </a>
                 </div>
             </div>
         </div>
@@ -233,8 +257,9 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-12">
-                <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-                    Reserved.</p>
+                <p>
+                    Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights Reserved.
+                </p>
             </div>
             <div class="col-lg-6 text-right col-md-12">
                 <div class="social-icons">
@@ -251,6 +276,41 @@
     </div>
 </div>
 <!-- end copyright -->
+
+<script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7004ea44101be7c75067b28e563db611&libraries=services"></script>
+<script>
+    let mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 생성합니다
+    let map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 주소-좌표 변환 객체를 생성합니다
+    let geocoder = new kakao.maps.services.Geocoder();
+
+    // 주소로 좌표를 검색합니다
+    geocoder.addressSearch('{{ challenge.challenge_address }}', function (result, status) {
+
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
+
+            let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            let marker = new kakao.maps.Marker({
+                map: map,
+                position: coords
+            });
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+        }
+    });
+</script>
 
 <!-- jquery -->
 <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
