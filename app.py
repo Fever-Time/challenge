@@ -5,10 +5,6 @@ app = Flask(__name__)
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-from bson.json_util import loads, dumps
-
-from datetime import datetime
-
 client = MongoClient('mongodb://test:test@13.124.151.213:27017')
 db = client.ftime
 
@@ -19,14 +15,12 @@ def main_page():
     return render_template('index.html', challenges=challenges)
 
 
-
 @app.route('/error', methods=['GET'])
 def error_page():
     return render_template('404.html')
 
 
 @app.route('/user', methods=['GET'])
-
 def user():
     token_receive = request.cookies.get('mytoken')
     try:
@@ -37,8 +31,6 @@ def user():
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
-
-
 
     return render_template('user.html')
 
@@ -60,6 +52,7 @@ def challenge_detail_page(challengeId):
 import jwt
 import hashlib
 from datetime import datetime, timedelta
+
 # from werkzeug.utils import secure_filename
 
 
@@ -249,6 +242,7 @@ def delete_word():
     db.challenge.delete_one({'challenge_host': host_receive})
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
 
+
 @app.route('/challenge/check', methods=['POST'])
 def challenge_check():
     challenge_receive = request.form["challenge_give"]
@@ -270,13 +264,13 @@ def challenge_check():
         'join_challenge': challenge_receive,
         'join_date': uploadtime,
         'join_cont': cont_receive,
-        'join_img' : f'{filename}.{extension}',
-
+        'join_img': f'{filename}.{extension}',
 
     }
 
     db.join.insert_one(doc)
     return jsonify({'msg': "챌린지 인증 되었습니다."})
+
 
 @app.route('/challenge/get', methods=['GET'])
 def challenge_get():

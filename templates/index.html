@@ -57,47 +57,7 @@
     <script>
         $(document).ready(function ($) {
             bsCustomFileInput.init()
-            showChallenge();
         });
-
-        function showChallenge() {
-            $.ajax({
-                type: "GET",
-                url: "/cc",
-                data: {},
-                success: function (response) {
-
-                    let challenges = JSON.parse(response['all_challenges'])
-                    console.log(challenges)
-                    for (let i = 0; i < challenges.length; i++) {
-                        let image = challenges[i]['challenge_img']
-                        let title = challenges[i]['challenge_title']
-                        let startTime = challenges[i]['challenge_startTime']
-                        let endTime = challenges[i]['challenge_endTime']
-                        let desc = challenges[i]['challenge_desc']
-                        let host = challenges[i]['challenge_host']
-                        let challengeId = challenges[i]['_id']['$oid']
-
-
-
-                        let temp_html = `<div class="col-lg-4 col-md-6 text-center strawberry">
-                                <div class="single-product-item">
-                                    <div class="product-image">
-                                        <a href="/challenge/${challengeId}"><img
-                                                src="/static/assets/img/${image}" alt=""></a>
-                                    </div>
-                                    <h3>${title}</h3>
-                                    <p class="product-price"><span><i class="far fa-calendar-alt"></i> ${startTime} ~ ${endTime}</span>
-                                        80명 참가 </p>
-                                    <a href="/challenge/${challengeId}" class="cart-btn"><i class="fas fa-bolt"></i> Go to Challenge</a>
-                                </div>
-                            </div>`
-                        $('#product-lists').append(temp_html)
-                    }
-
-                }
-            })
-        }
     </script>
 
 </head>
@@ -219,7 +179,7 @@
                             85명 참가
                         </p>
                         <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
-                            <i class="fas fa-bolt"></i> Go to Challenge
+                            <i class="fas fa-bolt"></i> View Details
                         </a>
                     </div>
                 </div>
