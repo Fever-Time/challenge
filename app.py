@@ -5,6 +5,8 @@ app = Flask(__name__)
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+from bson.json_util import loads, dumps
+
 from datetime import datetime
 
 client = MongoClient('mongodb://test:test@13.124.151.213:27017')
@@ -15,6 +17,7 @@ db = client.ftime
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
     return render_template('index.html', challenges=challenges)
+
 
 
 @app.route('/error', methods=['GET'])
@@ -199,7 +202,6 @@ def check_dup():
 #     print(json_str)
 #     return jsonify({'all_challenges': json_str})
 
-
 @app.route('/challenge', methods=['POST'])
 def save_challenge():
     title_receive = request.form["title_give"]
@@ -246,6 +248,42 @@ def delete_word():
     host_receive = request.form['host_give']
     db.challenge.delete_one({'challenge_host': host_receive})
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
+
+@app.route('/challenge/check', methods=['POST'])
+def challenge_check():
+    challenge_receive = request.form["challenge_give"]
+    cont_receive = request.form["cont_give"]
+    file = request.files["img_give"]
+
+    extension = file.filename.split('.')[-1]
+
+    today = datetime.now()
+    mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
+    uploadtime = today.strftime("%Y-%m-%d")
+
+    filename = f'file-{mytime}'
+
+    save_to = f'static/assets/img/{filename}.{extension}'
+    file.save(save_to)
+
+    doc = {
+        'join_challenge': challenge_receive,
+        'join_date': uploadtime,
+        'join_cont': cont_receive,
+        'join_img' : f'{filename}.{extension}',
+
+
+    }
+
+    db.join.insert_one(doc)
+    return jsonify({'msg': "챌린지 인증 되었습니다."})
+
+@app.route('/challenge/get', methods=['GET'])
+def challenge_get():
+    challenge_receive = request.args.get('challenge_give')
+    challenges = list(db.join.find({'join_challenge': challenge_receive}, {"_id": False}))
+    # 예문 가져오기
+    return jsonify({'all_challenges': challenges})
 
 
 # 수빈님 code end
