@@ -67,6 +67,12 @@
             let decs = $("#desc").val()
             let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
             let image = $('#formFile')[0].files[0]
+            let address = $('#sample5_address').val()
+
+            if (address == "") {
+                address = "online";
+            }
+
             console.log(image)
 
             let form_data = new FormData()
@@ -75,8 +81,8 @@
             form_data.append("title_give", title)
             form_data.append("desc_give", decs)
             form_data.append("period_give", period)
+            form_data.append("address_give", address)
             console.log(form_data)
-
 
             $.ajax({
                 type: "POST",
@@ -90,26 +96,25 @@
                     alert(response["msg"]);
                     window.location.reload()
                 }
-
-
             })
         }
 
-        function setThumbnail(event){
+        function setThumbnail(event) {
             $('#single-product-img').empty()
-		let reader = new FileReader();
+            let reader = new FileReader();
 
-		reader.onload = function(event){
-			let img = document.createElement("img");
-			img.setAttribute("src", event.target.result);
-			img.setAttribute("class", "col-lg-6");
-            img.setAttribute("style", "width: "+445+"px; height: "+334+"px;");
-			document.querySelector("div#image_container").appendChild(img);
-		};
+            reader.onload = function (event) {
+                let img = document.createElement("img");
+                img.setAttribute("src", event.target.result);
+                img.setAttribute("class", "col-lg-6");
+                img.setAttribute("style", "width: " + 445 + "px; height: " + 334 + "px;");
+                document.querySelector("div#image_container").appendChild(img);
+            };
 
-		reader.readAsDataURL(event.target.files[0]);
-	}
-      function onChangeAddressRadio() {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function onChangeAddressRadio() {
             if ($("#address-container").css("display") == "block") {
                 $("#address-container").hide();
             } else {
@@ -137,6 +142,7 @@
         <div class="row">
             <div class="col-lg-12 col-sm-12 text-center">
                 <div class="main-menu-wrap">
+
                     <!-- logo -->
                     <div class="site-logo">
                         <a href="{{ '/' }}">
@@ -215,7 +221,7 @@
                     <div id="create-form-container">
                         <div class="input-group mb-3 create-form">
                             <span for="formFile" class="input-group-text">챌린지 이미지</span>
-                            <input class="form-control" type="file" id="formFile" onchange="setThumbnail(event);" >
+                            <input class="form-control" type="file" id="formFile" onchange="setThumbnail(event);">
                         </div>
 
                         <div class="input-group mb-3 create-form">
@@ -259,7 +265,8 @@
                         </div>
 
                         <div id="create-btn-container">
-                            <button type="button" class="btn btn-primary btn-lg" onclick="createChallenge()">챌린지 등록</button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="createChallenge()">챌린지 등록
+                            </button>
                             <button type="button" id="create-cancel-btn" onclick="onClickCancelBtnHandler()"
                                     class="btn btn-secondary btn-lg">등록
                                 취소
