@@ -54,11 +54,74 @@
         .create-form .input-group-text {
             width: 120px
         }
+
     </style>
 
     <script>
         function onClickCancelBtnHandler() {
             location.href = "/";
+        }
+
+        function createChallenge() {
+            let title = $('#title').val()
+            let decs = $("#desc").val()
+            let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
+            let image = $('#formFile')[0].files[0]
+            let address = $('#sample5_address').val()
+
+            if (address == "") {
+                address = "online";
+            }
+
+            console.log(image)
+
+            let form_data = new FormData()
+
+            form_data.append("image_give", image)
+            form_data.append("title_give", title)
+            form_data.append("desc_give", decs)
+            form_data.append("period_give", period)
+            form_data.append("address_give", address)
+            console.log(form_data)
+
+            $.ajax({
+                type: "POST",
+                url: "/challenge",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (response) { // 성공하면
+                    alert(response["msg"]);
+                    window.location.reload()
+                }
+            })
+        }
+
+        function setThumbnail(event) {
+            $('#single-product-img').empty()
+            let reader = new FileReader();
+
+            reader.onload = function (event) {
+                let img = document.createElement("img");
+                img.setAttribute("src", event.target.result);
+                img.setAttribute("class", "col-lg-6");
+                img.setAttribute("style", "width: " + 445 + "px; height: " + 334 + "px;");
+                document.querySelector("div#image_container").appendChild(img);
+            };
+
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function onChangeAddressRadio() {
+            if ($("#address-container").css("display") == "block") {
+                $("#address-container").hide();
+            } else {
+                $("#address-container").show();
+            }
+            $("#sample5_address").val("");
+            $("#map").hide();
         }
     </script>
 </head>
@@ -79,6 +142,7 @@
         <div class="row">
             <div class="col-lg-12 col-sm-12 text-center">
                 <div class="main-menu-wrap">
+
                     <!-- logo -->
                     <div class="site-logo">
                         <a href="{{ '/' }}">
@@ -145,8 +209,8 @@
 <div class="single-product mt-150 mb-150">
     <div class="container">
         <div class="row">
-            <div class="col-md-5">
-                <div class="single-product-img">
+            <div class="col-md-5" id="image_container">
+                <div class="single-product-img" id="single-product-img">
                     <img src="{{ url_for('static', filename='assets/img/default/challenge.jfif') }}" alt="">
                 </div>
             </div>
@@ -157,7 +221,7 @@
                     <div id="create-form-container">
                         <div class="input-group mb-3 create-form">
                             <span for="formFile" class="input-group-text">챌린지 이미지</span>
-                            <input class="form-control" type="file" id="formFile">
+                            <input class="form-control" type="file" id="formFile" onchange="setThumbnail(event);">
                         </div>
 
                         <div class="input-group mb-3 create-form">
@@ -176,8 +240,33 @@
                             <input class="form-control" type="date" id="end-period">
                         </div>
 
+                        <input type="hidden" id="address">
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="addType" type="radio" id="online"
+                                   checked onchange="onChangeAddressRadio()">
+                            <label class="form-check-label" for="online">
+                                온라인
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" name="addType" type="radio" id="offline"
+                                   onchange="onChangeAddressRadio()">
+                            <label class="form-check-label" for="offline">
+                                오프라인
+                            </label>
+                        </div>
+
+                        <div id="address-container" style="display: none">
+                            <input type="text" id="sample5_address" placeholder="주소">
+                            <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
+                            <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
+                        </div>
+
                         <div id="create-btn-container">
-                            <button type="button" class="btn btn-primary btn-lg">챌린지 등록</button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="createChallenge()">챌린지 등록
+                            </button>
                             <button type="button" id="create-cancel-btn" onclick="onClickCancelBtnHandler()"
                                     class="btn btn-secondary btn-lg">등록
                                 취소
@@ -214,6 +303,56 @@
     </div>
 </div>
 <!-- end copyright -->
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7004ea44101be7c75067b28e563db611&libraries=services"></script>
+<script>
+    let mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new daum.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+            level: 5 // 지도의 확대 레벨
+        };
+
+    //지도를 미리 생성
+    let map = new daum.maps.Map(mapContainer, mapOption);
+    //주소-좌표 변환 객체를 생성
+    let geocoder = new daum.maps.services.Geocoder();
+    //마커를 미리 생성
+    let marker = new daum.maps.Marker({
+        position: new daum.maps.LatLng(37.537187, 127.005476),
+        map: map
+    });
+
+
+    function sample5_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let addr = data.address; // 최종 주소 변수
+
+                // 주소 정보를 해당 필드에 넣는다.
+                document.getElementById("sample5_address").value = addr;
+                // 주소로 상세 정보를 검색
+                geocoder.addressSearch(data.address, function (results, status) {
+                    // 정상적으로 검색이 완료됐으면
+                    if (status === daum.maps.services.Status.OK) {
+
+                        let result = results[0]; //첫번째 결과의 값을 활용
+
+                        // 해당 주소에 대한 좌표를 받아서
+                        let coords = new daum.maps.LatLng(result.y, result.x);
+                        // 지도를 보여준다.
+                        mapContainer.style.display = "block";
+                        map.relayout();
+                        // 지도 중심을 변경한다.
+                        map.setCenter(coords);
+                        // 마커를 결과값으로 받은 위치로 옮긴다.
+                        marker.setPosition(coords)
+                    }
+                });
+            }
+        }).open();
+    }
+</script>
 
 <!-- jquery -->
 <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
