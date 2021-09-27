@@ -60,6 +60,14 @@
         function onClickCancelBtnHandler() {
             location.href = "/";
         }
+
+        function onChangeAddressRadio() {
+            if ($("#address-container").css("display") == "block") {
+                $("#address-container").hide();
+            } else {
+                $("#address-container").show();
+            }
+        }
     </script>
 </head>
 
@@ -174,6 +182,28 @@
                             <span class="input-group-text">진행 기간</span>
                             <input class="form-control" type="date" id="start-period">
                             <input class="form-control" type="date" id="end-period">
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="address" id="online"
+                                   checked onchange="onChangeAddressRadio()">
+                            <label class="form-check-label" for="online">
+                                온라인
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="address" id="offline"
+                                   onchange="onChangeAddressRadio()">
+                            <label class="form-check-label" for="offline">
+                                오프라인
+                            </label>
+                        </div>
+
+                        <div id="address-container" style="display: none">
+                            <input type="text" id="sample5_address" placeholder="주소">
+                            <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
+                            <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
                         </div>
 
                         <div id="create-btn-container">
