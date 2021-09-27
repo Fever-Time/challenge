@@ -8,6 +8,9 @@
     <meta name="description"
           content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
     <!-- title -->
     <title>Challenge Detail</title>
 
@@ -54,6 +57,20 @@
             } else {
                 $("#join-form-container").show();
             }
+        }
+
+        function onClickdeleteChallenge() {
+            $.ajax({
+                type: "POST",
+                url: `/challenge/delete`,
+                data: {
+                    host_give: "admin"
+                },
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.href = '/'
+                }
+            });
         }
     </script>
 
@@ -155,6 +172,8 @@
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
                             Go to
                             Challenge</a>
+                        <a onclick="onClickdeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
+                            Delete</a>
                         <p><strong>Categories: </strong>공부, 운동</p>
                     </div>
 

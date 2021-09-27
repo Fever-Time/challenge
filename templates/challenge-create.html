@@ -54,6 +54,7 @@
         .create-form .input-group-text {
             width: 120px
         }
+
     </style>
 
     <script>
@@ -61,7 +62,54 @@
             location.href = "/";
         }
 
-        function onChangeAddressRadio() {
+        function createChallenge() {
+            let title = $('#title').val()
+            let decs = $("#desc").val()
+            let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
+            let image = $('#formFile')[0].files[0]
+            console.log(image)
+
+            let form_data = new FormData()
+
+            form_data.append("image_give", image)
+            form_data.append("title_give", title)
+            form_data.append("desc_give", decs)
+            form_data.append("period_give", period)
+            console.log(form_data)
+
+
+            $.ajax({
+                type: "POST",
+                url: "/challenge",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (response) { // 성공하면
+                    alert(response["msg"]);
+                    window.location.reload()
+                }
+
+
+            })
+        }
+
+        function setThumbnail(event){
+            $('#single-product-img').empty()
+		let reader = new FileReader();
+
+		reader.onload = function(event){
+			let img = document.createElement("img");
+			img.setAttribute("src", event.target.result);
+			img.setAttribute("class", "col-lg-6");
+            img.setAttribute("style", "width: "+445+"px; height: "+334+"px;");
+			document.querySelector("div#image_container").appendChild(img);
+		};
+
+		reader.readAsDataURL(event.target.files[0]);
+	}
+      function onChangeAddressRadio() {
             if ($("#address-container").css("display") == "block") {
                 $("#address-container").hide();
             } else {
@@ -155,8 +203,8 @@
 <div class="single-product mt-150 mb-150">
     <div class="container">
         <div class="row">
-            <div class="col-md-5">
-                <div class="single-product-img">
+            <div class="col-md-5" id="image_container">
+                <div class="single-product-img" id="single-product-img">
                     <img src="{{ url_for('static', filename='assets/img/default/challenge.jfif') }}" alt="">
                 </div>
             </div>
@@ -166,8 +214,8 @@
 
                     <div id="create-form-container">
                         <div class="input-group mb-3 create-form">
-                            <span for="file" class="input-group-text">챌린지 이미지</span>
-                            <input class="form-control" type="file" id="file">
+                            <span for="formFile" class="input-group-text">챌린지 이미지</span>
+                            <input class="form-control" type="file" id="formFile" onchange="setThumbnail(event);" >
                         </div>
 
                         <div class="input-group mb-3 create-form">
@@ -211,7 +259,7 @@
                         </div>
 
                         <div id="create-btn-container">
-                            <button type="button" class="btn btn-primary btn-lg">챌린지 등록</button>
+                            <button type="button" class="btn btn-primary btn-lg" onclick="createChallenge()">챌린지 등록</button>
                             <button type="button" id="create-cancel-btn" onclick="onClickCancelBtnHandler()"
                                     class="btn btn-secondary btn-lg">등록
                                 취소

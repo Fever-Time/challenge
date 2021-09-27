@@ -197,7 +197,7 @@ p:last-child {
   animation: spinRight 800ms linear infinite;
 }
 
-.circle:before {
+.circle:before
   content: '';
   width: 6vmax;
   height: 6vmax;
@@ -439,7 +439,7 @@ a.read-more-btn:hover {
   color: #F28123;
 }
 
-a.boxed-btn, a.bordered-btn, a.cart-btn {
+a.boxed-btn, a.bordered-btn, a.cart-btn, a.cart-btn-d {
   border-radius: 50px;
 }
 
@@ -1247,6 +1247,12 @@ a.cart-btn:hover {
   background-color: #051922;
   color: #F28123;
 }
+
+a.cart-btn-d:hover {
+  background-color: #051922;
+  color: #dc3545;;
+}
+
 
 .recent-posts ul li {
   -webkit-transition: 0.3s;
@@ -2440,6 +2446,14 @@ a.cart-btn {
   font-family: 'Poppins', sans-serif;
   display: inline-block;
   background-color: #F28123;
+  color: #fff;
+  padding: 10px 20px;
+}
+
+a.cart-btn-d {
+  font-family: 'Poppins', sans-serif;
+  display: inline-block;
+  background-color: #dc3545;
   color: #fff;
   padding: 10px 20px;
 }
