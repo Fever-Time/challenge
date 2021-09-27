@@ -14,6 +14,9 @@
     <!-- title -->
     <title>Challenge Detail</title>
 
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+
     <!-- favicon -->
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.ico') }}">
     <!-- google font -->
@@ -36,6 +39,8 @@
     <!-- responsive -->
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
 
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
     <style>
         #join-form-container {
             padding-top: 20px;
@@ -48,14 +53,55 @@
         .join-form .input-group-text {
             width: 120px
         }
+
+        .card-group {
+            width: 1000px;
+            margin: auto;
+            margin-bottom: 50px;
+        }
+
+        a.cart-btn-c {
+            font-family: 'Poppins', sans-serif;
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+        }
+
+        a.cart-btn-d {
+            font-family: 'Poppins', sans-serif;
+            display: inline-block;
+            background-color: #dc3545;
+            color: #fff;
+            padding: 10px 20px;
+        }
+
+        a.cart-btn-d:hover {
+            background-color: #051922;
+            color: #dc3545;;
+        }
+
+        a.cart-btn-c:hover {
+            background-color: #051922;
+            color: #007bff;;
+        }
+
+        a.cart-btn-d, a.cart-btn-c {
+            border-radius: 50px;
+        }
+
+
     </style>
 
     <script>
         function onClickJoinBtnHandler() {
             if ($("#join-form-container").css("display") == "block") {
                 $("#join-form-container").hide();
+                $("#card-group").hide();
             } else {
                 $("#join-form-container").show();
+                $("#card-group").show();
+
             }
         }
 
@@ -72,6 +118,56 @@
                 }
             });
         }
+
+        function onClickCheck() {
+            let cont = $('#formText').val()
+
+            let img = $('#formFile')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("img_give", img)
+            form_data.append("cont_give", cont)
+            form_data.append("challenge_give", "{{ challengeId }}")
+
+            $.ajax({
+                type: "POST",
+                url: "/challenge/check",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+            $.ajax({
+                type: "GET",
+                url: "/challenge/get?challenge_give={{ challengeId }}",
+                data: {},
+                success: function (response) {
+                    let joins = response['all_challenges']
+                    for (let i = 0; i < joins.length; i++) {
+                        let cont = joins[i]['join_cont'];
+                        let img = joins[i]['join_img'];
+                        let date = joins[i]['join_date']
+                        let temp_html = `<div class="cardCheck" style="width: 18rem;">
+                                            <img class="card-img-top" src="/static/assets/img/${img}" width="200" height="200" alt="Card image cap">
+                                            <div class="card-body">
+                                                <p class="card-text">${cont}</p>
+                                                <p class="card-text"><small class="text-muted">${date}</small></p>
+                                            </div>
+                                        </div>`
+                        $('#card-group').append(temp_html)
+                    }
+                }
+
+            })
+        })
     </script>
 
 </head>
@@ -159,15 +255,16 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="single-product-img">
-                    <img src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt="">
+                    <img src="/static/assets/img/{{ challenge.challenge_img }}" alt="">
                 </div>
             </div>
             <div class="col-md-7">
                 <div class="single-product-content">
-                    <h3>열심히 코딩하기</h3>
-                    <p class="single-product-pricing"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~
-								21-10-10</span> 50명 참가</p>
-                    <p>매일 심은 잔디를 인증하는 챌린지 입니다!</p>
+                    <h3>{{ challenge.challenge_title }}</h3>
+                    <p class="single-product-pricing"><span><i
+                            class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime }} ~
+                        {{ challenge.challenge_endTime }}</span> 50명 참가</p>
+                    <p>{{ challenge.challenge_desc }}</p>
                     <div class="single-product-form">
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
                             Go to
@@ -188,7 +285,8 @@
                             <input class="form-control" type="text" id="formText">
                         </div>
 
-                        <button type="button" class="btn btn-primary btn-lg">챌린지 인증</button>
+                        <a onclick="onClickCheck()" class="cart-btn-c"><i class="fa fa-check"></i>
+                            챌린지 인증</a>
                     </div>
                 </div>
             </div>
@@ -196,6 +294,10 @@
     </div>
 </div>
 <!-- end single product -->
+<div class="card-group" id="card-group" style="display: none">
+
+</div>
+
 
 <!-- more products -->
 <div class="more-products mb-150">
@@ -213,7 +315,8 @@
                 <div class="single-product-item">
                     <div class="product-image">
                         <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt=""></a>
+                                src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}"
+                                alt=""></a>
                     </div>
                     <h3>운동하기</h3>
                     <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
@@ -225,7 +328,8 @@
                 <div class="single-product-item">
                     <div class="product-image">
                         <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt=""></a>
+                                src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}"
+                                alt=""></a>
                     </div>
                     <h3>산책하기</h3>
                     <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
@@ -237,7 +341,8 @@
                 <div class="single-product-item">
                     <div class="product-image">
                         <a href="{{ '/challenge' }}"><img
-                                src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt=""></a>
+                                src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}"
+                                alt=""></a>
                     </div>
                     <h3>코딩하기</h3>
                     <p class="product-price"><span><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10</span>
@@ -274,8 +379,7 @@
 </div>
 <!-- end copyright -->
 
-<!-- jquery -->
-<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+
 <!-- bootstrap -->
 <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
 <!-- count down -->

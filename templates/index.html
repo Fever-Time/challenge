@@ -80,14 +80,13 @@
                         let host = challenges[i]['challenge_host']
                         let challengeId = challenges[i]['_id']['$oid']
 
-                        console.log(challengeId)
 
 
 
                         let temp_html = `<div class="col-lg-4 col-md-6 text-center strawberry">
                                 <div class="single-product-item">
                                     <div class="product-image">
-                                        <a href="{{ '/challenge' }}"><img
+                                        <a href="/challenge/${challengeId}"><img
                                                 src="/static/assets/img/${image}" alt=""></a>
                                     </div>
                                     <h3>${title}</h3>
