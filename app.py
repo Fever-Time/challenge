@@ -59,6 +59,7 @@ def save_challenge():
     title_receive = request.form["title_give"]
     decs_receive = request.form["desc_give"]
     period_receive = request.form["period_give"]
+    address_receive = request.form["address_give"]
 
     file_len = len(request.files)
     # file_len 이 0이면 JS에서 파일을 안보낸준 것!
@@ -86,6 +87,7 @@ def save_challenge():
         'challenge_img': full_file_name,
         'challenge_startTime': period_receive.split(',')[0],
         'challenge_endTime': period_receive.split(',')[1],
+        'challenge_address': address_receive,
         'challenge_host': 'admin'
     }
 
