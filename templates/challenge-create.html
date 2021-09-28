@@ -32,6 +32,7 @@
         .create-form .input-group-text {
             width: 120px
         }
+
         .btn-lg {
             border-radius: 50px;
         }
@@ -52,8 +53,7 @@
             if (address == "") {
                 address = "online";
             }
-            console.log(period[0]=="")
-
+            console.log(period[0] == "")
 
 
             console.log(image)
@@ -67,15 +67,14 @@
             form_data.append("address_give", address)
             console.log(form_data)
 
-            if (title==""||desc==""||period[0]==""||period[1]==""){
-                if(title==""){
+            if (title == "" || desc == "" || period[0] == "" || period[1] == "") {
+                if (title == "") {
                     alert('챌린지 이름을 입력하세요')
                     return $('#title').focus();
-                }else if (desc=="")
-                {
+                } else if (desc == "") {
                     alert('상세 내용을 입력하세요')
                     return $('#desc').focus();
-                }else (period[0]==""||period[1]=="")
+                } else (period[0] == "" || period[1] == "")
                 {
                     alert('진행 기간을 입력하세요')
                     return $('#desc').focus();
@@ -239,7 +238,6 @@
         position: new daum.maps.LatLng(37.537187, 127.005476),
         map: map
     });
-
 
     function sample5_execDaumPostcode() {
         new daum.Postcode({
