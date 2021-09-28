@@ -126,7 +126,8 @@
 
             form_data.append("img_give", img)
             form_data.append("cont_give", cont)
-            form_data.append("challenge_give", "{{ challengeId }}")
+            form_data.append("challenge_give", "{{ challenge._id }}")
+
 
             $.ajax({
                 type: "POST",
@@ -264,7 +265,7 @@
                         <span>
                             <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
                         </span>
-                        50명 참가
+                        {{ people }}명 참가
                     </p>
                     <p>{{ challenge.challenge_desc }}</p>
                     <div class="single-product-form">

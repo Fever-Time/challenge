@@ -53,8 +53,8 @@
     </style>
 
     <script>
-        function onClickChallenge() {
-            location.href = "/challenge";
+        function onClickChallenge(challengeId) {
+            location.href = `/challenge/${challengeId}`
         }
     </script>
 </head>
@@ -135,37 +135,23 @@
                             <th class="product-image">Challenge Image</th>
                             <th class="product-name">Challenge Title</th>
                             <th class="product-price">Challenge Period</th>
-                            <th class="product-total">Challenge Rate</th>
+{#                            <th class="product-total">Challenge Day</th>#}
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">운동하기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">50%</td>
-                        </tr>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">코딩하기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">30%</td>
-                        </tr>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">숨쉬기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">20%</td>
-                        </tr>
+                        {% for challenge in challenges %}
+                            <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
+                                <td class="product-image"><img
+                                        src="{{ url_for('static', filename='assets/img/'+challenge.challenge_img) }}"
+                                        alt="">
+                                </td>
+                                <td class="product-name">{{ challenge.challenge_title }}</td>
+                                <td class="product-price">
+                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                </td>
+{#                                <td class="product-total">50%</td>#}
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -183,16 +169,16 @@
                         <tbody>
                         <tr class="total-data">
                             <td><strong>진행 챌린지</strong></td>
-                            <td>5</td>
+                            <td>{{ challenges|length }}</td>
                         </tr>
                         <tr class="total-data">
                             <td><strong>종료 챌린지</strong></td>
-                            <td>3</td>
+                            <td>0</td>
                         </tr>
-                        <tr class="total-data">
-                            <td><strong>전체 달성률</strong></td>
-                            <td>99%</td>
-                        </tr>
+                        {#                        <tr class="total-data">#}
+                        {#                            <td><strong>전체 달성률</strong></td>#}
+                        {#                            <td>99%</td>#}
+                        {#                        </tr>#}
                         </tbody>
                     </table>
                     <div class="cart-buttons">

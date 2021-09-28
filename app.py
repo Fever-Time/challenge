@@ -12,6 +12,10 @@ db = client.ftime
 @app.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+    print(challenges)
+    for challenge in challenges:
+        challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
+
     return render_template('index.html', challenges=challenges)
 
 
@@ -25,14 +29,17 @@ def user():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
+        challenges = []
+        for challenge_id in join_challenge_id_list:
+            challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
 
-        return render_template('user.html')
+        return render_template('user.html', challenges=challenges)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
-
-    return render_template('user.html')
 
 
 @app.route('/challenge/create', methods=['GET'])
@@ -44,7 +51,11 @@ def challenge_create_page():
 def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
-    return render_template("challenge-detail.html", challenge=challenge)
+
+    people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
+    print(people)
+
+    return render_template("challenge-detail.html", challenge=challenge, people=people)
 
 
 # 준호님 code start
@@ -187,14 +198,6 @@ def check_dup():
 # 준호님 code end
 
 # 수빈님 code start
-
-# @app.route('/challenge', methods=['GET'])
-# def get_challenge():
-#     challenges = list(db.challenge.find({}))
-#     json_str = dumps(challenges)
-#     print(json_str)
-#     return jsonify({'all_challenges': json_str})
-
 @app.route('/challenge', methods=['POST'])
 def save_challenge():
     title_receive = request.form["title_give"]
@@ -245,31 +248,41 @@ def delete_word():
 
 @app.route('/challenge/check', methods=['POST'])
 def challenge_check():
-    challenge_receive = request.form["challenge_give"]
-    cont_receive = request.form["cont_give"]
-    file = request.files["img_give"]
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 
-    extension = file.filename.split('.')[-1]
+        user_id = payload['id']
 
-    today = datetime.now()
-    mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
-    uploadtime = today.strftime("%Y-%m-%d")
+        challenge_receive = request.form["challenge_give"]
+        cont_receive = request.form["cont_give"]
+        file = request.files["img_give"]
 
-    filename = f'file-{mytime}'
+        extension = file.filename.split('.')[-1]
 
-    save_to = f'static/assets/img/{filename}.{extension}'
-    file.save(save_to)
+        today = datetime.now()
+        mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
+        uploadtime = today.strftime("%Y-%m-%d")
 
-    doc = {
-        'join_challenge': challenge_receive,
-        'join_date': uploadtime,
-        'join_cont': cont_receive,
-        'join_img': f'{filename}.{extension}',
+        filename = f'file-{mytime}'
 
-    }
+        save_to = f'static/assets/img/{filename}.{extension}'
+        file.save(save_to)
 
-    db.join.insert_one(doc)
-    return jsonify({'msg': "챌린지 인증 되었습니다."})
+        doc = {
+            'join_challenge': challenge_receive,
+            'join_date': uploadtime,
+            'join_user': user_id,
+            'join_cont': cont_receive,
+            'join_img': f'{filename}.{extension}',
+        }
+
+        db.join.insert_one(doc)
+        return jsonify({'msg': "챌린지 인증 되었습니다."})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
 @app.route('/challenge/get', methods=['GET'])
