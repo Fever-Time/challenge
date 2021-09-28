@@ -232,7 +232,7 @@ def save_challenge():
 
             filename = f'file-{mytime}'
 
-            save_to = f'static/assets/img/{filename}.{extension}'
+            save_to = f'static/assets/img/challenge/{filename}.{extension}'
             image_receive.save(save_to)
 
             full_file_name = f'{filename}.{extension}'
@@ -284,7 +284,7 @@ def challenge_check():
 
         filename = f'file-{mytime}'
 
-        save_to = f'static/assets/img/{filename}.{extension}'
+        save_to = f'static/assets/img/join/{filename}.{extension}'
         file.save(save_to)
 
         doc = {
