@@ -54,6 +54,9 @@
         .create-form .input-group-text {
             width: 120px
         }
+        .btn-lg {
+            border-radius: 50px;
+        }
 
     </style>
 
@@ -64,14 +67,16 @@
 
         function createChallenge() {
             let title = $('#title').val()
-            let decs = $("#desc").val()
+            let desc = $("#desc").val()
             let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
             let image = $('#formFile')[0].files[0]
             let address = $('#sample5_address').val()
-
             if (address == "") {
                 address = "online";
             }
+            console.log(period[0]=="")
+
+
 
             console.log(image)
 
@@ -79,10 +84,26 @@
 
             form_data.append("image_give", image)
             form_data.append("title_give", title)
-            form_data.append("desc_give", decs)
+            form_data.append("desc_give", desc)
             form_data.append("period_give", period)
             form_data.append("address_give", address)
             console.log(form_data)
+
+            if (title==""||desc==""||period[0]==""||period[1]==""){
+                if(title==""){
+                    alert('챌린지 이름을 입력하세요')
+                    return $('#title').focus();
+                }else if (desc=="")
+                {
+                    alert('상세 내용을 입력하세요')
+                    return $('#desc').focus();
+                }else (period[0]==""||period[1]=="")
+                {
+                    alert('진행 기간을 입력하세요')
+                    return $('#desc').focus();
+                }
+            }
+
 
             $.ajax({
                 type: "POST",
@@ -94,7 +115,7 @@
 
                 success: function (response) { // 성공하면
                     alert(response["msg"]);
-                    window.location.reload()
+                    window.location.href = '/'
                 }
             })
         }
@@ -102,6 +123,7 @@
         function setThumbnail(event) {
             $('#single-product-img').empty()
             let reader = new FileReader();
+
 
             reader.onload = function (event) {
                 let img = document.createElement("img");
