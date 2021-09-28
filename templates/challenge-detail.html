@@ -81,12 +81,12 @@
             }
         }
 
-        function onClickdeleteChallenge() {
+        function onClickDeleteChallenge() {
             $.ajax({
-                type: "POST",
-                url: `/challenge/delete`,
+                type: "DELETE",
+                url: `/challenge`,
                 data: {
-                    host_give: "admin"
+                    challengeId_give: '{{ challenge._id }}'
                 },
                 success: function (response) {
                     alert(response["msg"])
@@ -189,8 +189,10 @@
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
                             Go to
                             Challenge</a>
-                        <a onclick="onClickdeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
+                        {% if status %}
+                        <a onclick="onClickDeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
                             Delete</a>
+                        {% endif %}
                         <p><strong>Categories: </strong>공부, 운동</p>
                     </div>
 
