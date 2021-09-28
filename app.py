@@ -205,9 +205,11 @@ def check_dup():
 # 수빈님 code start
 @app.route('/challenge', methods=['POST'])
 def save_challenge():
+
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
 
         challenge_host = payload['id']
 
@@ -280,6 +282,7 @@ def challenge_check():
         today = datetime.now()
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
+
 
         filename = f'file-{mytime}'
 
