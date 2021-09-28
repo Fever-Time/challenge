@@ -12,6 +12,9 @@ db = client.ftime
 @app.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+    for challenge in challenges:
+        challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
+
     return render_template('index.html', challenges=challenges)
 
 
@@ -25,14 +28,17 @@ def user():
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
+        challenges = []
+        for challenge_id in join_challenge_id_list:
+            challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
 
-        return render_template('user.html')
+        return render_template('user.html', challenges=challenges)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
-
-    return render_template('user.html')
 
 
 @app.route('/challenge/create', methods=['GET'])
@@ -44,7 +50,17 @@ def challenge_create_page():
 def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
-    return render_template("challenge-detail.html", challenge=challenge)
+
+    people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
+
+    token_receive = request.cookies.get('mytoken')
+
+    status = False
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
+    finally:
+        return render_template("challenge-detail.html", challenge=challenge, people=people, status=status)
 
 
 # 준호님 code start
@@ -187,90 +203,106 @@ def check_dup():
 # 준호님 code end
 
 # 수빈님 code start
-
-# @app.route('/challenge', methods=['GET'])
-# def get_challenge():
-#     challenges = list(db.challenge.find({}))
-#     json_str = dumps(challenges)
-#     print(json_str)
-#     return jsonify({'all_challenges': json_str})
-
 @app.route('/challenge', methods=['POST'])
 def save_challenge():
-    title_receive = request.form["title_give"]
-    desc_receive = request.form["desc_give"]
-    period_receive = request.form["period_give"]
-    address_receive = request.form["address_give"]
-    # host_receive = request.form["host_give"]
 
-    file_len = len(request.files)
-    # file_len 이 0이면 JS에서 파일을 안보낸준 것!
-    # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
-    if file_len == 0:
-        full_file_name = "challenge.jfif"  # default 파일이름 설정
-    else:
-        # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
-        image_receive = request.files["image_give"]
-
-        extension = image_receive.filename.split('.')[-1]
-        today = datetime.now()
-        mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
-
-        filename = f'file-{mytime}'
-
-        save_to = f'static/assets/img/challenge/{filename}.{extension}'
-        image_receive.save(save_to)
-
-        full_file_name = f'{filename}.{extension}'
-
-    doc = {
-        'challenge_title': title_receive,
-        'challenge_desc': desc_receive,
-        'challenge_img': full_file_name,
-        'challenge_startTime': period_receive.split(',')[0],
-        'challenge_endTime': period_receive.split(',')[1],
-        'challenge_address': address_receive,
-        'challenge_host':  'admin'
-    }
-
-    db.challenge.insert_one(doc)
-    return jsonify({'msg': "챌린지 등록 되었습니다."})
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 
 
-@app.route('/challenge/delete', methods=['POST'])
-def delete_word():
-    host_receive = request.form['host_give']
-    db.challenge.delete_one({'challenge_host': host_receive})
+        challenge_host = payload['id']
+
+        title_receive = request.form["title_give"]
+        decs_receive = request.form["desc_give"]
+        period_receive = request.form["period_give"]
+        address_receive = request.form["address_give"]
+
+        file_len = len(request.files)
+        # file_len 이 0이면 JS에서 파일을 안보낸준 것!
+        # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
+        if file_len == 0:
+            full_file_name = "default.png"  # default 파일이름 설정
+        else:
+            # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
+            image_receive = request.files["image_give"]
+
+            extension = image_receive.filename.split('.')[-1]
+            today = datetime.now()
+            mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+            filename = f'file-{mytime}'
+
+            save_to = f'static/assets/img/{filename}.{extension}'
+            image_receive.save(save_to)
+
+            full_file_name = f'{filename}.{extension}'
+
+        doc = {
+            'challenge_title': title_receive,
+            'challenge_desc': decs_receive,
+            'challenge_img': full_file_name,
+            'challenge_startTime': period_receive.split(',')[0],
+            'challenge_endTime': period_receive.split(',')[1],
+            'challenge_address': address_receive,
+            'challenge_host': challenge_host
+        }
+
+        db.challenge.insert_one(doc)
+
+        return jsonify({'msg': "챌린지 등록 되었습니다."})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
+
+
+@app.route('/challenge', methods=['DELETE'])
+def delete_challenge():
+    challengeId_receive = request.form['challengeId_give']
+    db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
+    db.join.delete_many({'join_challenge': challengeId_receive})
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
 
 
 @app.route('/challenge/check', methods=['POST'])
 def challenge_check():
-    challenge_receive = request.form["challenge_give"]
-    cont_receive = request.form["cont_give"]
-    file = request.files["img_give"]
+    token_receive = request.cookies.get('mytoken')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 
-    extension = file.filename.split('.')[-1]
+        user_id = payload['id']
 
-    today = datetime.now()
-    mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
-    uploadtime = today.strftime("%Y-%m-%d")
+        challenge_receive = request.form["challenge_give"]
+        cont_receive = request.form["cont_give"]
+        file = request.files["img_give"]
 
-    filename = f'file-{mytime}'
+        extension = file.filename.split('.')[-1]
 
-    save_to = f'static/assets/img/join/{filename}.{extension}'
-    file.save(save_to)
+        today = datetime.now()
+        mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
+        uploadtime = today.strftime("%Y-%m-%d")
 
-    doc = {
-        'join_challenge': challenge_receive,
-        'join_date': uploadtime,
-        'join_cont': cont_receive,
-        'join_img': f'{filename}.{extension}',
 
-    }
+        filename = f'file-{mytime}'
 
-    db.join.insert_one(doc)
-    return jsonify({'msg': "챌린지 인증 되었습니다."})
+        save_to = f'static/assets/img/{filename}.{extension}'
+        file.save(save_to)
+
+        doc = {
+            'join_challenge': challenge_receive,
+            'join_date': uploadtime,
+            'join_user': user_id,
+            'join_cont': cont_receive,
+            'join_img': f'{filename}.{extension}',
+        }
+
+        db.join.insert_one(doc)
+        return jsonify({'msg': "챌린지 인증 되었습니다."})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
 @app.route('/challenge/get', methods=['GET'])

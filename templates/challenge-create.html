@@ -2,36 +2,14 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
 
     <!-- title -->
     <title>Challenge Create</title>
 
-    <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.ico') }}">
-    <!-- google font -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
-    <!-- fontawesome -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/all.min.css') }}">
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
-    <!-- owl carousel -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.carousel.css') }}">
-    <!-- magnific popup -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/magnific-popup.css') }}">
-    <!-- animate css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
-    <!-- mean menu css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/meanmenu.min.css') }}">
-    <!-- main style -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
-    <!-- responsive -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
+    <!-- bootstrap css-->
+    {% include "include/header-css.html" %}
 
     <style>
         #create-form-container {
@@ -116,21 +94,17 @@
                 success: function (response) { // 성공하면
                     alert(response["msg"]);
                     window.location.href = '/'
+
                 }
             })
         }
 
         function setThumbnail(event) {
-            $('#single-product-img').empty()
             let reader = new FileReader();
 
 
             reader.onload = function (event) {
-                let img = document.createElement("img");
-                img.setAttribute("src", event.target.result);
-                img.setAttribute("class", "col-lg-6");
-                img.setAttribute("style", "width: " + 445 + "px; height: " + 334 + "px;");
-                document.querySelector("div#image_container").appendChild(img);
+                $("#thumbnail").attr('src', event.target.result)
             };
 
             reader.readAsDataURL(event.target.files[0]);
@@ -149,91 +123,32 @@
 </head>
 
 <body>
+<!--PreLoader start -->
+{% include 'include/preloader.html' %}
+<!--PreLoader end-->
 
-<!--PreLoader-->
-<div class="loader">
-    <div class="loader-inner">
-        <div class="circle"></div>
-    </div>
-</div>
-<!--PreLoader Ends-->
+<!-- header start -->
+{% include 'include/body-header.html' %}
+<!-- header end -->
 
-<!-- header -->
-<div class="top-header-area" id="sticker">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-sm-12 text-center">
-                <div class="main-menu-wrap">
+<!-- search area start-->
+{% include 'include/search.html' %}
+<!-- search area end -->
 
-                    <!-- logo -->
-                    <div class="site-logo">
-                        <a href="{{ '/' }}">
-                            <img src="{{ url_for('static', filename='assets/img/logo.png') }}" alt="">
-                        </a>
-                    </div>
-                    <!-- logo -->
-
-                    <!-- menu start -->
-                    <nav class="main-menu">
-                        <ul>
-                            <li>
-                                <div class="header-icons">
-                                    <a class="shopping-cart" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
-                                </div>
-                            </li>
-                        </ul>
-                    </nav>
-                    <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
-                    <!-- menu end -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end header -->
-
-<!-- search area -->
-<div class="search-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <span class="close-btn"><i class="fas fa-window-close"></i></span>
-                <div class="search-bar">
-                    <div class="search-bar-tablecell">
-                        <h3>Search For:</h3>
-                        <input type="text" placeholder="Keywords">
-                        <button type="submit">Search <i class="fas fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end search arewa -->
-
-<!-- breadcrumb-section -->
-<div class="breadcrumb-section breadcrumb-bg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2 text-center">
-                <div class="breadcrumb-text">
-                    <p>지구평화도 한걸음 부터</p>
-                    <h1>어벤져스!</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end breadcrumb section -->
-
+<!-- breadcrumb-section start -->
+{% include 'include/breadcrumb-section.html' %}
+<!-- breadcrumb section end -->
 
 <!-- single product -->
 <div class="single-product mt-150 mb-150">
     <div class="container">
         <div class="row">
             <div class="col-md-5" id="image_container">
-                <div class="single-product-img" id="single-product-img">
-                    <img src="{{ url_for('static', filename='assets/img/default/challenge.jfif') }}" alt="">
+                <div class="single-product-img">
+                    <img id="thumbnail"
+                         style="height: 300px;width:500px"
+                         src="{{ url_for('static', filename='assets/img/default/challenge.jfif') }}"
+                         alt="">
                 </div>
             </div>
             <div class="col-md-7">
@@ -302,29 +217,9 @@
 </div>
 <!-- end single product -->
 
-<!-- copyright -->
-<div class="copyright">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-                    Reserved.</p>
-            </div>
-            <div class="col-lg-6 text-right col-md-12">
-                <div class="social-icons">
-                    <!-- <ul>
-                        <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-                    </ul> -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end copyright -->
+<!-- copyright start -->
+{% include 'include/copyright.html' %}
+<!-- copyright end -->
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=7004ea44101be7c75067b28e563db611&libraries=services"></script>
@@ -376,27 +271,9 @@
     }
 </script>
 
-<!-- jquery -->
-<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
-<!-- bootstrap -->
-<script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
-<!-- count down -->
-<script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
-<!-- isotope -->
-<script src="{{ url_for('static', filename='assets/js/jquery.isotope-3.0.6.min.js') }}"></script>
-<!-- waypoints -->
-<script src="{{ url_for('static', filename='assets/js/waypoints.js') }}"></script>
-<!-- owl carousel -->
-<script src="{{ url_for('static', filename='assets/js/owl.carousel.min.js') }}"></script>
-<!-- magnific popup -->
-<script src="{{ url_for('static', filename='assets/js/jquery.magnific-popup.min.js') }}"></script>
-<!-- mean menu -->
-<script src="{{ url_for('static', filename='assets/js/jquery.meanmenu.min.js') }}"></script>
-<!-- sticker js -->
-<script src="{{ url_for('static', filename='assets/js/sticker.js') }}"></script>
-<!-- main js -->
-<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
+<!-- bootstrap js start -->
+{% include 'include/footer-js.html' %}
+<!-- bootstrap js end -->
 </body>
 
 </html>

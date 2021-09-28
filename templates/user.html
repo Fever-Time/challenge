@@ -2,36 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
 
     <!-- title -->
     <title>User</title>
 
-    <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.ico') }}">
-    <!-- google font -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
-    <!-- fontawesome -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/all.min.css') }}">
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
-    <!-- owl carousel -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.carousel.css') }}">
-    <!-- magnific popup -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/magnific-popup.css') }}">
-    <!-- animate css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
-    <!-- mean menu css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/meanmenu.min.css') }}">
-    <!-- main style -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
-    <!-- responsive -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
+    {% include "include/header-css.html" %}
 
     <style>
         .table-body-row {
@@ -53,21 +30,16 @@
     </style>
 
     <script>
-        function onClickChallenge() {
-            location.href = "/challenge";
+        function onClickChallenge(challengeId) {
+            location.href = `/challenge/${challengeId}`
         }
     </script>
 </head>
 
 <body>
-
-<!--PreLoader-->
-<div class="loader">
-    <div class="loader-inner">
-        <div class="circle"></div>
-    </div>
-</div>
-<!--PreLoader Ends-->
+<!--PreLoader start -->
+{% include 'include/preloader.html' %}
+<!--PreLoader end-->
 
 <!-- header -->
 <div class="top-header-area" id="sticker">
@@ -89,39 +61,13 @@
 </div>
 <!-- end header -->
 
-<!-- search area -->
-<div class="search-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <span class="close-btn"><i class="fas fa-window-close"></i></span>
-                <div class="search-bar">
-                    <div class="search-bar-tablecell">
-                        <h3>Search For:</h3>
-                        <input type="text" placeholder="Keywords">
-                        <button type="submit">Search <i class="fas fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end search arewa -->
+<!-- search area start-->
+{% include 'include/search.html' %}
+<!-- search area end -->
 
-<!-- breadcrumb-section -->
-<div class="breadcrumb-section breadcrumb-bg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2 text-center">
-                <div class="breadcrumb-text">
-                    <p>지구평화도 한걸음 부터</p>
-                    <h1>어벤져스!</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end breadcrumb section -->
+<!-- breadcrumb-section start -->
+{% include 'include/breadcrumb-section.html' %}
+<!-- breadcrumb section end -->
 
 <!-- cart -->
 <div class="cart-section mt-150 mb-150">
@@ -135,37 +81,23 @@
                             <th class="product-image">Challenge Image</th>
                             <th class="product-name">Challenge Title</th>
                             <th class="product-price">Challenge Period</th>
-                            <th class="product-total">Challenge Rate</th>
+                            {#                            <th class="product-total">Challenge Day</th>#}
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default4.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">운동하기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">50%</td>
-                        </tr>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default1.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">코딩하기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">30%</td>
-                        </tr>
-                        <tr class="table-body-row" onclick="onClickChallenge()">
-                            <td class="product-image"><img
-                                    src="{{ url_for('static', filename='assets/img/default/default2.jfif') }}" alt="">
-                            </td>
-                            <td class="product-name">숨쉬기</td>
-                            <td class="product-price"><i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                            </td>
-                            <td class="product-total">20%</td>
-                        </tr>
+                        {% for challenge in challenges %}
+                            <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
+                                <td class="product-image"><img
+                                        src="{{ url_for('static', filename='assets/img/'+challenge.challenge_img) }}"
+                                        alt="">
+                                </td>
+                                <td class="product-name">{{ challenge.challenge_title }}</td>
+                                <td class="product-price">
+                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                </td>
+                                {#                                <td class="product-total">50%</td>#}
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -183,16 +115,16 @@
                         <tbody>
                         <tr class="total-data">
                             <td><strong>진행 챌린지</strong></td>
-                            <td>5</td>
+                            <td>{{ challenges|length }}</td>
                         </tr>
                         <tr class="total-data">
                             <td><strong>종료 챌린지</strong></td>
-                            <td>3</td>
+                            <td>0</td>
                         </tr>
-                        <tr class="total-data">
-                            <td><strong>전체 달성률</strong></td>
-                            <td>99%</td>
-                        </tr>
+                        {#                        <tr class="total-data">#}
+                        {#                            <td><strong>전체 달성률</strong></td>#}
+                        {#                            <td>99%</td>#}
+                        {#                        </tr>#}
                         </tbody>
                     </table>
                     <div class="cart-buttons">
@@ -206,52 +138,13 @@
 </div>
 <!-- end cart -->
 
-<!-- copyright -->
-<div class="copyright">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <p>Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights
-                    Reserved.</p>
-            </div>
-            <div class="col-lg-6 text-right col-md-12">
-                <div class="social-icons">
-                    <!-- <ul>
-                        <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-                    </ul> -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end copyright -->
+<!-- copyright start -->
+{% include 'include/copyright.html' %}
+<!-- copyright end -->
 
-<!-- jquery -->
-<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
-<!-- bootstrap -->
-<script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
-<!-- count down -->
-<script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
-<!-- isotope -->
-<script src="{{ url_for('static', filename='assets/js/jquery.isotope-3.0.6.min.js') }}"></script>
-<!-- waypoints -->
-<script src="{{ url_for('static', filename='assets/js/waypoints.js') }}"></script>
-<!-- owl carousel -->
-<script src="{{ url_for('static', filename='assets/js/owl.carousel.min.js') }}"></script>
-<!-- magnific popup -->
-<script src="{{ url_for('static', filename='assets/js/jquery.magnific-popup.min.js') }}"></script>
-<!-- mean menu -->
-<script src="{{ url_for('static', filename='assets/js/jquery.meanmenu.min.js') }}"></script>
-<!-- sticker js -->
-<script src="{{ url_for('static', filename='assets/js/sticker.js') }}"></script>
-<!-- main js -->
-<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
-
+<!-- bootstrap js start -->
+{% include 'include/footer-js.html' %}
+<!-- bootstrap js end -->
 </body>
 
 </html>

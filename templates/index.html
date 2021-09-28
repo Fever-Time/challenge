@@ -2,39 +2,18 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
-    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
-    <!-- jquery -->
-    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
 
     <!-- title -->
     <title>Main</title>
 
-    <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.ico') }}">
-    <!-- google font -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
-    <!-- fontawesome -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/all.min.css') }}">
-    <!-- bootstrap -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
-    <!-- owl carousel -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.carousel.css') }}">
-    <!-- magnific popup -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/magnific-popup.css') }}">
-    <!-- animate css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
-    <!-- mean menu css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/meanmenu.min.css') }}">
-    <!-- main style -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
-    <!-- responsive -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
+    <!-- bootstrap css-->
+    {% include "include/header-css.html" %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
 
     <style>
         #add-btn {
@@ -63,88 +42,21 @@
 </head>
 
 <body>
+<!--PreLoader start -->
+{% include 'include/preloader.html' %}
+<!--PreLoader end-->
 
-<!--PreLoader-->
-<div class="loader">
-    <div class="loader-inner">
-        <div class="circle"></div>
-    </div>
-</div>
-<!--PreLoader Ends-->
+<!-- header start -->
+{% include 'include/body-header.html' %}
+<!-- header end -->
 
-<!-- header -->
-<div class="top-header-area" id="sticker">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-sm-12 text-center">
-                <div class="main-menu-wrap">
-                    <!-- logo -->
-                    <div class="site-logo">
-                        <a href="{{ '/' }}">
-                            <img src="{{ url_for('static', filename='assets/img/logo.png') }}" alt="">
-                        </a>
-                    </div>
-                    <!-- logo -->
+<!-- search area start-->
+{% include 'include/search.html' %}
+<!-- search area end -->
 
-                    <!-- menu start -->
-                    <nav class="main-menu">
-                        <ul>
-                            <li>
-                                <div class="header-icons">
-                                    <a class="mobile-hide search-bar-icon" href="#"><i
-                                            class="fas fa-search"></i></a>
-                                    <a class="shopping-cart" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
-                                </div>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    <div class="nav-mobile-show-container">
-                        <a class="mobile-show search-bar-icon" style="right: 100px;" href="#"><i
-                                class="fas fa-search"></i></a>
-                        <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
-                    </div>
-                    <!-- menu end -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end header -->
-
-<!-- search area -->
-<div class="search-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <span class="close-btn"><i class="fas fa-window-close"></i></span>
-                <div class="search-bar">
-                    <div class="search-bar-tablecell">
-                        <h3>Search For:</h3>
-                        <input type="text" placeholder="Keywords">
-                        <button type="submit">Search <i class="fas fa-search"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end search arewa -->
-
-<!-- breadcrumb-section -->
-<div class="breadcrumb-section breadcrumb-bg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2 text-center">
-                <div class="breadcrumb-text">
-                    <p>지구평화도 한걸음 부터</p>
-                    <h1>어벤져스!</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end breadcrumb section -->
+<!-- breadcrumb-section start -->
+{% include 'include/breadcrumb-section.html' %}
+<!-- breadcrumb section end -->
 
 <!-- products -->
 <div class="product-section mt-150 mb-150">
@@ -176,7 +88,7 @@
                             <span>
                                 <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_startTime }}
                             </span>
-                            85명 참가
+                            {{ challenge.people }}명 참가
                         </p>
                         <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
                             <i class="fas fa-bolt"></i> View Details
@@ -213,52 +125,13 @@
 </div>
 <!-- end products -->
 
-<!-- copyright -->
-<div class="copyright">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <p>
-                    Copyrights &copy; 2019 - <a href="https://imransdesign.com/">Imran Hossain</a>, All Rights Reserved.
-                </p>
-            </div>
-            <div class="col-lg-6 text-right col-md-12">
-                <div class="social-icons">
-                    <!-- <ul>
-                        <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
-                        <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
-                    </ul> -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end copyright -->
+<!-- copyright start -->
+{% include 'include/copyright.html' %}
+<!-- copyright end -->
 
-<!-- jquery -->
-<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
-<!-- bootstrap -->
-<script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
-<!-- count down -->
-<script src="{{ url_for('static', filename='assets/js/jquery.countdown.js') }}"></script>
-<!-- isotope -->
-<script src="{{ url_for('static', filename='assets/js/jquery.isotope-3.0.6.min.js') }}"></script>
-<!-- waypoints -->
-<script src="{{ url_for('static', filename='assets/js/waypoints.js') }}"></script>
-<!-- owl carousel -->
-<script src="{{ url_for('static', filename='assets/js/owl.carousel.min.js') }}"></script>
-<!-- magnific popup -->
-<script src="{{ url_for('static', filename='assets/js/jquery.magnific-popup.min.js') }}"></script>
-<!-- mean menu -->
-<script src="{{ url_for('static', filename='assets/js/jquery.meanmenu.min.js') }}"></script>
-<!-- sticker js -->
-<script src="{{ url_for('static', filename='assets/js/sticker.js') }}"></script>
-<!-- main js -->
-<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
+<!-- bootstrap js start -->
+{% include 'include/footer-js.html' %}
+<!-- bootstrap js end -->
 </body>
 
 </html>
