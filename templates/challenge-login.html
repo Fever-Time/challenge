@@ -167,12 +167,13 @@
         }
 
         function is_nickname(asValue) {
-            var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;
+            //const regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{2,10}$/;   // 기존 정규식
+            const regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; // 이메일 정규식
             return regExp.test(asValue);
         }
 
         function is_password(asValue) {
-            var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+            const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
             return regExp.test(asValue);
         }
 
@@ -185,7 +186,7 @@
                 return;
             }
             if (!is_nickname(username)) {
-                $("#help-id").text("아이디의 형식을 확인해주세요. 영문과 숫자, 일부 특수문자(._-) 사용 가능. 2-10자 길이").removeClass("is-safe").addClass("is-danger")
+                $("#help-id").text("아이디의 형식을 확인해주세요. 이메일 형식이 아닙니다.").removeClass("is-safe").addClass("is-danger")
                 $("#input-username").focus()
                 return;
             }
