@@ -32,8 +32,7 @@
 
         .card-group {
             width: 1000px;
-            margin: auto;
-            margin-bottom: 50px;
+            margin: auto auto 50px;
         }
 
         a.cart-btn-c {
@@ -44,7 +43,7 @@
             padding: 10px 20px;
         }
 
-        a.cart-btn-d {
+        a.cart-btn-d, a.cart-btn-h {
             font-family: 'Poppins', sans-serif;
             display: inline-block;
             background-color: #dc3545;
@@ -52,17 +51,28 @@
             padding: 10px 20px;
         }
 
+        a.cart-btn-h {
+            background-color: white;
+            color: #F28123;
+            border: solid #F28123;
+        }
+
         a.cart-btn-d:hover {
             background-color: #051922;
-            color: #dc3545;;
+            color: #dc3545;
         }
 
         a.cart-btn-c:hover {
             background-color: #051922;
-            color: #007bff;;
+            color: #007bff;
         }
 
-        a.cart-btn-d, a.cart-btn-c {
+        a.cart-btn-h:hover {
+            background-color: #F28123;
+            color: white;
+        }
+
+        a.cart-btn-d, a.cart-btn-c, a.cart-btn-h {
             border-radius: 50px;
         }
 
@@ -76,7 +86,7 @@
             height: 300px;
         }
 
-        .card-headerr img {
+        .card-header img {
             width: 100%;
             height: 170px;
             object-fit: cover;
@@ -89,7 +99,6 @@
             align-items: flex-start;
             padding: 20px;
             min-height: 100px;
-
         }
 
         .card-mid p {
@@ -98,6 +107,15 @@
             text-align: center;
         }
 
+        .related-challenge-img {
+            width: 250px;
+            height: 200px;
+        }
+
+        .deleteBtn-container {
+            display: flex;
+            justify-content: flex-end;
+        }
     </style>
 
     <script>
@@ -110,17 +128,20 @@
         }
 
         function onClickDeleteChallenge() {
-            $.ajax({
-                type: "DELETE",
-                url: `/challenge`,
-                data: {
-                    challengeId_give: '{{ challenge._id }}'
-                },
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.href = '/'
-                }
-            });
+            let check = confirm("챌린지를 삭제하시겠습니까?")
+            if (check) {
+                $.ajax({
+                    type: "DELETE",
+                    url: `/challenge`,
+                    data: {
+                        challengeId_give: '{{ challenge._id }}'
+                    },
+                    success: function (response) {
+                        alert(response["msg"])
+                        window.location.href = '/'
+                    }
+                });
+            }
         }
 
         function onClickCheck() {
@@ -160,7 +181,7 @@
                         let img = joins[i]['join_img'];
                         let date = joins[i]['join_date']
                         let temp_html = `<div class="card-check">
-                                            <div class="card-headerr">
+                                            <div class="card-header">
                                               <img src="/static/assets/img/join/${img}" alt="" />
                                             </div>
                                             <div class="card-mid">
@@ -217,14 +238,14 @@
                         {{ people }}명 참가
                     </p>
                     <p>{{ challenge.challenge_desc }}</p>
-                    <div class="single-product-form">
-                        <a onclick="onClickJoinBtnHandler()" class="cart-btn"><i class="fas fa-bolt"></i>
-                            Go to
-                            Challenge</a>
-                        {% if status %}
-                            <a onclick="onClickDeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
-                                Delete</a>
-                        {% endif %}
+                    <div class="single-product-form btn-container">
+                        <a onclick="onClickJoinBtnHandler()" class="cart-btn">
+                            <i class="fas fa-bolt"></i>Go to Challenge
+                        </a>
+                        <a onclick="location.href='/'" class="cart-btn-h">
+                            <i class="fas fa-home"></i> Go to Main
+                        </a>
+
                         {% if categories!='' %}
                             <p><strong>Categories: </strong>{{ categories }}</p>
                         {% endif %}
@@ -241,11 +262,19 @@
                             <input class="form-control" type="text" id="formText">
                         </div>
 
-                        <a onclick="onClickCheck()" class="cart-btn-c"><i class="fa fa-check"></i>
-                            챌린지 인증</a>
+                        <a onclick="onClickCheck()" class="cart-btn-c">
+                            <i class="fa fa-check"></i>챌린지 인증
+                        </a>
                     </div>
                 </div>
             </div>
+            {% if status %}
+                <div class="col-md-12 deleteBtn-container">
+                    <a onclick="onClickDeleteChallenge()" class="cart-btn-d">
+                        <i class="fa fa-minus"></i> Delete
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -283,25 +312,29 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-4 col-md-6 text-center lemon">
-                <div class="single-product-item">
-                    <div class="product-image">
-                        <a href="#">
-                            <img src="{{ url_for('static', filename='assets/img/default/default5.jfif') }}" alt="">
+            {% for challenge in related_challenge %}
+                <div class="col-lg-4 col-md-6 text-center">
+                    <div class="single-product-item">
+                        <div class="product-image">
+                            <a href="{{ '/challenge/'+challenge._id }}">
+                                <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                     alt=""
+                                     class="related-challenge-img">
+                            </a>
+                        </div>
+                        <h3>{{ challenge.challenge_title }}</h3>
+                        <p class="product-price">
+                        <span>
+                            <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                        </span>
+                            {{ challenge.people }}명 참가
+                        </p>
+                        <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                            <i class="fas fa-bolt"></i> Go to Challenge
                         </a>
                     </div>
-                    <h3>예시</h3>
-                    <p class="product-price">
-                        <span>
-                            <i class="far fa-calendar-alt"></i> 21-09-24 ~ 21-10-10
-                        </span>
-                        35명 참가
-                    </p>
-                    <a href="#" class="cart-btn">
-                        <i class="fas fa-bolt"></i> Go to Challenge
-                    </a>
                 </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </div>
