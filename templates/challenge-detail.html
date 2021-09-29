@@ -118,6 +118,10 @@
     </style>
 
     <script>
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+
         function onClickJoinBtnHandler() {
             let cookie = document.cookie.match("mytoken");
             if (cookie == null) {
@@ -172,31 +176,6 @@
                 }
             });
         }
-
-        $(document).ready(function () {
-            bsCustomFileInput.init()
-            $.ajax({
-                type: "GET",
-                url: "/challenge/get?challenge_give={{ challenge._id }}",
-                data: {},
-                success: function (response) {
-                    let joins = response['all_challenges']
-                    for (let i = 0; i < joins.length; i++) {
-                        let cont = joins[i]['join_cont'];
-                        let img = joins[i]['join_img'];
-                        let date = joins[i]['join_date']
-                        let temp_html = `<div class="card-check">
-                                          <div class="card-headerr"><img src="/static/assets/img/join/${img}" alt="" /></div>
-                                          <div class="card-mid">
-                                           <h5>${cont}</h5>
-                                           <p>${date}</p>
-                                         </div>
-                                       </div>`
-                        $('#card-group').append(temp_html)
-                    }
-                }
-            })
-        })
     </script>
 
 </head>
@@ -278,8 +257,18 @@
     </div>
 </div>
 <!-- end single product -->
-<div class="card-group" id="card-group">
 
+<div class="card-group" id="card-group">
+    {% for join in joins %}
+        <div class="card-check">
+            <div class="card-header"><img src="{{ url_for('static', filename='assets/img/join/'+join.join_img) }}"
+                                          alt=""/></div>
+            <div class="card-mid">
+                <h5>{{ join.join_cont }}</h5>
+                <p>{{ join.join_date }}</p>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 
 

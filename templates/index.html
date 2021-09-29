@@ -40,10 +40,10 @@
 
         function onClickCreateChallenge() {
             if (document.cookie.match("mytoken") != null) {
-                window.location.href="/challenge/create"
+                window.location.href = "/challenge/create"
             } else {
                 alert("로그인 후 생성해주세요 !!")
-                window.location.href= '/help-login';
+                window.location.href = '/help-login';
             }
 
         }
@@ -110,19 +110,19 @@
             {% endfor %}
         </div>
 
-{#        <div class="row">#}
-{#            <div class="col-lg-12 text-center">#}
-{#                <div class="pagination-wrap">#}
-{#                    <ul>#}
-{#                        <li><a href="#">Prev</a></li>#}
-{#                        <li><a href="#">1</a></li>#}
-{#                        <li><a class="active" href="#">2</a></li>#}
-{#                        <li><a href="#">3</a></li>#}
-{#                        <li><a href="#">Next</a></li>#}
-{#                    </ul>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+        {#        <div class="row">#}
+        {#            <div class="col-lg-12 text-center">#}
+        {#                <div class="pagination-wrap">#}
+        {#                    <ul>#}
+        {#                        <li><a href="#">Prev</a></li>#}
+        {#                        <li><a href="#">1</a></li>#}
+        {#                        <li><a class="active" href="#">2</a></li>#}
+        {#                        <li><a href="#">3</a></li>#}
+        {#                        <li><a href="#">Next</a></li>#}
+        {#                    </ul>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
 
         <div class="row">
             <div class="col-md-12 text-center">

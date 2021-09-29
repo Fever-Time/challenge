@@ -53,6 +53,9 @@ def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
 
+    # 챌린지 인증 가져오기
+    joins = list(db.join.find({'join_challenge': challengeId}, {"_id": False}))
+
     # 챌린지 카테고리 가져오기
     if 'challenge_categories' in challenge:
         categories = ', '.join(challenge['challenge_categories']) \
@@ -77,7 +80,7 @@ def challenge_detail_page(challengeId):
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
     finally:
         return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
-                               categories=categories, related_challenge=related_challenge)
+                               categories=categories, related_challenge=related_challenge, joins=joins)
 
 
 # 준호님 code start
@@ -91,7 +94,6 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 
 SECRET_KEY = 'FEVER'
-
 
 
 @app.route('/help-login')
