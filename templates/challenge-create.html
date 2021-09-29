@@ -11,6 +11,9 @@
     <!-- bootstrap css-->
     {% include "include/header-css.html" %}
 
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+
     <style>
         #create-form-container {
             padding-top: 20px;
@@ -37,14 +40,43 @@
             border-radius: 50px;
         }
 
+        #address-container, #radio-container {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-group input {
+            display: none;
+        }
+
+        .checkbox-checked {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .checkbox-check {
+            background-color: white;
+            border-color: #007bff;
+            color: #007bff;
+        }
     </style>
 
     <script>
+        $(document).ready(function () {
+            setInputDateToday();
+        });
+
         function onClickCancelBtnHandler() {
             location.href = "/";
         }
 
         function createChallenge() {
+
+            let categories = [];
+            $("input[name='category']:checked").each(function (e) {
+                categories.push($(this).val())
+            })
+
             let title = $('#title').val()
             let desc = $("#desc").val()
             let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
@@ -55,7 +87,6 @@
             }
             console.log(period[0] == "")
 
-
             console.log(image)
 
             let form_data = new FormData()
@@ -65,6 +96,7 @@
             form_data.append("desc_give", desc)
             form_data.append("period_give", period)
             form_data.append("address_give", address)
+            form_data.append("categories_give", categories)
             console.log(form_data)
 
             if (title == "" || desc == "" || period[0] == "" || period[1] == "") {
@@ -81,7 +113,6 @@
                 }
             }
 
-
             $.ajax({
                 type: "POST",
                 url: "/challenge",
@@ -93,14 +124,12 @@
                 success: function (response) { // 성공하면
                     alert(response["msg"]);
                     window.location.href = '/'
-
                 }
             })
         }
 
         function setThumbnail(event) {
             let reader = new FileReader();
-
 
             reader.onload = function (event) {
                 $("#thumbnail").attr('src', event.target.result)
@@ -116,7 +145,29 @@
                 $("#address-container").show();
             }
             $("#sample5_address").val("");
-            $("#map").hide();
+            $("#map-container").hide();
+        }
+
+        function onclickCheckboxHandler(e) {
+            e.classList.toggle("checkbox-checked");
+            e.classList.toggle("checkbox-check");
+        }
+
+        function setInputDateToday() {
+            let today = new Date();
+            let dd = today.getDate();
+            let mm = today.getMonth() + 1;
+            let yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+
+            today = yyyy + '-' + mm + '-' + dd;
+            document.getElementById("end-period").setAttribute("min", today);
+            document.getElementById("start-period").setAttribute("min", today);
         }
     </script>
 </head>
@@ -139,7 +190,7 @@
 <!-- breadcrumb section end -->
 
 <!-- single product -->
-<div class="single-product mt-150 mb-150">
+<div class="single-product mt-150 mb-100">
     <div class="container">
         <div class="row">
             <div class="col-md-5" id="image_container">
@@ -176,36 +227,55 @@
                             <input class="form-control" type="date" id="end-period">
                         </div>
 
-                        <input type="hidden" id="address">
+                        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                            <input type="checkbox" name="category" value="category1" class="btn-check" id="category1"
+                                   autocomplete="off">
+                            <label onclick="onclickCheckboxHandler(this)"
+                                   class="checkbox-check btn btn-outline-primary"
+                                   for="category1">운동</label>
 
-                        <div class="form-check">
-                            <input class="form-check-input" name="addType" type="radio" id="online"
-                                   checked onchange="onChangeAddressRadio()">
-                            <label class="form-check-label" for="online">
-                                온라인
-                            </label>
+                            <input type="checkbox" name="category" value="category2" class="btn-check" id="category2"
+                                   autocomplete="off">
+                            <label onclick="onclickCheckboxHandler(this)"
+                                   class="checkbox-check btn btn-outline-primary"
+                                   for="category2">공부</label>
+
+                            <input type="checkbox" name="category" value="category3" class="btn-check" id="category3"
+                                   autocomplete="off">
+                            <label onclick="onclickCheckboxHandler(this)"
+                                   class="checkbox-check btn btn-outline-primary"
+                                   for="category3">취미</label>
                         </div>
 
-                        <div class="form-check">
-                            <input class="form-check-input" name="addType" type="radio" id="offline"
-                                   onchange="onChangeAddressRadio()">
-                            <label class="form-check-label" for="offline">
-                                오프라인
-                            </label>
+                        <input type="hidden" id="address">
+
+                        <div id="radio-container">
+                            <div class="form-check">
+                                <input class="form-check-input" name="addType" type="radio" id="online"
+                                       checked onchange="onChangeAddressRadio()">
+                                <label class="form-check-label" for="online">
+                                    온라인
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" name="addType" type="radio" id="offline"
+                                       onchange="onChangeAddressRadio()">
+                                <label class="form-check-label" for="offline">
+                                    오프라인
+                                </label>
+                            </div>
                         </div>
 
                         <div id="address-container" style="display: none">
                             <input type="text" id="sample5_address" placeholder="주소">
                             <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
-                            <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
                         </div>
 
                         <div id="create-btn-container">
                             <button type="button" class="btn btn-primary btn-lg" onclick="createChallenge()">챌린지 등록
                             </button>
                             <button type="button" id="create-cancel-btn" onclick="onClickCancelBtnHandler()"
-                                    class="btn btn-secondary btn-lg">등록
-                                취소
+                                    class="btn btn-secondary btn-lg">등록 취소
                             </button>
                         </div>
                     </div>
@@ -215,6 +285,19 @@
     </div>
 </div>
 <!-- end single product -->
+
+<div class="more-products mb-150" id="map-container" style="display: none">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div class="section-title">
+                    <h3><span class="orange-text"></span> 장소</h3>
+                    <div id="map" style="width:100%;height:350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- copyright start -->
 {% include 'include/copyright.html' %}
@@ -256,7 +339,7 @@
                         // 해당 주소에 대한 좌표를 받아서
                         let coords = new daum.maps.LatLng(result.y, result.x);
                         // 지도를 보여준다.
-                        mapContainer.style.display = "block";
+                        $("#map-container").show()
                         map.relayout();
                         // 지도 중심을 변경한다.
                         map.setCenter(coords);

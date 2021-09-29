@@ -225,7 +225,9 @@
                             <a onclick="onClickDeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
                                 Delete</a>
                         {% endif %}
-                        <p><strong>Categories: </strong>공부, 운동</p>
+                        {% if categories!='' %}
+                            <p><strong>Categories: </strong>{{ categories }}</p>
+                        {% endif %}
                     </div>
 
                     <div id="join-form-container" style="display: none;">

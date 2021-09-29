@@ -53,6 +53,13 @@ def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
 
+    categories = ''
+    if 'challenge_categories' in challenge:
+        categories = ', '.join(challenge['challenge_categories']) \
+            .replace("category1", "운동") \
+            .replace("category2", "공부") \
+            .replace("category3", "취미")
+
     people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
 
     token_receive = request.cookies.get('mytoken')
@@ -62,7 +69,8 @@ def challenge_detail_page(challengeId):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
     finally:
-        return render_template("challenge-detail.html", challenge=challenge, people=people, status=status)
+        return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
+                               categories=categories)
 
 
 # 준호님 code start
@@ -217,6 +225,9 @@ def save_challenge():
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
 
+        categories_receive = request.form["categories_give"]
+        categories = categories_receive.split(',')
+
         file_len = len(request.files)
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
         # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
@@ -244,7 +255,8 @@ def save_challenge():
             'challenge_startTime': period_receive.split(',')[0],
             'challenge_endTime': period_receive.split(',')[1],
             'challenge_address': address_receive,
-            'challenge_host': challenge_host
+            'challenge_host': challenge_host,
+            'challenge_categories': categories
         }
 
         db.challenge.insert_one(doc)
