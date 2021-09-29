@@ -95,7 +95,7 @@
         .card-mid p {
             font-size: 13px;
             margin: 0 0 40px;
-            text-align : center;
+            text-align: center;
         }
 
     </style>
@@ -106,7 +106,6 @@
                 $("#join-form-container").hide();
             } else {
                 $("#join-form-container").show();
-
             }
         }
 
@@ -133,7 +132,6 @@
             form_data.append("img_give", img)
             form_data.append("cont_give", cont)
             form_data.append("challenge_give", "{{ challenge._id }}")
-
 
             $.ajax({
                 type: "POST",
@@ -168,10 +166,10 @@
                                            <p>${date}</p>
                                          </div>
                                        </div>`
+
                         $('#card-group').append(temp_html)
                     }
                 }
-
             })
         })
     </script>
@@ -219,8 +217,8 @@
                             Go to
                             Challenge</a>
                         {% if status %}
-                        <a onclick="onClickDeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
-                            Delete</a>
+                            <a onclick="onClickDeleteChallenge()" class="cart-btn-d"><i class="fa fa-minus"></i>
+                                Delete</a>
                         {% endif %}
                         <p><strong>Categories: </strong>공부, 운동</p>
                     </div>

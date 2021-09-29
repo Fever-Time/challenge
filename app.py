@@ -29,7 +29,9 @@ def user():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
+
         join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
+
         challenges = []
         for challenge_id in join_challenge_id_list:
             challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
@@ -64,7 +66,6 @@ def challenge_detail_page(challengeId):
 
 
 # 준호님 code start
-
 import jwt
 import hashlib
 from datetime import datetime, timedelta
@@ -205,11 +206,9 @@ def check_dup():
 # 수빈님 code start
 @app.route('/challenge', methods=['POST'])
 def save_challenge():
-
     token_receive = request.cookies.get('mytoken')
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-
 
         challenge_host = payload['id']
 
@@ -222,7 +221,7 @@ def save_challenge():
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
         # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
         if file_len == 0:
-            full_file_name = "default.png"  # default 파일이름 설정
+            full_file_name = "challenge.jfif"  # default 파일이름 설정
         else:
             # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
             image_receive = request.files["image_give"]
@@ -282,7 +281,6 @@ def challenge_check():
         today = datetime.now()
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
-
 
         filename = f'file-{mytime}'
 

@@ -112,9 +112,10 @@
                         <tbody>
                         {% for challenge in challenges %}
                             <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
-                                <td class="product-image"><img
-                                        src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
-                                        alt="">
+
+                                <td class="product-image">
+                                    <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                         alt="">
                                 </td>
                                 <td class="product-name">{{ challenge.challenge_title }}</td>
                                 <td class="product-price">
