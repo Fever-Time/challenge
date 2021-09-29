@@ -37,6 +37,16 @@
         $(document).ready(function ($) {
             bsCustomFileInput.init()
         });
+
+        function onClickCreateChallenge() {
+            if (document.cookie.match("mytoken") != null) {
+                window.location.href="/challenge/create"
+            } else {
+                alert("로그인 후 생성해주세요 !!")
+                window.location.href= '/help-login';
+            }
+
+        }
     </script>
 
 </head>
@@ -116,7 +126,7 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <div class="pagination-wrap">
-                    <a href="{{ '/challenge/create' }}" id="add-btn" class="cart-btn">
+                    <a id="add-btn" class="cart-btn" onclick="onClickCreateChallenge()">
                         <i class="fas fa-plus"></i> Add new Challenge
                     </a>
                 </div>
