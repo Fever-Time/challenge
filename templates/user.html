@@ -21,18 +21,43 @@
 
         #delete-user-btn {
             background-color: crimson;
+            margin-left: 10px;
         }
 
         #delete-user-btn:hover {
             color: crimson;
             background-color: black;
         }
+
+        #logout-user-btn {
+            background-color: #28a745;
+            margin-right: 10px;
+        }
+
+        #logout-user-btn:hover {
+            color: #28a745;
+            background-color: black;
+        }
+
     </style>
 
     <script>
+        let delete_cookie = function (name) {
+            document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        };
+
+        function sign_out() {
+            delete_cookie('mytoken')
+            alert('로그아웃되었습니다.')
+            location.href = '/'
+
+        }
+
         function onClickChallenge(challengeId) {
             location.href = `/challenge/${challengeId}`
         }
+
+
     </script>
 </head>
 
@@ -87,6 +112,7 @@
                         <tbody>
                         {% for challenge in challenges %}
                             <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
+
                                 <td class="product-image">
                                     <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
                                          alt="">
@@ -128,8 +154,10 @@
                         </tbody>
                     </table>
                     <div class="cart-buttons">
+                        <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
                         <a href="#" class="boxed-btn">비밀번호 수정</a>
                         <a href="#" id="delete-user-btn" class="boxed-btn black">회원탈퇴</a>
+
                     </div>
                 </div>
             </div>

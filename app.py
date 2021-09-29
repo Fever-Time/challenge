@@ -93,18 +93,6 @@ app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
 SECRET_KEY = 'FEVER'
 
 
-@app.route('/check-login')
-def home():
-    token_receive = request.cookies.get('mytoken')
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-
-        return render_template('index.html')
-    except jwt.ExpiredSignatureError:
-        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
-    except jwt.exceptions.DecodeError:
-        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
-
 
 @app.route('/help-login')
 def login():
@@ -321,7 +309,6 @@ def challenge_check():
 def challenge_get():
     challenge_receive = request.args.get('challenge_give')
     challenges = list(db.join.find({'join_challenge': challenge_receive}, {"_id": False}))
-    # 예문 가져오기
     return jsonify({'all_challenges': challenges})
 
 
