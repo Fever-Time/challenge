@@ -233,7 +233,7 @@ def save_challenge():
 
             filename = f'file-{mytime}'
 
-            save_to = f'static/assets/img/{filename}.{extension}'
+            save_to = f'static/assets/img/challenge/{filename}.{extension}'
             image_receive.save(save_to)
 
             full_file_name = f'{filename}.{extension}'
@@ -286,7 +286,7 @@ def challenge_check():
 
         filename = f'file-{mytime}'
 
-        save_to = f'static/assets/img/{filename}.{extension}'
+        save_to = f'static/assets/img/join/{filename}.{extension}'
         file.save(save_to)
 
         doc = {
@@ -309,7 +309,6 @@ def challenge_check():
 def challenge_get():
     challenge_receive = request.args.get('challenge_give')
     challenges = list(db.join.find({'join_challenge': challenge_receive}, {"_id": False}))
-    # 예문 가져오기
     return jsonify({'all_challenges': challenges})
 
 
