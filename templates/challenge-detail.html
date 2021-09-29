@@ -14,9 +14,8 @@
     {% include "include/header-css.html" %}
 
     <!-- jquery -->
-    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <style>
         #join-form-container {
             padding-top: 20px;
@@ -102,10 +101,16 @@
 
     <script>
         function onClickJoinBtnHandler() {
-            if ($("#join-form-container").css("display") == "block") {
-                $("#join-form-container").hide();
+            let cookie = document.cookie.match("mytoken");
+            if (cookie == null) {
+                alert("로그인후 챌린지에 도전해주세요 !!")
+                window.location.replace("/help-login")
             } else {
-                $("#join-form-container").show();
+                if ($("#join-form-container").css("display") == "block") {
+                    $("#join-form-container").hide();
+                } else {
+                    $("#join-form-container").show();
+                }
             }
         }
 
