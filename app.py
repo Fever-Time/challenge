@@ -53,6 +53,20 @@ def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
 
+    # 챌린지 카테고리 가져오기
+    if 'challenge_categories' in challenge:
+        categories = ', '.join(challenge['challenge_categories']) \
+            .replace("category1", "운동") \
+            .replace("category2", "공부") \
+            .replace("category3", "취미")
+    else:
+        categories = ''
+
+    # 연관 챌린지 가쟈오기(3개)
+    related_challenge = objectIdDecoder(list(db.challenge.find({'_id': {'$ne': ObjectId(challengeId)}}).limit(3)))
+    for r_challenge in related_challenge:
+        r_challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": r_challenge['_id']})))
+
     people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
 
     token_receive = request.cookies.get('mytoken')
@@ -62,7 +76,8 @@ def challenge_detail_page(challengeId):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
     finally:
-        return render_template("challenge-detail.html", challenge=challenge, people=people, status=status)
+        return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
+                               categories=categories, related_challenge=related_challenge)
 
 
 # 준호님 code start
@@ -71,7 +86,6 @@ import hashlib
 from datetime import datetime, timedelta
 
 # from werkzeug.utils import secure_filename
-
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
@@ -155,7 +169,6 @@ def check_dup():
 #     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
 #         return redirect(url_for("home"))
 
-
 # @app.route('/posting', methods=['POST'])
 # def posting():
 #     token_receive = request.cookies.get('mytoken')
@@ -165,7 +178,6 @@ def check_dup():
 #         return jsonify({"result": "success", 'msg': '포스팅 성공'})
 #     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
 #         return redirect(url_for("home"))
-
 
 # @app.route("/get_posts", methods=['GET'])
 # def get_posts():
@@ -177,7 +189,6 @@ def check_dup():
 #     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
 #         return redirect(url_for("home"))
 
-
 # @app.route('/update_like', methods=['POST'])
 # def update_like():
 #     token_receive = request.cookies.get('mytoken')
@@ -187,7 +198,6 @@ def check_dup():
 #         return jsonify({"result": "success", 'msg': 'updated'})
 #     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
 #         return redirect(url_for("home"))
-
 
 # 준호님 code end
 
@@ -204,6 +214,9 @@ def save_challenge():
         decs_receive = request.form["desc_give"]
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
+
+        categories_receive = request.form["categories_give"]
+        categories = categories_receive.split(',')
 
         file_len = len(request.files)
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
@@ -232,7 +245,8 @@ def save_challenge():
             'challenge_startTime': period_receive.split(',')[0],
             'challenge_endTime': period_receive.split(',')[1],
             'challenge_address': address_receive,
-            'challenge_host': challenge_host
+            'challenge_host': challenge_host,
+            'challenge_categories': categories
         }
 
         db.challenge.insert_one(doc)
