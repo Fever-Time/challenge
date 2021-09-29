@@ -156,7 +156,7 @@
             bsCustomFileInput.init()
             $.ajax({
                 type: "GET",
-                url: "/challenge/get?challenge_give={{ challengeId }}",
+                url: "/challenge/get?challenge_give={{ challenge._id }}",
                 data: {},
                 success: function (response) {
                     let joins = response['all_challenges']
@@ -165,18 +165,13 @@
                         let img = joins[i]['join_img'];
                         let date = joins[i]['join_date']
                         let temp_html = `<div class="card-check">
-                                            <div class="card-headerr">
-                                              <img src="/static/assets/img/join/${img}" alt="" />
-                                            </div>
-                                            <div class="card-mid">
-                                              <h5>
-                                                ${cont}
-                                              </h5>
-                                              <p>
-                                                ${date}
-                                              </p>
-                                            </div>
-                                          </div>`
+                                          <div class="card-headerr"><img src="/static/assets/img/join/${img}" alt="" /></div>
+                                          <div class="card-mid">
+                                           <h5>${cont}</h5>
+                                           <p>${date}</p>
+                                         </div>
+                                       </div>`
+
                         $('#card-group').append(temp_html)
                     }
                 }

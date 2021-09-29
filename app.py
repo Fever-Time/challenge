@@ -295,7 +295,6 @@ def challenge_check():
 def challenge_get():
     challenge_receive = request.args.get('challenge_give')
     challenges = list(db.join.find({'join_challenge': challenge_receive}, {"_id": False}))
-    # 예문 가져오기
     return jsonify({'all_challenges': challenges})
 
 
