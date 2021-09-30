@@ -31,4 +31,4 @@
 - 챌린지 생성한 유저만 챌린지 삭제
 - 오프라인 챌린지 장소 Kakao Map 키워드 검색 및 위치 설정
 
-### 📌 문제를 이렇게 해결했어요! (<a href="https://github.com/Fever-Time/challenge/wiki/%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 상세보기 - WIKI 이동</a>)
+### 📌 <a href="https://github.com/Fever-Time/challenge/wiki/%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 문제를 이렇게 해결했어요! - WIKI 이동</a>
