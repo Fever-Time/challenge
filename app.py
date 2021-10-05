@@ -1,11 +1,13 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
-
-app = Flask(__name__)
-
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import os
+import jwt
+import hashlib
+from datetime import datetime, timedelta
+
+app = Flask(__name__)
 
 load_dotenv("mongo.env")
 client = MongoClient(os.environ.get("MONGO_URL"))
@@ -87,14 +89,6 @@ def challenge_detail_page(challengeId):
 
 
 # 준호님 code start
-import jwt
-import hashlib
-from datetime import datetime, timedelta
-
-
-# from werkzeug.utils import secure_filename
-
-
 @app.route('/help-login')
 def login():
     msg = request.args.get("msg")
