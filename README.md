@@ -5,7 +5,7 @@
 - <a href="https://faint-clef-9ea.notion.site/5b174114b93b4eb0ad70c27fd0853910">개발문서</a> (API 설계, DB 설계, 화면 설계, Convention)
 
 ### 🏠 소개
-- 자신만의 챌린지를 설정하고 달성하기 위해 다른 참여자들과 함께 도전하고 인증하는 서비스입니다.
+- 챌린지를 설정하고 달성하기 위해 다른 참여자들과 함께 도전하고 인증하는 서비스입니다.
 
 ### ⏲️ 개발기간
 - 1차 프로젝트 2021-09-23 ~ 2021-09-30
@@ -15,7 +15,7 @@
 - <a href="https://github.com/JunHo-YH">강준호</a>
 - <a href="https://github.com/suubinkim">김수빈</a>
 
-### 📌 기술 선택 이유! (<a href="https://github.com/Fever-Time/challenge/wiki/%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0!">상세보기 - WIKI 이동</a>)
+### 📌 기술 스택 (<a href="https://github.com/Fever-Time/challenge/wiki/%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0!">기술 선택 이유! - WIKI 이동</a>)
 - PyCharm - IDE
 - Flask - 웹 프레임워크
 - Python - 개발 언어
@@ -31,4 +31,4 @@
 - 챌린지 생성한 유저만 챌린지 삭제
 - 오프라인 챌린지 장소 Kakao Map 키워드 검색 및 위치 설정
 
-### 📌 문제를 이렇게 해결했어요! (<a href="https://github.com/Fever-Time/challenge/wiki/%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 상세보기 - WIKI 이동</a>)
+### 📌 <a href="https://github.com/Fever-Time/challenge/wiki/%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 문제를 이렇게 해결했어요! - WIKI 이동</a>
