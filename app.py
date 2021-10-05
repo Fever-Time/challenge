@@ -4,9 +4,13 @@ app = Flask(__name__)
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from dotenv import load_dotenv
+import os
 
-client = MongoClient('mongodb://test:test@13.124.151.213:27017')
+load_dotenv("mongo.env")
+client = MongoClient(os.environ.get("MONGO_URL"))
 db = client.ftime
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
 @app.route('/', methods=['GET'])
@@ -91,8 +95,6 @@ from datetime import datetime, timedelta
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
-
-SECRET_KEY = 'FEVER'
 
 
 @app.route('/help-login')
