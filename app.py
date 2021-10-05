@@ -91,10 +91,8 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta
 
-# from werkzeug.utils import secure_filename
 
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-app.config['UPLOAD_FOLDER'] = "./static/profile_pics"
+# from werkzeug.utils import secure_filename
 
 
 @app.route('/help-login')
