@@ -8,6 +8,7 @@ import hashlib
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 load_dotenv("mongo.env")
 client = MongoClient(os.environ.get("MONGO_URL"))
