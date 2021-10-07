@@ -8,7 +8,7 @@
 - 챌린지를 설정하고 달성하기 위해 다른 참여자들과 함께 도전하고 인증하는 서비스입니다.
 
 ### ⏲️ 개발기간
-- 1차 프로젝트 2021-09-23 ~ 2021-09-30  (<a href="https://github.com/Fever-Time/challenge/wiki/4.-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0">1차 프로젝트 KRT - WIKI 이동</a>)
+- 1차 프로젝트 2021-09-23 ~ 2021-09-30  (<a href="https://github.com/Fever-Time/challenge/wiki/4.-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0">1차 프로젝트 KPT - WIKI 이동</a>)
 
 ### 🧙 맴버구성
 - <a href="https://github.com/kkyu8925">강현규</a>
