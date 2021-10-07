@@ -12,7 +12,7 @@ application = Flask(__name__)
 application.config["TEMPLATES_AUTO_RELOAD"] = True
 cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
-load_dotenv("mongo.env")
+load_dotenv()
 client = MongoClient(os.environ.get("MONGO_URL"))
 db = client.ftime
 SECRET_KEY = os.environ.get("SECRET_KEY")
