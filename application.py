@@ -2,8 +2,8 @@ from flask import Flask, render_template, jsonify, request, session, redirect, u
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
-import os
+# from dotenv import load_dotenv
+# import os
 import jwt
 import hashlib
 from datetime import datetime, timedelta
@@ -12,10 +12,12 @@ application = Flask(__name__)
 application.config["TEMPLATES_AUTO_RELOAD"] = True
 cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
-load_dotenv()
-client = MongoClient(os.environ.get("MONGO_URL"))
+# load_dotenv()
+# client = MongoClient(os.environ.get("MONGO_URL"))
+client = MongoClient("mongodb://test:test@13.125.238.75:27017")
 db = client.ftime
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "FEVER"
 
 
 @application.route('/', methods=['GET'])
