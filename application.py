@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for
+from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
@@ -7,8 +8,9 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta
 
-app = Flask(__name__)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+application = Flask(__name__)
+application.config["TEMPLATES_AUTO_RELOAD"] = True
+cors = CORS(application, resources={r"/*": {"origins": "*"}})
 
 load_dotenv("mongo.env")
 client = MongoClient(os.environ.get("MONGO_URL"))
@@ -16,7 +18,7 @@ db = client.ftime
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 
-@app.route('/', methods=['GET'])
+@application.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
     for challenge in challenges:
@@ -24,12 +26,12 @@ def main_page():
     return render_template('index.html', challenges=challenges)
 
 
-@app.route('/error', methods=['GET'])
+@application.route('/error', methods=['GET'])
 def error_page():
     return render_template('404.html')
 
 
-@app.route('/user', methods=['GET'])
+@application.route('/user', methods=['GET'])
 def user():
     token_receive = request.cookies.get('mytoken')
     try:
@@ -49,12 +51,12 @@ def user():
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
-@app.route('/challenge', methods=['GET'])
+@application.route('/challenge', methods=['GET'])
 def challenge_create_page():
     return render_template('challenge-create.html')
 
 
-@app.route('/challenge/<challengeId>', methods=['GET'])
+@application.route('/challenge/<challengeId>', methods=['GET'])
 def challenge_detail_page(challengeId):
     challenge = db.challenge.find_one({'_id': ObjectId(challengeId)})
     challenge['_id'] = str(challenge['_id'])
@@ -90,13 +92,13 @@ def challenge_detail_page(challengeId):
 
 
 # 준호님 code start
-@app.route('/help-login')
+@application.route('/help-login')
 def login():
     msg = request.args.get("msg")
     return render_template('challenge-login.html', msg=msg)
 
 
-@app.route('/sign_in', methods=['POST'])
+@application.route('/sign_in', methods=['POST'])
 def sign_in():
     # 로그인
     username_receive = request.form['username_give']
@@ -117,7 +119,7 @@ def sign_in():
         return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
-@app.route('/sign_up/save', methods=['POST'])
+@application.route('/sign_up/save', methods=['POST'])
 def sign_up():
     username_receive = request.form['username_give']
     password_receive = request.form['password_give']
@@ -130,7 +132,7 @@ def sign_up():
     return jsonify({'result': 'success'})
 
 
-@app.route('/sign_up/check_dup', methods=['POST'])
+@application.route('/sign_up/check_dup', methods=['POST'])
 def check_dup():
     username_receive = request.form['username_give']
     exists = bool(db.users.find_one({"username": username_receive}))
@@ -140,7 +142,7 @@ def check_dup():
 # 준호님 code end
 
 # 수빈님 code start
-@app.route('/challenge', methods=['POST'])
+@application.route('/challenge', methods=['POST'])
 def save_challenge():
     token_receive = request.cookies.get('mytoken')
     try:
@@ -196,7 +198,7 @@ def save_challenge():
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
-@app.route('/challenge', methods=['DELETE'])
+@application.route('/challenge', methods=['DELETE'])
 def delete_challenge():
     challengeId_receive = request.form['challengeId_give']
     db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
@@ -204,7 +206,7 @@ def delete_challenge():
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
 
 
-@app.route('/challenge/check', methods=['POST'])
+@application.route('/challenge/check', methods=['POST'])
 def challenge_check():
     token_receive = request.cookies.get('mytoken')
     try:
@@ -257,4 +259,4 @@ def objectIdDecoder(list):
 # 현규님 code end
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+    application.run('0.0.0.0', port=5000, debug=True)
