@@ -8,21 +8,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1.컨테이너 내에서 소스를 checkout 받는다.
       - name: Checkout source code.
         uses: actions/checkout@master
 
+      # 2.파이썬 환경을 세팅한다.
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: "3.8"
 
+       # 3.소스를 압축한다
       - name: Generate deployment package
         run: zip -r deploy.zip . -x '*.git*'
 
+      # 4.현재 시간을 가져온다
       - name: Get timestamp
         uses: gerred/actions/current-time@master
         id: current-time
 
+      # 5.EB에 업로드될 배포 파일 이름을 정한다
       - name: Run string replace
         uses: frabert/replace-string-action@master
         id: format-time
@@ -32,6 +37,7 @@ jobs:
           replace-with: '-'
           flags: 'g'
 
+      # 6.EB에 파일을 배포한다
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v16
         with:
