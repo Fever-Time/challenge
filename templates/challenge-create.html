@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- meta -->
     {% include "include/header-meta.html" %}
@@ -71,7 +70,6 @@
         }
 
         function createChallenge() {
-
             let categories = [];
             $("input[name='category']:checked").each(function (e) {
                 categories.push($(this).val())
@@ -171,7 +169,6 @@
         }
     </script>
 </head>
-
 <body>
 <!--PreLoader start -->
 {% include 'include/preloader.html' %}
@@ -356,5 +353,4 @@
 {% include 'include/footer-js.html' %}
 <!-- bootstrap js end -->
 </body>
-
 </html>

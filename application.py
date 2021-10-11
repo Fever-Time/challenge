@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request, session, redirect, url_for
+from flask import Flask, render_template, jsonify, request, session, redirect, url_for, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -16,6 +16,7 @@ load_dotenv()
 client = MongoClient(os.environ.get("MONGO_URL"))
 db = client.ftime
 SECRET_KEY = os.environ.get("SECRET_KEY")
+TOKEN_NAME = "fever-time"
 
 
 @application.route('/', methods=['GET'])
@@ -33,7 +34,7 @@ def error_page():
 
 @application.route('/user', methods=['GET'])
 def user():
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get(TOKEN_NAME)
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
@@ -80,7 +81,7 @@ def challenge_detail_page(challengeId):
 
     people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
 
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get('fever-time')
 
     status = False
     try:
@@ -92,50 +93,63 @@ def challenge_detail_page(challengeId):
 
 
 # 준호님 code start
-@application.route('/help-login')
+@application.route('/login', methods=['GET'])
 def login():
     msg = request.args.get("msg")
-    return render_template('challenge-login.html', msg=msg)
+    return render_template('login.html', msg=msg)
 
 
 @application.route('/sign_in', methods=['POST'])
 def sign_in():
     # 로그인
-    username_receive = request.form['username_give']
-    password_receive = request.form['password_give']
+    email_receive = request.form['user_email']
+    password_receive = request.form['user_pw']
 
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
-    result = db.users.find_one({'username': username_receive, 'password': pw_hash})
+    result = db.users.find_one({'user_email': email_receive, 'user_pw': pw_hash})
     if result is not None:
         payload = {
-            'id': username_receive,
+            'id': email_receive,
             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-        return jsonify({'result': 'success', 'token': token})
+
+        response = make_response(render_template('index.html'))
+        response.set_cookie(TOKEN_NAME, token)
+        return response
 
     # 찾지 못하면
     else:
-        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+        return redirect(url_for("login", msg='아이디/비밀번호가 일치하지 않습니다.'))
 
 
-@application.route('/sign_up/save', methods=['POST'])
+@application.route('/sign_up', methods=['GET'])
 def sign_up():
-    username_receive = request.form['username_give']
-    password_receive = request.form['password_give']
+    return render_template('sign-up.html')
+
+
+@application.route('/sign_up', methods=['POST'])
+def sign_up_save():
+    email_receive = request.form['user_email']
+    username_receive = request.form['user_name']
+    password_receive = request.form['user_pw']
     password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
     doc = {
-        "username": username_receive,  # 아이디
-        "password": password_hash,  # 비밀번호
+        "user_email": email_receive,
+        "user_name": username_receive,
+        "user_pw": password_hash
     }
+
     db.users.insert_one(doc)
-    return jsonify({'result': 'success'})
+
+    return redirect(url_for("login", msg='회원가입 하셨습니다.'))
 
 
 @application.route('/sign_up/check_dup', methods=['POST'])
 def check_dup():
-    username_receive = request.form['username_give']
-    exists = bool(db.users.find_one({"username": username_receive}))
+    email_receive = request.form['user_email']
+    exists = bool(db.users.find_one({"user_email": email_receive}))
     return jsonify({'result': 'success', 'exists': exists})
 
 
@@ -144,7 +158,7 @@ def check_dup():
 # 수빈님 code start
 @application.route('/challenge', methods=['POST'])
 def save_challenge():
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get(TOKEN_NAME)
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 
@@ -208,7 +222,7 @@ def delete_challenge():
 
 @application.route('/challenge/check', methods=['POST'])
 def challenge_check():
-    token_receive = request.cookies.get('mytoken')
+    token_receive = request.cookies.get(TOKEN_NAME)
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
 

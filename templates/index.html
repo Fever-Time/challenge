@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- meta -->
     {% include "include/header-meta.html" %}
@@ -39,7 +38,7 @@
         });
 
         function onClickCreateChallenge() {
-            if (document.cookie.match("mytoken") != null) {
+            if (document.cookie.match("fever-time") != null) {
                 window.location.href = "/challenge"
             } else {
                 alert("로그인 후 생성해주세요 !!")
@@ -48,9 +47,7 @@
 
         }
     </script>
-
 </head>
-
 <body>
 <!--PreLoader start -->
 {% include 'include/preloader.html' %}
@@ -145,5 +142,4 @@
 {% include 'include/footer-js.html' %}
 <!-- bootstrap js end -->
 </body>
-
 </html>
