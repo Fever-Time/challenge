@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
+
+    <!-- title -->
+    <title>Login</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/all.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='assets/login/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/login/css/util.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/login/css/main.css') }}">
+</head>
+<body>
+<!-- Preloader Start -->
+{% include 'include/preloader.html' %}
+<!-- Preloader end -->
+
+<div class="container-login100">
+    <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+        <form class="login100-form validate-form" action="{{ '/sign_up' }}" method="post">
+            <span class="login100-form-title p-b-37">
+                Sign Up
+            </span>
+
+            <div class="wrap-input100 validate-input m-b-20" id="user_email" data-validate="Enter email">
+                <input class="input100" type="email" name="user_email" placeholder="email" autocomplete="off"
+                       onkeyup="emailCheckHandler(this)">
+                <span class="focus-input100"></span>
+            </div>
+            <div class="wrap-input100 validate-input m-b-20" data-validate="Enter user name">
+                <input class="input100" type="text" name="user_name" placeholder="name" autocomplete="off">
+                <span class="focus-input100"></span>
+            </div>
+
+            <div class="wrap-input100 validate-input m-b-25" data-validate="Enter password">
+                <input class="input100" id="user_pw" type="password" name="user_pw" placeholder="password">
+                <span class="focus-input100"></span>
+            </div>
+            <div class="wrap-input100 validate-input m-b-25" data-validate="Enter password check">
+                <input class="input100" id="user_pw_check" type="password" name="user_pw_check"
+                       placeholder="password check">
+                <span class="focus-input100"></span>
+            </div>
+
+            <div class="container-login100-form-btn" style="padding-top: 50px;">
+                <button type="submit" class="login100-form-btn">
+                    Sign Up
+                </button>
+            </div>
+
+            <div class="text-center" style="padding-top: 20px;">
+                <a href="{{ '/login' }}" class="txt2 hov1">
+                    Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- jquery -->
+<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/login.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/login-main.js') }}"></script>
+<script>
+    function emailCheckHandler(e) {
+        let user_email = e.value;
+        $.ajax({
+            url: "/sign_up/check_dup",
+            type: "post",
+            dataType: "JSON",
+            data: {"user_email": user_email},
+            success: function (json) {
+                let checkRes = json['exists'];
+                let user_email_node = document.querySelector("#user_email");
+
+                if (checkRes) {
+                    user_email_node.classList.add("exist_user");
+                    user_email_node.setAttribute("data-validate", "Email Already Exists!!")
+                } else {
+                    user_email_node.classList.remove("exist_user");
+                    user_email_node.setAttribute("data-validate", "Enter email");
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

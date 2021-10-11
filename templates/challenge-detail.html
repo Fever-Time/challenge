@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- meta -->
     {% include "include/header-meta.html" %}
@@ -123,7 +122,7 @@
         })
 
         function onClickJoinBtnHandler() {
-            let cookie = document.cookie.match("mytoken");
+            let cookie = document.cookie.match("fever-time");
             if (cookie == null) {
                 alert("로그인후 챌린지에 도전해주세요 !!")
                 window.location.replace("/help-login")
@@ -177,9 +176,7 @@
             });
         }
     </script>
-
 </head>
-
 <body>
 <!--PreLoader start -->
 {% include 'include/preloader.html' %}
@@ -270,7 +267,6 @@
         </div>
     {% endfor %}
 </div>
-
 
 {% if challenge.challenge_address != 'online' %}
     <div class="more-products mb-150">
@@ -371,5 +367,4 @@
 {% include 'include/footer-js.html' %}
 <!-- bootstrap js end -->
 </body>
-
 </html>

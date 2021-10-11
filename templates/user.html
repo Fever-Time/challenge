@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- meta -->
     {% include "include/header-meta.html" %}
@@ -38,7 +37,6 @@
             color: #28a745;
             background-color: black;
         }
-
     </style>
 
     <script>
@@ -47,20 +45,16 @@
         };
 
         function sign_out() {
-            delete_cookie('mytoken')
+            delete_cookie('fever-time')
             alert('로그아웃되었습니다.')
             location.href = '/'
-
         }
 
         function onClickChallenge(challengeId) {
             location.href = `/challenge/${challengeId}`
         }
-
-
     </script>
 </head>
-
 <body>
 <!--PreLoader start -->
 {% include 'include/preloader.html' %}
@@ -174,5 +168,4 @@
 {% include 'include/footer-js.html' %}
 <!-- bootstrap js end -->
 </body>
-
 </html>

@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-
     <!-- Webpage Title -->
     <title>Log In | SWEETER</title>
 
@@ -96,7 +95,7 @@
                 },
                 success: function (response) {
                     if (response['result'] == 'success') {
-                        $.cookie('mytoken', response['token'], {path: '/'});
+                        $.cookie('fever-time', response['token'], {path: '/'});
                         window.location.replace("/")
                     } else {
                         alert(response['msg'])
@@ -209,7 +208,6 @@
             });
         }
     </script>
-
 </head>
 <body>
 <section class="hero is-white">
@@ -287,7 +285,6 @@
                 </div>
             </article>
         </div>
-
     </div>
 </section>
 </body>
