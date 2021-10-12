@@ -42,7 +42,7 @@
                 window.location.href = "/challenge"
             } else {
                 alert("로그인 후 생성해주세요 !!")
-                window.location.href = '/help-login';
+                window.location.href = '/login';
             }
 
         }
@@ -88,7 +88,7 @@
                     <div class="single-product-item">
                         <div class="product-image">
                             <a href="{{ '/challenge/'+challenge._id }}">
-                                <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                      alt="">
                             </a>
                         </div>
