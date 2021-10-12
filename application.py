@@ -234,14 +234,15 @@ def delete_challenge():
     challengeId_receive = request.form['challengeId_give']
 
     challenge_img = db.challenge.find_one({'_id': ObjectId(challengeId_receive)})['challenge_img']
-    join_img = list(db.join.find({'join_challenge': challengeId_receive})['join_img'])
+    join_list = list(db.join.find({'join_challenge': challengeId_receive}))
+
     # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
     # 챌린지 이미지 삭제
     s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
     # 챌린지 인증 이미지 삭제
-    for img in join_img:
-        s3.Object(os.environ["BUCKET_NAME"], img).delete()
+    for join in join_list:
+        s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
 
     db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
     db.join.delete_many({'join_challenge': challengeId_receive})
