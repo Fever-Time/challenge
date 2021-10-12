@@ -33,6 +33,11 @@ def error_page():
     return render_template('404.html')
 
 
+@application.route('/find', methods=['GET'])
+def find_pw():
+    return render_template('findPw.html')
+
+
 @application.route('/user', methods=['GET'])
 def user():
     token_receive = request.cookies.get(TOKEN_NAME)

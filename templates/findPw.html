@@ -1,10 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
+
+    <!-- title -->
+    <title>FIND</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <!-- fontawesome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/all.min.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='assets/login/css/material-design-iconic-font.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/login/css/util.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/login/css/main.css') }}">
 </head>
 <body>
+<!-- Preloader Start -->
+{% include 'include/preloader.html' %}
+<!-- Preloader end -->
 
+<div class="container-login100">
+    <div class="wrap-login100 p-l-55 p-r-55 p-t-80 p-b-30">
+        <form class="login100-form validate-form" method="post" action="#">
+            <span class="login100-form-title p-b-37">Find Password</span>
+
+            <div class="wrap-input100 validate-input m-b-20" id="user_email" data-validate="Enter email">
+                <input class="input100" type="email" name="user_email" placeholder="email" autocomplete="off">
+                <span class="focus-input100"></span>
+            </div>
+            <div class="wrap-input100 validate-input m-b-20" data-validate="Enter user name">
+                <input class="input100" type="text" name="user_name" placeholder="name" autocomplete="off">
+                <span class="focus-input100"></span>
+            </div>
+
+            <div class="container-login100-form-btn" style="padding-top: 50px;">
+                <button class="login100-form-btn">
+                    Find
+                </button>
+            </div>
+
+            <div class="text-center" style="padding-top: 20px;">
+                <a href="{{ '/login' }}" class="txt2 hov1">
+                    Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- jquery -->
+<script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/login.js') }}"></script>
+<script src="{{ url_for('static', filename='assets/js/login-main.js') }}"></script>
 </body>
 </html>
