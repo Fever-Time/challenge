@@ -7,6 +7,7 @@ import os
 import jwt
 import hashlib
 from datetime import datetime, timedelta
+import boto3
 
 application = Flask(__name__)
 application.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -186,11 +187,22 @@ def save_challenge():
             mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
             filename = f'file-{mytime}'
-
-            save_to = f'static/assets/img/challenge/{filename}.{extension}'
-            image_receive.save(save_to)
-
+            # save_to = f'static/assets/img/challenge/{filename}.{extension}'
+            # image_receive.save(save_to)
             full_file_name = f'{filename}.{extension}'
+
+            # s3 지정한 버킷에 파일 업로드
+            s3 = boto3.client('s3',
+                              aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                              aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
+                              )
+            s3.put_object(
+                ACL="public-read",
+                Bucket=os.environ["BUCKET_NAME"],
+                Body=image_receive,
+                Key=full_file_name,
+                ContentType=image_receive.content_type
+            )
 
         doc = {
             'challenge_title': title_receive,
@@ -215,6 +227,17 @@ def save_challenge():
 @application.route('/challenge', methods=['DELETE'])
 def delete_challenge():
     challengeId_receive = request.form['challengeId_give']
+
+    challenge_img = db.challenge.find_one({'_id': ObjectId(challengeId_receive)})['challenge_img']
+    join_img = list(db.join.find({'join_challenge': challengeId_receive})['join_img'])
+    # s3 버킷에서도 사진 삭제
+    s3 = boto3.resource('s3')
+    # 챌린지 이미지 삭제
+    s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
+    # 챌린지 인증 이미지 삭제
+    for img in join_img:
+        s3.Object(os.environ["BUCKET_NAME"], img).delete()
+
     db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
     db.join.delete_many({'join_challenge': challengeId_receive})
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
@@ -230,25 +253,38 @@ def challenge_check():
 
         challenge_receive = request.form["challenge_give"]
         cont_receive = request.form["cont_give"]
-        file = request.files["img_give"]
+        image_receive = request.files["img_give"]
 
-        extension = file.filename.split('.')[-1]
+        extension = image_receive.filename.split('.')[-1]
 
         today = datetime.now()
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
 
         filename = f'file-{mytime}'
+        # save_to = f'static/assets/img/join/{filename}.{extension}'
+        # file.save(save_to)
+        full_file_name = f'{filename}.{extension}'
 
-        save_to = f'static/assets/img/join/{filename}.{extension}'
-        file.save(save_to)
+        # s3 지정한 버킷에 파일 업로드
+        s3 = boto3.client('s3',
+                          aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+                          aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"]
+                          )
+        s3.put_object(
+            ACL="public-read",
+            Bucket=os.environ["BUCKET_NAME"],
+            Body=image_receive,
+            Key=full_file_name,
+            ContentType=image_receive.content_type
+        )
 
         doc = {
             'join_challenge': challenge_receive,
             'join_date': uploadtime,
             'join_user': user_id,
             'join_cont': cont_receive,
-            'join_img': f'{filename}.{extension}',
+            'join_img': full_file_name
         }
 
         db.join.insert_one(doc)
