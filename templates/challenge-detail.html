@@ -200,7 +200,7 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="single-product-img">
-                    <img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=challenge.challenge_img) }}" alt="">
+                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}" alt="">
                 </div>
             </div>
             <div class="col-md-7">
@@ -258,8 +258,9 @@
 <div class="card-group" id="card-group">
     {% for join in joins %}
         <div class="card-check">
-            <div class="card-header"><img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=join.join_img) }}"
-                                          alt=""/></div>
+            <div class="card-header">
+                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+ join.join_img }}" alt=""/>
+            </div>
             <div class="card-mid">
                 <h5>{{ join.join_cont }}</h5>
                 <p>{{ join.join_date }}</p>
@@ -301,7 +302,7 @@
                     <div class="single-product-item">
                         <div class="product-image">
                             <a href="{{ '/challenge/'+challenge._id }}">
-                                <img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=challenge.challenge_img) }}"
+                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                      alt=""
                                      class="related-challenge-img">
                             </a>
