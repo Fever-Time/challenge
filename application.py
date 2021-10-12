@@ -86,16 +86,18 @@ def challenge_detail_page(challengeId):
         r_challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": r_challenge['_id']})))
 
     people = len(list(db.join.distinct("join_user", {"join_challenge": challengeId})))
-
+    join = list(db.join.distinct("join_user", {"join_challenge": challengeId}))
     token_receive = request.cookies.get('fever-time')
 
     status = False
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
+        statusj = (payload["id"] in join)
     finally:
         return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
-                               categories=categories, related_challenge=related_challenge, joins=joins)
+                               categories=categories, related_challenge=related_challenge, joins=joins,
+                               payload=payload, statusj=statusj)
 
 
 # 준호님 code start
@@ -217,7 +219,8 @@ def save_challenge():
             'challenge_endTime': period_receive.split(',')[1],
             'challenge_address': address_receive,
             'challenge_host': challenge_host,
-            'challenge_categories': categories
+            'challenge_categories': categories,
+            'challenge_pause' : 0
         }
 
         db.challenge.insert_one(doc)
@@ -229,23 +232,53 @@ def save_challenge():
         return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
+@application.route('/challenge', methods=['PUT'])
+def pause_challenge():
+    challengeId_receive = request.form['challengeId_give']
+    pause_receive = int(request.form['pause_give'])
+    if pause_receive == 0 :
+        db.challenge.update_one({'_id': ObjectId(challengeId_receive)},{'$set':{'challenge_pause': 1}})
+        return jsonify({'result': 'success', 'msg': '챌린지가 중단 되었습니다.'})
+    else :
+        db.challenge.update_one({'_id': ObjectId(challengeId_receive)},{'$set':{'challenge_pause': 0}})
+        return jsonify({'result': 'success', 'msg': '챌린지가 활성화 되었습니다.'})
+
+
 @application.route('/challenge', methods=['DELETE'])
 def delete_challenge():
     challengeId_receive = request.form['challengeId_give']
 
     challenge_img = db.challenge.find_one({'_id': ObjectId(challengeId_receive)})['challenge_img']
-    join_img = list(db.join.find({'join_challenge': challengeId_receive})['join_img'])
+    join_list = list(db.join.find({'join_challenge': challengeId_receive}))
+
     # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
     # 챌린지 이미지 삭제
     s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
     # 챌린지 인증 이미지 삭제
-    for img in join_img:
-        s3.Object(os.environ["BUCKET_NAME"], img).delete()
+    for join in join_list:
+        s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
 
     db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
     db.join.delete_many({'join_challenge': challengeId_receive})
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
+
+
+@application.route('/challenge/cancel', methods=['DELETE'])
+def cancel_challenge():
+    challengeId_receive = request.form['challengeId_give']
+    user_receive = request.form['user_give']
+
+    join_list = list(db.join.find({'join_challenge': challengeId_receive,'join_user': user_receive}))
+
+    # s3 버킷에서도 사진 삭제
+    s3 = boto3.resource('s3')
+    # 챌린지 인증 이미지 삭제
+    for join in join_list:
+        s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
+
+    db.join.delete_many({'join_challenge': challengeId_receive,'join_user': user_receive})
+    return jsonify({'result': 'success', 'msg': '참가 챌린지에서 삭제 되었습니다.'})
 
 
 @application.route('/challenge/check', methods=['POST'])

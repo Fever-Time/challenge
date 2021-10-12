@@ -31,6 +31,9 @@
             width: 250px;
             height: 200px;
         }
+        a.btnp {
+            background-color: #4e555b;
+        }
     </style>
     <script>
         $(document).ready(function ($) {
@@ -93,15 +96,28 @@
                             </a>
                         </div>
                         <h3>{{ challenge.challenge_title }}</h3>
-                        <p class="product-price">
-                            <span>
-                                <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
-                            </span>
-                            {{ challenge.people }}명 참가
-                        </p>
-                        <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
-                            <i class="fas fa-bolt"></i> View Details
-                        </a>
+                        {% if challenge.challenge_pause==1 %}
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                {{ challenge.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                <i class="fas fa-bolt"></i> View Details
+                            </a>
+                        {% else %}
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                                </span>
+                                {{ challenge.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                                <i class="fas fa-bolt"></i> View Details
+                            </a>
+                        {% endif %}
+
                     </div>
                 </div>
             {% endfor %}

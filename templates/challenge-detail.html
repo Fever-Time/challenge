@@ -15,6 +15,9 @@
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
     <style>
         #join-form-container {
             padding-top: 20px;
@@ -33,7 +36,7 @@
             margin: auto auto 50px;
         }
 
-        a.cart-btn-c {
+        a.cart-btn-c, a.cart-btn-p {
             font-family: 'Poppins', sans-serif;
             display: inline-block;
             background-color: #007bff;
@@ -41,7 +44,7 @@
             padding: 10px 20px;
         }
 
-        a.cart-btn-d, a.cart-btn-h {
+        a.cart-btn-d, a.cart-btn-h, a.cart-btn-x {
             font-family: 'Poppins', sans-serif;
             display: inline-block;
             background-color: #dc3545;
@@ -55,12 +58,12 @@
             border: solid #F28123;
         }
 
-        a.cart-btn-d:hover {
+        a.cart-btn-d:hover, a.cart-btn-x:hover {
             background-color: #051922;
             color: #dc3545;
         }
 
-        a.cart-btn-c:hover {
+        a.cart-btn-c:hover, a.cart-btn-p:hover {
             background-color: #051922;
             color: #007bff;
         }
@@ -70,7 +73,7 @@
             color: white;
         }
 
-        a.cart-btn-d, a.cart-btn-c, a.cart-btn-h {
+        a.cart-btn-d, a.cart-btn-c, a.cart-btn-h, a.cart-btn-p, a.cart-btn-x {
             border-radius: 50px;
         }
 
@@ -114,6 +117,10 @@
             display: flex;
             justify-content: flex-end;
         }
+
+        a.cart-btn-p {
+            margin-right: 5px;
+        }
     </style>
 
     <script>
@@ -123,16 +130,59 @@
 
         function onClickJoinBtnHandler() {
             let cookie = document.cookie.match("fever-time");
+            let pause = {{ challenge.challenge_pause }}
             if (cookie == null) {
                 alert("로그인후 챌린지에 도전해주세요 !!")
                 window.location.replace("/login")
             } else {
-                if ($("#join-form-container").css("display") == "block") {
+                if(pause==1){
+                     alert("참여가 중지된 챌린지 입니다 !!")
+                }else{
+                   if ($("#join-form-container").css("display") == "block") {
                     $("#join-form-container").hide();
                 } else {
                     $("#join-form-container").show();
                 }
+                }
+
             }
+        }
+
+        function onClickPauseChallenge() {
+            let check = confirm("챌린지를 중단하시겠습니까? 모든 인증이 삭제됩니다.")
+            if (check) {
+                $.ajax({
+                    type: "PUT",
+                    url: `/challenge`,
+                    data: {
+                        challengeId_give: '{{ challenge._id }}',
+                        pause_give: '{{ challenge.challenge_pause }}'
+                    },
+                    success: function (response) {
+                        alert(response["msg"])
+                        window.location.href = '/'
+                    }
+                });
+            }
+        }
+
+        function onClickStartChallenge() {
+            let check = confirm("챌린지를 다시 진행하시겠습니까?")
+            if (check) {
+                $.ajax({
+                    type: "PUT",
+                    url: `/challenge`,
+                    data: {
+                        challengeId_give: '{{ challenge._id }}',
+                        pause_give: '{{ challenge.challenge_pause }}'
+                    },
+                    success: function (response) {
+                        alert(response["msg"])
+                        window.location.href = '/'
+                    }
+                });
+            }
+
         }
 
         function onClickDeleteChallenge() {
@@ -175,6 +225,26 @@
                 }
             });
         }
+
+        function CancelChallenge() {
+            let check = confirm("챌린지 참가를 취소하시겠습니까? 모든 인증이 삭제됩니다.")
+            if (check) {
+                $.ajax({
+                    type: "DELETE",
+                    url: `/challenge/cancel`,
+                    data: {
+                        challengeId_give: '{{ challenge._id }}',
+                        user_give: '{{ payload.id }}'
+                    },
+                    success: function (response) {
+                        alert(response["msg"])
+                        window.location.href = '/'
+                    }
+                });
+            }
+
+        }
+
     </script>
 </head>
 <body>
@@ -200,16 +270,22 @@
         <div class="row">
             <div class="col-md-5">
                 <div class="single-product-img">
-                    <img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=challenge.challenge_img) }}" alt="">
+                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}" alt="">
                 </div>
             </div>
             <div class="col-md-7">
                 <div class="single-product-content">
                     <h3>{{ challenge.challenge_title }}</h3>
                     <p class="single-product-pricing">
-                        <span>
+                        {% if challenge.challenge_pause==1 %}
+                            <span>
+                                <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime }} ~ /
+                            </span>
+                        {% else %}
+                            <span>
                             <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
                         </span>
+                        {% endif %}
                         {{ people }}명 참가
                     </p>
                     <p>{{ challenge.challenge_desc }}</p>
@@ -217,6 +293,11 @@
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn">
                             <i class="fas fa-bolt"></i>Go to Challenge
                         </a>
+                        {% if statusj %}
+                            <a onclick="CancelChallenge()" class="cart-btn-x">
+                                <i class="fa fa-times" aria-hidden="true"></i> 참가 취소
+                            </a>
+                        {% endif %}
                         <a onclick="location.href='/'" class="cart-btn-h">
                             <i class="fas fa-home"></i> Go to Main
                         </a>
@@ -243,13 +324,25 @@
                     </div>
                 </div>
             </div>
-            {% if status %}
-                <div class="col-md-12 deleteBtn-container">
-                    <a onclick="onClickDeleteChallenge()" class="cart-btn-d">
-                        <i class="fa fa-minus"></i> Delete
+            <div class="col-md-12 deleteBtn-container">
+                {% if status %}
+                <div class="btn-group dropleft">
+                    <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Challenge
                     </a>
+                    <div class="dropdown-menu">
+                        {% if challenge.challenge_pause==0 %}
+                            <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>
+                        {% else %}
+                            <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>
+                    </div>
                 </div>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -258,7 +351,7 @@
 <div class="card-group" id="card-group">
     {% for join in joins %}
         <div class="card-check">
-            <div class="card-header"><img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=join.join_img) }}"
+            <div class="card-header"><img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+join.join_img }}"
                                           alt=""/></div>
             <div class="card-mid">
                 <h5>{{ join.join_cont }}</h5>
@@ -301,7 +394,7 @@
                     <div class="single-product-item">
                         <div class="product-image">
                             <a href="{{ '/challenge/'+challenge._id }}">
-                                <img src="{{ url_for('https://dybzsbdm9g4zq.cloudfront.net', filename=challenge.challenge_img) }}"
+                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                      alt=""
                                      class="related-challenge-img">
                             </a>
