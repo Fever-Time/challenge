@@ -93,7 +93,7 @@ def challenge_detail_page(challengeId):
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
-        statusj = (payload["id"] in join)
+        statusj = (payload["id"] in join) # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
         return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
                                categories=categories, related_challenge=related_challenge, joins=joins,
