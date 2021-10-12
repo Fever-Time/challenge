@@ -115,7 +115,7 @@ def sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-        response = make_response(render_template('index.html'))
+        response = make_response(redirect(url_for("main_page")))
         response.set_cookie(TOKEN_NAME, token)
         return response
 
