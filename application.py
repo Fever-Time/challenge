@@ -185,7 +185,6 @@ def change_pwd():
         return jsonify({'result': '쿠키 만료'})
     except jwt.exceptions.DecodeError:
         return jsonify({'result': '쿠키값 디코드 실패'})
-
     return jsonify({'result': 'success'})
 
 

@@ -77,10 +77,12 @@
                 success: function (response) {
                     if (response['result'] === 'no') {
                         $('#pwdHelp').text('비밀번호가 일치하지 않습니다.');
+                        $('#edit').addClass('change');
                         $('#pwdHelp').removeClass('canChange');
                     } else {
                         $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
                         $('#pwdHelp').addClass('canChange');
+                        $('#edit').removeClass('change');
                     }
                 }
             });
@@ -140,8 +142,6 @@
                         }
                     }
                 });
-            } else {
-                alert('현재 비밀번호를 확인해주세요 !!')
             }
         }
     </script>
