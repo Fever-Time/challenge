@@ -71,9 +71,9 @@
         function check_pwd() { // 현재 비밀번호 확인
             let pwd = $('#nowPwd').val();
             $.ajax({
-                type: "GET",
-                url: `/check_pwd?pwd=${pwd}`,
-                data: {},
+                type: "POST",
+                url: '/check_pwd',
+                data: {'pwd': pwd},
                 success: function (response) {
                     if (response['result']) {
                         $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
@@ -207,11 +207,13 @@
                                 </td>
                                 <td class="product-name">{{ challenge.challenge_title }}</td>
                                 <td class="product-price">
-                                {% if challenge.challenge_pause==1 %}
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }} (중단)
-                                {% else %}
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
-                                {% endif %}
+                                    {% if challenge.challenge_pause==1 %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }} (중단)
+                                    {% else %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                    {% endif %}
                                 </td>
                                 {#                                <td class="product-total">50%</td>#}
                             </tr>

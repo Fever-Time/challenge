@@ -40,15 +40,15 @@ def find_pw():
 
 @application.route('/search', methods=['GET'])
 def search_challenge():
-    temp = request.args.get('search')
+    search_receive = request.args.get('search')
     challenges = objectIdDecoder(list(db.challenge.find({})))
     search_ch = []
 
     for challenge in challenges:
-        if temp in challenge["challenge_title"]:
+        if search_receive in challenge["challenge_title"]:
             search_ch.append(challenge)
             challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]})))
-    return render_template('search.html', search_ch=search_ch)
+    return render_template('index.html', challenges=search_ch)
 
 
 @application.route('/user', methods=['GET'])
@@ -114,7 +114,8 @@ def challenge_detail_page(challengeId):
         status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
         return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
-                               categories=categories, related_challenge=related_challenge, joins=joins, status_join=status_join)
+                               categories=categories, related_challenge=related_challenge, joins=joins,
+                               status_join=status_join)
 
 
 # 준호님 code start
@@ -178,10 +179,10 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
-@application.route('/check_pwd', methods=['GET'])  # 현재 비밀번호가 맞는지 확인
+@application.route('/check_pwd', methods=['POST'])  # 현재 비밀번호가 맞는지 확인
 def check_pwd():
     token_receive = request.cookies.get(TOKEN_NAME)
-    password_receive = request.args.get('pwd')
+    password_receive = request.form['pwd']
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
 
     try:
