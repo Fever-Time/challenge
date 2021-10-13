@@ -37,6 +37,20 @@
             color: #28a745;
             background-color: black;
         }
+
+        #pwdHelp {
+            font-size: 15px;
+        }
+
+        .change {
+            pointer-events: none;
+            background-color: gray;
+
+        }
+
+        .canChange, .canEdit {
+            color: green !important;
+        }
     </style>
 
     <script>
@@ -52,6 +66,85 @@
 
         function onClickChallenge(challengeId) {
             location.href = `/challenge/${challengeId}`
+        }
+
+        function check_pwd() { // 현재 비밀번호 확인
+            let pwd = $('#nowPwd').val();
+            $.ajax({
+                type: "POST",
+                url: '/check_pwd',
+                data: {'pwd': pwd},
+                success: function (response) {
+                    if (response['result']) {
+                        $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
+                        $('#pwdHelp').addClass('canChange');
+                        if ($('#changePwd').val() !== "" && $('#doubleCheckPwd').val() !== "") {
+                            $('#edit').removeClass('change');
+                        }
+                    } else {
+                        $('#pwdHelp').text('비밀번호가 일치하지 않습니다.');
+                        $('#edit').addClass('change');
+                        $('#pwdHelp').removeClass('canChange');
+                    }
+                }
+            });
+        }
+
+        function is_password(asValue) { // 비밀번호 정규식
+            const regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+            return regExp.test(asValue);
+        }
+
+        function change_pwd() { // 비밀번호 변경
+            let pwd = $('#changePwd').val(); // 변경할 비밀번호
+            doubleCheck_pwd()
+            if (!is_password(pwd)) {
+                $('#regHelp').text('비밀번호의 형식을 확인해주세요. 영문과 숫자 필수 포함, 특수문자(!@#$%^&*) 사용가능 8-20자"')
+                $('#regHelp').removeClass('canChange');
+            } else {
+                $('#regHelp').text('보안이 철저합니다 🔒');
+                $('#regHelp').addClass('canChange');
+
+            }
+        }
+
+        function doubleCheck_pwd() { // 비밀번호 더블 체크
+            let pwd = $('#changePwd').val(); // 변경할 비밀번호
+            let samePwd = $('#doubleCheckPwd').val(); // 한번 더 입력한 비밀번호
+
+            if (pwd != samePwd) {
+                $("#regDoubleHelp").text("비밀번호가 일치하지 않습니다.");
+                $('#regDoubleHelp').removeClass('canEdit');
+            } else {
+                $("#regDoubleHelp").text("비밀번호가 일치합니다 ✔");
+                $('#regDoubleHelp').addClass('canEdit');
+            }
+            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange')) {
+                $('#edit').removeClass('change');
+            } else {
+                $('#edit').addClass('change');
+            }
+        }
+
+        function edit_pwd() { // 수정하기 눌렀을 때
+            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange')) {
+                let pwd = $('#changePwd').val(); // 변경할 비밀번호
+
+                $.ajax({
+                    type: "PUT",
+                    url: `/change_pwd?pwd=${pwd}`,
+                    data: {},
+                    success: function (response) {
+                        if (response['result'] === 'success') {
+                            alert('비밀번호 변경 성공');
+                            window.location.reload();
+                        } else {
+                            alert('비밀번호 변경에 실패했습니다.');
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
         }
     </script>
 </head>
@@ -103,17 +196,24 @@
                             {#                            <th class="product-total">Challenge Day</th>#}
                         </tr>
                         </thead>
+
                         <tbody>
                         {% for challenge in challenges %}
                             <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
 
                                 <td class="product-image">
-                                    <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                          alt="">
                                 </td>
                                 <td class="product-name">{{ challenge.challenge_title }}</td>
                                 <td class="product-price">
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                    {% if challenge.challenge_pause==1 %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }} (중단)
+                                    {% else %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                    {% endif %}
                                 </td>
                                 {#                                <td class="product-total">50%</td>#}
                             </tr>
@@ -138,7 +238,11 @@
                             <td>{{ challenges|length }}</td>
                         </tr>
                         <tr class="total-data">
-                            <td><strong>종료 챌린지</strong></td>
+                            <td><strong>중단 챌린지</strong></td>
+                            <td>{{ pause_cnt }}</td>
+                        </tr>
+                        <tr class="total-data">
+                            <td><strong>중료 챌린지</strong></td>
                             <td>0</td>
                         </tr>
                         {#                        <tr class="total-data">#}
@@ -149,9 +253,9 @@
                     </table>
                     <div class="cart-buttons">
                         <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
-                        <a href="#" class="boxed-btn">비밀번호 수정</a>
+                        <a href="#" class="boxed-btn" data-toggle="modal" data-target="#myModal">비밀번호
+                            수정</a>
                         <a href="#" id="delete-user-btn" class="boxed-btn black">회원탈퇴</a>
-
                     </div>
                 </div>
             </div>
@@ -159,6 +263,45 @@
     </div>
 </div>
 <!-- end cart -->
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">비밀번호 변경</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">현재 비밀번호</label>
+                        <input type="password" class="form-control" id="nowPwd" onkeyup="check_pwd()"
+                               aria-describedby="emailHelp"
+                               placeholder="Now your Password">
+                        <small id="pwdHelp" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">변경할 비밀번호</label>
+                        <input type="password" class="form-control" id="changePwd" onkeyup="change_pwd()"
+                               placeholder="Password">
+                        <small id="regHelp" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">한번 더 입력해주세요</label>
+                        <input type="password" class="form-control" id="doubleCheckPwd" onkeyup="doubleCheck_pwd()"
+                               placeholder="Password">
+                        <small id="regDoubleHelp" class="form-text text-muted"></small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary change" id="edit" onclick="edit_pwd()">수정하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end Modal-->
 
 <!-- copyright start -->
 {% include 'include/copyright.html' %}

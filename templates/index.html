@@ -31,6 +31,10 @@
             width: 250px;
             height: 200px;
         }
+
+        a.btnp {
+            background-color: #4e555b;
+        }
     </style>
     <script>
         $(document).ready(function ($) {
@@ -44,7 +48,6 @@
                 alert("로그인 후 생성해주세요 !!")
                 window.location.href = '/login';
             }
-
         }
     </script>
 </head>
@@ -67,59 +70,77 @@
 
 <!-- products -->
 <div class="product-section mt-150 mb-150">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="product-filters">
-                    <ul>
-                        <li class="active" data-filter="*">All</li>
-                        <li data-filter=".category1">운동</li>
-                        <li data-filter=".category2">공부</li>
-                        <li data-filter=".category3">취미</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <div class="container" style="text-align: center">
+        {% if challenges ==[] %}
+            <img src="{{ url_for("static", filename="assets/img/error.svg") }}" width="300" height="300">
+            <h4 style="margin-top: 30px">챌린지가 없습니다😥</h4>
+        {% else %}
 
-        <div class="row product-lists">
-            {% for challenge in challenges %}
-                <div id="category-div"
-                     class="col-lg-4 col-md-6 text-center {{ challenge.challenge_categories|join(" ") }}">
-                    <div class="single-product-item">
-                        <div class="product-image">
-                            <a href="{{ '/challenge/'+challenge._id }}">
-                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
-                                     alt="">
-                            </a>
-                        </div>
-                        <h3>{{ challenge.challenge_title }}</h3>
-                        <p class="product-price">
-                            <span>
-                                <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
-                            </span>
-                            {{ challenge.people }}명 참가
-                        </p>
-                        <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
-                            <i class="fas fa-bolt"></i> View Details
-                        </a>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="product-filters">
+                        <ul>
+                            <li class="active" data-filter="*">All</li>
+                            <li data-filter=".category1">운동</li>
+                            <li data-filter=".category2">공부</li>
+                            <li data-filter=".category3">취미</li>
+                        </ul>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-        {# 페이지 이동 주석#}
-        {#        <div class="row">#}
-        {#            <div class="col-lg-12 text-center">#}
-        {#                <div class="pagination-wrap">#}
-        {#                    <ul>#}
-        {#                        <li><a href="#">Prev</a></li>#}
-        {#                        <li><a href="#">1</a></li>#}
-        {#                        <li><a class="active" href="#">2</a></li>#}
-        {#                        <li><a href="#">3</a></li>#}
-        {#                        <li><a href="#">Next</a></li>#}
-        {#                    </ul>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#        </div>#}
+            </div>
+
+            <div class="row product-lists">
+                {% for challenge in challenges %}
+                    <div class="col-lg-4 col-md-6 text-center {{ challenge.challenge_categories|join(" ") }}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="{{ '/challenge/'+challenge._id }}">
+                                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>{{ challenge.challenge_title }}</h3>
+                            {% if challenge.challenge_pause==1 %}
+                                <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                    {{ challenge.people }}명 참가
+                                </p>
+                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                            {% else %}
+                                <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                                </span>
+                                    {{ challenge.people }}명 참가
+                                </p>
+                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {# 페이지 이동 주석#}
+            {#        <div class="row">#}
+            {#            <div class="col-lg-12 text-center">#}
+            {#                <div class="pagination-wrap">#}
+            {#                    <ul>#}
+            {#                        <li><a href="#">Prev</a></li>#}
+            {#                        <li><a href="#">1</a></li>#}
+            {#                        <li><a class="active" href="#">2</a></li>#}
+            {#                        <li><a href="#">3</a></li>#}
+            {#                        <li><a href="#">Next</a></li>#}
+            {#                    </ul>#}
+            {#                </div>#}
+            {#            </div>#}
+            {#        </div>#}
+        {% endif %}
 
         <div class="row">
             <div class="col-md-12 text-center">
