@@ -412,13 +412,12 @@ def objectIdDecoder(list):
 scheduler = BackgroundScheduler()
 
 
-@scheduler.scheduled_job('cron', hour='22', minute='30', id='schedule-job')
+@scheduler.scheduled_job('cron', hour='00', minute='05', id='schedule-job', timezone='Asia/Seoul')
 def challenge_scheduler():
     today = datetime.now()
     yesterday = today - timedelta(1)
-    # date = yesterday.strftime("%Y-%m-%d")
-    date = today.strftime("%Y-%m-%d")
-    db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_ing': 1}})
+    date = yesterday.strftime("%Y-%m-%d")
+    db.challenge.update_many({'challenge_endTime': '2021-10-13'}, {'$set': {'challenge_ing': 1}})
 
 
 scheduler.start()
