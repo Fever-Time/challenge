@@ -38,6 +38,20 @@ def find_pw():
     return render_template('findPw.html')
 
 
+@application.route('/search', methods=['GET'])
+def search_challenge():
+    temp = request.args.get('search')
+    challenges = objectIdDecoder(list(db.challenge.find({})))
+    search_ch = []
+
+    for challenge in challenges:
+        if temp in challenge["challenge_title"]:
+            search_ch.append(challenge)
+            challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]})))
+
+    return render_template('search.html', search_ch=search_ch)
+
+
 @application.route('/user', methods=['GET'])
 def user():
     token_receive = request.cookies.get(TOKEN_NAME)

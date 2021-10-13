@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- meta -->
+    {% include "include/header-meta.html" %}
+
+    <!-- title -->
+    <title>Main</title>
+
+    <!-- bootstrap css-->
+    {% include "include/header-css.html" %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+    <!-- jquery -->
+    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+
+    <style>
+        #add-btn {
+            background-color: white;
+            border: solid #F28123;
+            color: #F28123;
+        }
+
+        #add-btn:hover {
+            background-color: #F28123;
+            border: solid white;
+            color: white;
+        }
+
+        .product-image img {
+            width: 250px;
+            height: 200px;
+        }
+        a.btnp {
+            background-color: #4e555b;
+        }
+    </style>
+    <script>
+        $(document).ready(function ($) {
+            bsCustomFileInput.init()
+        });
+
+    </script>
+</head>
+<body>
+<!--PreLoader start -->
+{% include 'include/preloader.html' %}
+<!--PreLoader end-->
+
+<!-- header start -->
+{% include 'include/body-header.html' %}
+<!-- header end -->
+
+<!-- search area start-->
+{% include 'include/search.html' %}
+<!-- search area end -->
+
+<!-- breadcrumb-section start -->
+{% include 'include/breadcrumb-section.html' %}
+<!-- breadcrumb section end -->
+
+<!-- products -->
+<div class="product-section mt-150 mb-150">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="product-filters">
+                    <ul>
+                        <li class="active" data-filter="*">All</li>
+                        <li data-filter=".category1">운동</li>
+                        <li data-filter=".category2">공부</li>
+                        <li data-filter=".category3">취미</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row product-lists">
+            {% for search in search_ch %}
+                <div id="category-div"
+                     class="col-lg-4 col-md-6 text-center {{ search.challenge_categories|join(" ") }}">
+                    <div class="single-product-item">
+                        <div class="product-image">
+                            <a href="{{ '/challenge/'+search._id }}">
+                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+search.challenge_img }}"
+                                     alt="">
+                            </a>
+                        </div>
+                        <h3>{{ search.challenge_title }}</h3>
+                        {% if search.challenge_pause==1 %}
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                {{ search.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+search._id }}" class="cart-btn btnp">
+                                <i class="fas fa-bolt"></i> View Details
+                            </a>
+                        {% else %}
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> {{ search.challenge_startTime +' ~ '+search.challenge_endTime }}
+                                </span>
+                                {{ search.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+search._id }}" class="cart-btn">
+                                <i class="fas fa-bolt"></i> View Details
+                            </a>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {# 페이지 이동 주석#}
+        {#        <div class="row">#}
+        {#            <div class="col-lg-12 text-center">#}
+        {#                <div class="pagination-wrap">#}
+        {#                    <ul>#}
+        {#                        <li><a href="#">Prev</a></li>#}
+        {#                        <li><a href="#">1</a></li>#}
+        {#                        <li><a class="active" href="#">2</a></li>#}
+        {#                        <li><a href="#">3</a></li>#}
+        {#                        <li><a href="#">Next</a></li>#}
+        {#                    </ul>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
+
+    </div>
+</div>
+<!-- end products -->
+
+<!-- copyright start -->
+{% include 'include/copyright.html' %}
+<!-- copyright end -->
+
+<!-- bootstrap js start -->
+{% include 'include/footer-js.html' %}
+<!-- bootstrap js end -->
+</body>
+</html>
