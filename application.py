@@ -48,7 +48,6 @@ def search_challenge():
         if temp in challenge["challenge_title"]:
             search_ch.append(challenge)
             challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]})))
-
     return render_template('search.html', search_ch=search_ch)
 
 
@@ -309,6 +308,7 @@ def challenge_check():
 
         user_id = payload['id']
 
+        user_name = db.users.find_one({'user_email': user_id})['user_name']
         challenge_receive = request.form["challenge_give"]
         cont_receive = request.form["cont_give"]
         image_receive = request.files["img_give"]
@@ -341,6 +341,7 @@ def challenge_check():
             'join_challenge': challenge_receive,
             'join_date': uploadtime,
             'join_user': user_id,
+            'join_user_name': user_name,
             'join_cont': cont_receive,
             'join_img': full_file_name
         }

@@ -31,6 +31,7 @@
             width: 250px;
             height: 200px;
         }
+
         a.btnp {
             background-color: #4e555b;
         }
@@ -74,8 +75,11 @@
                 </div>
             </div>
         </div>
+        {% if search_ch ==[] %}
+            <h3 style="text-align: center">해당하는 챌린지가 없습니다.</h3>
+        {% else %}
+            <div class="row product-lists">
 
-        <div class="row product-lists">
             {% for search in search_ch %}
                 <div id="category-div"
                      class="col-lg-4 col-md-6 text-center {{ search.challenge_categories|join(" ") }}">
@@ -112,6 +116,7 @@
                     </div>
                 </div>
             {% endfor %}
+        {% endif %}
         </div>
         {# 페이지 이동 주석#}
         {#        <div class="row">#}
