@@ -48,7 +48,7 @@
 
         }
 
-        .canChange, .canChange1, .canEdit {
+        .canChange, .canEdit {
             color: green !important;
         }
     </style>
@@ -75,14 +75,16 @@
                 url: `/check_pwd?pwd=${pwd}`,
                 data: {},
                 success: function (response) {
-                    if (response['result'] === 'no') {
+                    if (response['result']) {
+                        $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
+                        $('#pwdHelp').addClass('canChange');
+                        if ($('#changePwd').val() !== "" && $('#doubleCheckPwd').val() !== "") {
+                            $('#edit').removeClass('change');
+                        }
+                    } else {
                         $('#pwdHelp').text('비밀번호가 일치하지 않습니다.');
                         $('#edit').addClass('change');
                         $('#pwdHelp').removeClass('canChange');
-                    } else {
-                        $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
-                        $('#pwdHelp').addClass('canChange');
-                        $('#edit').removeClass('change');
                     }
                 }
             });
@@ -98,10 +100,10 @@
             doubleCheck_pwd()
             if (!is_password(pwd)) {
                 $('#regHelp').text('비밀번호의 형식을 확인해주세요. 영문과 숫자 필수 포함, 특수문자(!@#$%^&*) 사용가능 8-20자"')
-                $('#regHelp').removeClass('canChange1');
+                $('#regHelp').removeClass('canChange');
             } else {
                 $('#regHelp').text('보안이 철저합니다 🔒');
-                $('#regHelp').addClass('canChange1');
+                $('#regHelp').addClass('canChange');
 
             }
         }
@@ -117,7 +119,7 @@
                 $("#regDoubleHelp").text("비밀번호가 일치합니다 ✔");
                 $('#regDoubleHelp').addClass('canEdit');
             }
-            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange1')) {
+            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange')) {
                 $('#edit').removeClass('change');
             } else {
                 $('#edit').addClass('change');
@@ -125,7 +127,7 @@
         }
 
         function edit_pwd() { // 수정하기 눌렀을 때
-            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange1')) {
+            if ($('#regDoubleHelp').hasClass('canEdit') && $('#pwdHelp').hasClass('canChange') && $('#regHelp').hasClass('canChange')) {
                 let pwd = $('#changePwd').val(); // 변경할 비밀번호
 
                 $.ajax({
