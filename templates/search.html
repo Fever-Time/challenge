@@ -62,22 +62,24 @@
 
 <!-- products -->
 <div class="product-section mt-150 mb-150">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="product-filters">
-                    <ul>
-                        <li class="active" data-filter="*">All</li>
-                        <li data-filter=".category1">운동</li>
-                        <li data-filter=".category2">공부</li>
-                        <li data-filter=".category3">취미</li>
-                    </ul>
+    <div class="container" style="text-align: center">
+        {% if search_ch ==[] %}
+            <img src="/static/assets/img/error.svg" width="300" height="300">
+            <h4 style="margin-top: 30px">해당하는 챌린지가 없습니다😥</h4>
+        {% else %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="product-filters">
+                        <ul>
+                            <li class="active" data-filter="*">All</li>
+                            <li data-filter=".category1">운동</li>
+                            <li data-filter=".category2">공부</li>
+                            <li data-filter=".category3">취미</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-        {% if search_ch ==[] %}
-            <h3 style="text-align: center">해당하는 챌린지가 없습니다.</h3>
-        {% else %}
+
             <div class="row product-lists">
 
             {% for search in search_ch %}
