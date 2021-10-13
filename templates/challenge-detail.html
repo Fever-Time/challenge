@@ -130,19 +130,19 @@
 
         function onClickJoinBtnHandler() {
             let cookie = document.cookie.match("fever-time");
-            let pause = {{ challenge.challenge_pause }}
+            let pause = {{ challenge.challenge_pause }};
             if (cookie == null) {
                 alert("로그인후 챌린지에 도전해주세요 !!")
                 window.location.replace("/login")
             } else {
-                if(pause==1){
-                     alert("참여가 중지된 챌린지 입니다 !!")
-                }else{
-                   if ($("#join-form-container").css("display") == "block") {
-                    $("#join-form-container").hide();
+                if (pause == 1) {
+                    alert("참여가 중지된 챌린지 입니다 !!")
                 } else {
-                    $("#join-form-container").show();
-                }
+                    if ($("#join-form-container").css("display") == "block") {
+                        $("#join-form-container").hide();
+                    } else {
+                        $("#join-form-container").show();
+                    }
                 }
 
             }
@@ -233,8 +233,7 @@
                     type: "DELETE",
                     url: `/challenge/cancel`,
                     data: {
-                        challengeId_give: '{{ challenge._id }}',
-                        user_give: '{{ payload.id }}'
+                        challengeId_give: '{{ challenge._id }}'
                     },
                     success: function (response) {
                         alert(response["msg"])
@@ -293,7 +292,7 @@
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn">
                             <i class="fas fa-bolt"></i>Go to Challenge
                         </a>
-                        {% if statusj %}
+                        {% if status_join %}
                             <a onclick="CancelChallenge()" class="cart-btn-x">
                                 <i class="fa fa-times" aria-hidden="true"></i> 참가 취소
                             </a>
@@ -326,21 +325,21 @@
             </div>
             <div class="col-md-12 deleteBtn-container">
                 {% if status %}
-                <div class="btn-group dropleft">
-                    <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                        Challenge
-                    </a>
-                    <div class="dropdown-menu">
-                        {% if challenge.challenge_pause==0 %}
-                            <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>
-                        {% else %}
-                            <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>
-                        {% endif %}
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>
+                    <div class="btn-group dropleft">
+                        <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            Challenge
+                        </a>
+                        <div class="dropdown-menu">
+                            {% if challenge.challenge_pause==0 %}
+                                <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>
+                            {% else %}
+                                <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>
+                            {% endif %}
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>
+                        </div>
                     </div>
-                </div>
                 {% endif %}
             </div>
         </div>
