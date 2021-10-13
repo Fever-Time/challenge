@@ -178,6 +178,44 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
+@application.route('/check_pwd', methods=['GET'])  # 현재 비밀번호가 맞는지 확인
+def check_pwd():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    password_receive = request.args.get('pwd')
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        exists = bool(db.users.find_one({"user_email": user_id, "user_pw": pw_hash}))
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': '쿠키 만료'})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': '쿠키값 디코드 실패'})
+    # 토큰을 불러와서 유저아이디를 기준으로 비밀번호가 있어야됨
+    # 같은 비밀번호가 있으면 EXIT이 YES가된다.
+
+    return jsonify({'result': exists})
+
+
+@application.route('/change_pwd', methods=['PUT'])  # 비밀번호 변경
+def change_pwd():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    password_receive = request.args.get('pwd')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        user_id = payload['id']
+        db.users.update_one({'user_email': user_id}, {'$set': {'user_pw': pw_hash}})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': '쿠키 만료'})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': '쿠키값 디코드 실패'})
+    return jsonify({'result': 'success'})
+
+
 # 준호님 code end
 
 # 수빈님 code start
@@ -201,16 +239,17 @@ def save_challenge():
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
         # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
         if file_len == 0:
-            full_file_name = "challenge.jfif"  # default 파일이름 설정
+            full_file_name = "default-challenge-img.jfif"  # default 파일이름 설정
         else:
             # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
             image_receive = request.files["image_give"]
 
             extension = image_receive.filename.split('.')[-1]
+
             today = datetime.now()
             mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
-            filename = f'file-{mytime}'
+            filename = f'challenge-file-{mytime}'
             # save_to = f'static/assets/img/challenge/{filename}.{extension}'
             # image_receive.save(save_to)
             full_file_name = f'{filename}.{extension}'
@@ -271,7 +310,8 @@ def delete_challenge():
     # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
     # 챌린지 이미지 삭제
-    s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
+    if challenge_img != 'default-challenge-img.jfif':
+        s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
     # 챌린지 인증 이미지 삭제
     for join in join_list:
         s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
@@ -319,7 +359,7 @@ def challenge_check():
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
 
-        filename = f'file-{mytime}'
+        filename = f'join-file-{mytime}'
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'

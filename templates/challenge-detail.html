@@ -353,8 +353,9 @@
 <div class="card-group" id="card-group">
     {% for join in joins %}
         <div class="card-check">
-            <div class="card-header"><img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+join.join_img }}"
-                                          alt=""/></div>
+            <div class="card-header">
+                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+ join.join_img }}" alt=""/>
+            </div>
             <div class="card-mid">
                 <h5 class="join_title">{{ join.join_cont }}</h5>
                 <p  class="join_name"><span class="badge badge-pill badge-dark" style="text-align: right">{{ join.join_user_name }}</span></p>
