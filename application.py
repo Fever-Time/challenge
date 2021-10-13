@@ -8,6 +8,7 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta
 import boto3
+from apscheduler.schedulers.background import BackgroundScheduler
 
 application = Flask(__name__)
 application.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -277,7 +278,7 @@ def save_challenge():
             'challenge_address': address_receive,
             'challenge_host': challenge_host,
             'challenge_categories': categories,
-            'challenge_ing': 0
+            'challenge_ing': 0,
             'challenge_pause': 0
         }
 
@@ -407,20 +408,21 @@ def objectIdDecoder(list):
     return results
 
 
-from apscheduler.schedulers.background import BackgroundScheduler
-
+# scheduler start
 scheduler = BackgroundScheduler()
 
 
-@scheduler.scheduled_job('cron', hour='00', minute='00', id='schedule-job')
+@scheduler.scheduled_job('cron', hour='22', minute='30', id='schedule-job')
 def challenge_scheduler():
     today = datetime.now()
     yesterday = today - timedelta(1)
-    date = yesterday.strftime("%Y-%m-%d")
+    # date = yesterday.strftime("%Y-%m-%d")
+    date = today.strftime("%Y-%m-%d")
     db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_ing': 1}})
 
 
 scheduler.start()
+# scheduler end
 
 # 현규님 code end
 
