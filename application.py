@@ -182,16 +182,17 @@ def save_challenge():
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
         # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
         if file_len == 0:
-            full_file_name = "challenge.jfif"  # default 파일이름 설정
+            full_file_name = "default-challenge-img.jfif"  # default 파일이름 설정
         else:
             # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
             image_receive = request.files["image_give"]
 
             extension = image_receive.filename.split('.')[-1]
+
             today = datetime.now()
             mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
-            filename = f'file-{mytime}'
+            filename = f'challenge-file-{mytime}'
             # save_to = f'static/assets/img/challenge/{filename}.{extension}'
             # image_receive.save(save_to)
             full_file_name = f'{filename}.{extension}'
@@ -239,7 +240,8 @@ def delete_challenge():
     # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
     # 챌린지 이미지 삭제
-    s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
+    if challenge_img != 'default-challenge-img.jfif':
+        s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
     # 챌린지 인증 이미지 삭제
     for join in join_list:
         s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
@@ -267,7 +269,7 @@ def challenge_check():
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
 
-        filename = f'file-{mytime}'
+        filename = f'join-file-{mytime}'
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'

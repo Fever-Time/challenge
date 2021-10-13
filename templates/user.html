@@ -108,7 +108,7 @@
                             <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
 
                                 <td class="product-image">
-                                    <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                          alt="">
                                 </td>
                                 <td class="product-name">{{ challenge.challenge_title }}</td>
@@ -151,7 +151,6 @@
                         <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
                         <a href="#" class="boxed-btn">비밀번호 수정</a>
                         <a href="#" id="delete-user-btn" class="boxed-btn black">회원탈퇴</a>
-
                     </div>
                 </div>
             </div>
