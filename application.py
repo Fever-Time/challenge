@@ -40,12 +40,11 @@ def find_pw():
 
 @application.route('/search', methods=['GET'])
 def search_challenge():
-    temp = request.args.get('search')
+    search_receive = request.args.get('search')
     challenges = objectIdDecoder(list(db.challenge.find({})))
     search_ch = []
-
     for challenge in challenges:
-        if temp in challenge["challenge_title"]:
+        if search_receive in challenge["challenge_title"]:
             search_ch.append(challenge)
             challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]})))
     return render_template('search.html', search_ch=search_ch)
