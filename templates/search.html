@@ -31,6 +31,7 @@
             width: 250px;
             height: 200px;
         }
+
         a.btnp {
             background-color: #4e555b;
         }
@@ -40,15 +41,6 @@
             bsCustomFileInput.init()
         });
 
-        function onClickCreateChallenge() {
-            if (document.cookie.match("fever-time") != null) {
-                window.location.href = "/challenge"
-            } else {
-                alert("로그인 후 생성해주세요 !!")
-                window.location.href = '/login';
-            }
-
-        }
     </script>
 </head>
 <body>
@@ -70,49 +62,55 @@
 
 <!-- products -->
 <div class="product-section mt-150 mb-150">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="product-filters">
-                    <ul>
-                        <li class="active" data-filter="*">All</li>
-                        <li data-filter=".category1">운동</li>
-                        <li data-filter=".category2">공부</li>
-                        <li data-filter=".category3">취미</li>
-                    </ul>
+    <div class="container" style="text-align: center">
+        {% if search_ch ==[] %}
+            <img src="/static/assets/img/error.svg" width="300" height="300">
+            <h4 style="margin-top: 30px">해당하는 챌린지가 없습니다😥</h4>
+        {% else %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="product-filters">
+                        <ul>
+                            <li class="active" data-filter="*">All</li>
+                            <li data-filter=".category1">운동</li>
+                            <li data-filter=".category2">공부</li>
+                            <li data-filter=".category3">취미</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row product-lists">
-            {% for challenge in challenges %}
-                <div class="col-lg-4 col-md-6 text-center {{ challenge.challenge_categories|join(" ") }}">
+            <div class="row product-lists">
+
+            {% for search in search_ch %}
+                <div id="category-div"
+                     class="col-lg-4 col-md-6 text-center {{ search.challenge_categories|join(" ") }}">
                     <div class="single-product-item">
                         <div class="product-image">
-                            <a href="{{ '/challenge/'+challenge._id }}">
-                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
+                            <a href="{{ '/challenge/'+search._id }}">
+                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+search.challenge_img }}"
                                      alt="">
                             </a>
                         </div>
-                        <h3>{{ challenge.challenge_title }}</h3>
-                        {% if challenge.challenge_pause==1 %}
+                        <h3>{{ search.challenge_title }}</h3>
+                        {% if search.challenge_pause==1 %}
                             <p class="product-price">
                                 <span>
                                     <i class="far fa-calendar-alt"></i> 중단된 챌린지
                                 </span>
-                                {{ challenge.people }}명 참가
+                                {{ search.people }}명 참가
                             </p>
-                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                            <a href="{{ '/challenge/'+search._id }}" class="cart-btn btnp">
                                 <i class="fas fa-bolt"></i> View Details
                             </a>
                         {% else %}
                             <p class="product-price">
                                 <span>
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                                    <i class="far fa-calendar-alt"></i> {{ search.challenge_startTime +' ~ '+search.challenge_endTime }}
                                 </span>
-                                {{ challenge.people }}명 참가
+                                {{ search.people }}명 참가
                             </p>
-                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                            <a href="{{ '/challenge/'+search._id }}" class="cart-btn">
                                 <i class="fas fa-bolt"></i> View Details
                             </a>
                         {% endif %}
@@ -120,6 +118,7 @@
                     </div>
                 </div>
             {% endfor %}
+        {% endif %}
         </div>
         {# 페이지 이동 주석#}
         {#        <div class="row">#}
@@ -136,15 +135,6 @@
         {#            </div>#}
         {#        </div>#}
 
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <div class="pagination-wrap">
-                    <a id="add-btn" class="cart-btn" onclick="onClickCreateChallenge()">
-                        <i class="fas fa-plus"></i> Add new Challenge
-                    </a>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 <!-- end products -->
