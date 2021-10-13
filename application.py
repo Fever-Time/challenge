@@ -320,7 +320,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 scheduler = BackgroundScheduler()
 
 
-@scheduler.scheduled_job('cron', hour='24', minute='00', id='schedule-job')
+@scheduler.scheduled_job('cron', hour='00', minute='00', id='schedule-job')
 def challenge_scheduler():
     today = datetime.now()
     yesterday = today - timedelta(1)
