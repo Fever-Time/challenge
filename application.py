@@ -277,6 +277,7 @@ def save_challenge():
             'challenge_address': address_receive,
             'challenge_host': challenge_host,
             'challenge_categories': categories,
+            'challenge_ing': 0
             'challenge_pause': 0
         }
 
@@ -405,6 +406,21 @@ def objectIdDecoder(list):
         results.append(document)
     return results
 
+
+from apscheduler.schedulers.background import BackgroundScheduler
+
+scheduler = BackgroundScheduler()
+
+
+@scheduler.scheduled_job('cron', hour='00', minute='00', id='schedule-job')
+def challenge_scheduler():
+    today = datetime.now()
+    yesterday = today - timedelta(1)
+    date = yesterday.strftime("%Y-%m-%d")
+    db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_ing': 1}})
+
+
+scheduler.start()
 
 # 현규님 code end
 
