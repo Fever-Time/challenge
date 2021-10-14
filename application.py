@@ -226,6 +226,22 @@ def change_pwd():
     return jsonify({'result': 'success'})
 
 
+@application.route('/unregister', methods=['POST'])  # 회원탈퇴
+def unregister():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        db.users.delete_one({'user_email': user_id})
+
+
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="회원 정보가 존재하지 않습니다."))
+    return jsonify({"result": '회원탈퇴 되었습니다.'})
+
+
 # 준호님 code end
 
 # 수빈님 code start
