@@ -100,7 +100,17 @@
                                 </a>
                             </div>
                             <h3>{{ challenge.challenge_title }}</h3>
-                            {% if challenge.challenge_status==1 %}
+                            {% if challenge.challenge_status==2 %}
+                                <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지
+                                </span>
+                                    {{ challenge.people }}명 참가
+                                </p>
+                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                            {% elif challenge.challenge_status==1 %}
                                 <p class="product-price">
                                 <span>
                                     <i class="far fa-calendar-alt"></i> 중단된 챌린지
@@ -121,7 +131,6 @@
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                             {% endif %}
-
                         </div>
                     </div>
                 {% endfor %}
