@@ -44,7 +44,6 @@ def search_challenge():
     search_receive = request.args.get('search')
     challenges = objectIdDecoder(list(db.challenge.find({})))
     search_ch = []
-
     for challenge in challenges:
         if search_receive in challenge["challenge_title"]:
             search_ch.append(challenge)
@@ -61,16 +60,23 @@ def user():
 
         join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
 
-        pause_cnt = 0
+        challenge_cnt = dict()
+        challenge_cnt['ing'] = 0
+        challenge_cnt['pause'] = 0
+        challenge_cnt['end'] = 0
         for challenge_id in join_challenge_id_list:
-            if db.challenge.find_one({'_id': ObjectId(challenge_id)})['challenge_pause'] == 1:
-                pause_cnt += 1
+            if db.challenge.find_one({'_id': ObjectId(challenge_id)})['challenge_status'] == 1:
+                challenge_cnt['pause'] += 1
+            elif db.challenge.find_one({'_id': ObjectId(challenge_id)})['challenge_status'] == 0:
+                challenge_cnt['ing'] += 1
+            else:
+                challenge_cnt['end'] += 1
 
         challenges = []
         for challenge_id in join_challenge_id_list:
             challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
 
-        return render_template('user.html', challenges=challenges, pause_cnt=pause_cnt)
+        return render_template('user.html', challenges=challenges, challenge_cnt=challenge_cnt)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -278,8 +284,7 @@ def save_challenge():
             'challenge_address': address_receive,
             'challenge_host': challenge_host,
             'challenge_categories': categories,
-            'challenge_ing': 0,
-            'challenge_pause': 0
+            'challenge_status': 0,
         }
 
         db.challenge.insert_one(doc)
@@ -296,10 +301,10 @@ def pause_challenge():
     challengeId_receive = request.form['challengeId_give']
     pause_receive = int(request.form['pause_give'])
     if pause_receive == 0:
-        db.challenge.update_one({'_id': ObjectId(challengeId_receive)}, {'$set': {'challenge_pause': 1}})
+        db.challenge.update_one({'_id': ObjectId(challengeId_receive)}, {'$set': {'challenge_status': 1}})
         return jsonify({'result': 'success', 'msg': '챌린지가 중단 되었습니다.'})
     else:
-        db.challenge.update_one({'_id': ObjectId(challengeId_receive)}, {'$set': {'challenge_pause': 0}})
+        db.challenge.update_one({'_id': ObjectId(challengeId_receive)}, {'$set': {'challenge_status': 0}})
         return jsonify({'result': 'success', 'msg': '챌린지가 활성화 되었습니다.'})
 
 
@@ -417,7 +422,7 @@ def challenge_scheduler():
     today = datetime.now()
     yesterday = today - timedelta(1)
     date = yesterday.strftime("%Y-%m-%d")
-    db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_ing': 1}})
+    db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_status': 2}})
 
 
 scheduler.start()
