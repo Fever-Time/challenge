@@ -115,6 +115,8 @@ def challenge_detail_page(challengeId):
     token_receive = request.cookies.get('fever-time')
 
     status = False
+    status_join = False
+    
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
