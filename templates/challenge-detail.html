@@ -288,13 +288,19 @@
                         <span>
                             <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
                         </span>
-                        {{ people }}명 참가
+                        {{ people }} / {{ challenge.challenge_max }}명
                     </p>
                     <p>{{ challenge.challenge_desc }}</p>
                     <div class="single-product-form btn-container">
+                     {% if (people==challenge.challenge_max) and (status_join==False) %}
+                        <a  class="cart-btn btnp">
+                            <i class="fas fa-bolt"></i>모집 마감
+                        </a>
+                    {% else %}
                         <a onclick="onClickJoinBtnHandler()" class="cart-btn">
                             <i class="fas fa-bolt"></i>Go to Challenge
                         </a>
+                    {% endif %}
                         {% if status_join %}
                             <a onclick="CancelChallenge()" class="cart-btn-x">
                                 <i class="fa fa-times" aria-hidden="true"></i> 참가 취소
@@ -406,26 +412,26 @@
                         </div>
                         <h3>{{ challenge.challenge_title }}</h3>
                         {% if challenge.challenge_status==1 %}
-                                <p class="product-price">
+                            <p class="product-price">
                                 <span>
                                     <i class="far fa-calendar-alt"></i> 중단된 챌린지
                                 </span>
-                                    {{ challenge.people }}명 참가
-                                </p>
-                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> Go to Challenge
-                                </a>
-                            {% else %}
-                        <p class="product-price">
+                                {{ challenge.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                <i class="fas fa-bolt"></i> Go to Challenge
+                            </a>
+                        {% else %}
+                            <p class="product-price">
                         <span>
                             <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
                         </span>
-                            {{ challenge.people }}명 참가
-                        </p>
-                        <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
-                            <i class="fas fa-bolt"></i> Go to Challenge
-                        </a>
-                    {% endif %}
+                                {{ challenge.people }}명 참가
+                            </p>
+                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
+                                <i class="fas fa-bolt"></i> Go to Challenge
+                            </a>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}

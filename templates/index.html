@@ -105,7 +105,7 @@
                                 <span>
                                     <i class="far fa-calendar-alt"></i> 중단된 챌린지
                                 </span>
-                                    {{ challenge.people }}명 참가
+                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
                                 </p>
                                 <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
                                     <i class="fas fa-bolt"></i> View Details
@@ -115,7 +115,7 @@
                                 <span>
                                     <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
                                 </span>
-                                    {{ challenge.people }}명 참가
+                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
                                 </p>
                                 <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
                                     <i class="fas fa-bolt"></i> View Details
