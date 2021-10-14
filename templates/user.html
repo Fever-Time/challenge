@@ -97,7 +97,9 @@
 
         function change_pwd() { // 비밀번호 변경
             let pwd = $('#changePwd').val(); // 변경할 비밀번호
-            doubleCheck_pwd()
+            let samePwd = $('#doubleCheckPwd').val(); // 한번 더 입력한 비밀번호
+            if(samePwd !== "") doubleCheck_pwd();
+
             if (!is_password(pwd)) {
                 $('#regHelp').text('비밀번호의 형식을 확인해주세요. 영문과 숫자 필수 포함, 특수문자(!@#$%^&*) 사용가능 8-20자"')
                 $('#regHelp').removeClass('canChange');
