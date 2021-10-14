@@ -1,3 +1,4 @@
+import requests
 from flask import Flask, render_template, jsonify, request, session, redirect, url_for, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -224,7 +225,79 @@ def change_pwd():
     return jsonify({'result': 'success'})
 
 
+@application.route('/oauth/callback', methods=['GET'])
+def oauth():
+    # code는 index.html에 카카오 버튼 url을 보면 알 수 있습니다. 버튼 url에 만든사람 인증id, return uri이 명시되어 있습니다.
+    # 사용자 로그인에 성공하면 로그인 한 사람의 코드를 발급해줍니다.
+    code = request.args.get("code")
+
+    # 그 코드를 이용해 서버에 토큰을 요청해야 합니다. 아래는 POST 요청을 위한 header와 body입니다.
+    client_id = '568f2b791efeffd312f12ece9bb5faea'
+    redirect_uri = 'http://localhost:5000/oauth/callback'
+    token_url = "https://kauth.kakao.com/oauth/token"
+    token_headers = {
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+    }
+    data = {
+        'grant_type': 'authorization_code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'code': code
+    }
+    response = requests.post(url=token_url, headers=token_headers, data=data)
+    token = response.json()
+
+    print(f'토큰 = {token}')
+    # POST 요청에 성공하면 return value를 JSON 형식으로 파싱해서 담아줍니다.
+
+    info_url = "https://kapi.kakao.com/v2/user/me"
+    info_headers = {
+        'Authorization': 'Bearer ' + token['access_token'],
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+    }
+    info_response = requests.post(url=info_url, headers=info_headers)
+    infos = info_response.json()
+    print("========================================")
+    print(f'유저 정보 = {infos}')
+    print("========================================")
+
+    kakao_id = infos['id']
+    kakao_name = infos['properties']['nickname']
+
+    exist = bool(db.users.find_one({'user_email': infos['id']}))
+    print(exist)
+    if exist:  # 이미 가입한 유저라면
+        payload = {
+            'id': kakao_id,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # 토큰을 발급하고
+        response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
+        response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
+        return response
+    else:
+        kakaoSignUp(kakao_id, kakao_name)
+    return
+
+
+def kakaoSignUp(kakao_id, kakao_name):
+    doc = {
+        "user_email": kakao_id,
+        "user_name": kakao_name
+    }
+    db.users.insert_one(doc)
+    payload = {
+        'id': kakao_id,
+        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # 토큰을 발급하고
+    response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
+    response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
+    return response
+
+
 # 준호님 code end
+
 
 # 수빈님 code start
 @application.route('/challenge', methods=['POST'])
