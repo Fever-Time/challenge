@@ -117,7 +117,7 @@ def challenge_detail_page(challengeId):
 
     status = False
     status_join = False
-    
+
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload["id"])  # 내가 만든 챌리지이면 True
@@ -227,7 +227,6 @@ def change_pwd():
     return jsonify({'result': 'success'})
 
 
-
 @application.route('/unregister', methods=['POST'])  # 회원탈퇴
 def unregister():
     token_receive = request.cookies.get(TOKEN_NAME)
@@ -243,7 +242,7 @@ def unregister():
         return redirect(url_for("login", msg="회원 정보가 존재하지 않습니다."))
     return jsonify({"result": '회원탈퇴 되었습니다.'})
 
-  
+
 @application.route('/oauth/callback', methods=['GET'])
 def oauth():
     # code는 index.html에 카카오 버튼 url을 보면 알 수 있습니다. 버튼 url에 만든사람 인증id, return uri이 명시되어 있습니다.
@@ -276,9 +275,7 @@ def oauth():
     }
     info_response = requests.post(url=info_url, headers=info_headers)
     infos = info_response.json()
-    print("========================================")
     print(f'유저 정보 = {infos}')
-    print("========================================")
 
     kakao_id = infos['id']
     kakao_name = infos['properties']['nickname']
@@ -293,27 +290,24 @@ def oauth():
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # 토큰을 발급하고
         response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
         response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
+
         return response
     else:
-        kakaoSignUp(kakao_id, kakao_name)
-    return
+        doc = {
+            "user_email": kakao_id,
+            "user_name": kakao_name
+        }
+        db.users.insert_one(doc)
+        payload = {
+            'id': kakao_id,
+            'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
+        }
 
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # 토큰을 발급하고
+        response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
+        response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
 
-def kakaoSignUp(kakao_id, kakao_name):
-    doc = {
-        "user_email": kakao_id,
-        "user_name": kakao_name
-    }
-    db.users.insert_one(doc)
-    payload = {
-        'id': kakao_id,
-        'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
-    }
-    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")  # 토큰을 발급하고
-    response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
-    response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
-    return response
-
+        return response
 
 
 # 준호님 code end
