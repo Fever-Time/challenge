@@ -8,6 +8,7 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta
 import boto3
+from apscheduler.schedulers.background import BackgroundScheduler
 
 application = Flask(__name__)
 application.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -47,7 +48,7 @@ def search_challenge():
         if search_receive in challenge["challenge_title"]:
             search_ch.append(challenge)
             challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]})))
-    return render_template('search.html', search_ch=search_ch)
+    return render_template('index.html', challenges=search_ch)
 
 
 @application.route('/user', methods=['GET'])
@@ -113,7 +114,8 @@ def challenge_detail_page(challengeId):
         status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
         return render_template("challenge-detail.html", challenge=challenge, people=people, status=status,
-                               categories=categories, related_challenge=related_challenge, joins=joins, status_join=status_join)
+                               categories=categories, related_challenge=related_challenge, joins=joins,
+                               status_join=status_join)
 
 
 # 준호님 code start
@@ -177,6 +179,44 @@ def check_dup():
     return jsonify({'result': 'success', 'exists': exists})
 
 
+@application.route('/check_pwd', methods=['POST'])  # 현재 비밀번호가 맞는지 확인
+def check_pwd():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    password_receive = request.form['pwd']
+    pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        exists = bool(db.users.find_one({"user_email": user_id, "user_pw": pw_hash}))
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': '쿠키 만료'})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': '쿠키값 디코드 실패'})
+    # 토큰을 불러와서 유저아이디를 기준으로 비밀번호가 있어야됨
+    # 같은 비밀번호가 있으면 EXIT이 YES가된다.
+
+    return jsonify({'result': exists})
+
+
+@application.route('/change_pwd', methods=['PUT'])  # 비밀번호 변경
+def change_pwd():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    password_receive = request.args.get('pwd')
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+        user_id = payload['id']
+        db.users.update_one({'user_email': user_id}, {'$set': {'user_pw': pw_hash}})
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({'result': '쿠키 만료'})
+    except jwt.exceptions.DecodeError:
+        return jsonify({'result': '쿠키값 디코드 실패'})
+    return jsonify({'result': 'success'})
+
+
 # 준호님 code end
 
 # 수빈님 code start
@@ -200,16 +240,17 @@ def save_challenge():
         # file_len 이 0이면 JS에서 파일을 안보낸준 것!
         # 파일을 안보내줬으면 default 파일이름을 넘겨준다.
         if file_len == 0:
-            full_file_name = "challenge.jfif"  # default 파일이름 설정
+            full_file_name = "default-challenge-img.jfif"  # default 파일이름 설정
         else:
             # 파일을 제대로 전달해줬으면 파일을 꺼내서 저장하고 파일이름을 넘겨준다.
             image_receive = request.files["image_give"]
 
             extension = image_receive.filename.split('.')[-1]
+
             today = datetime.now()
             mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
 
-            filename = f'file-{mytime}'
+            filename = f'challenge-file-{mytime}'
             # save_to = f'static/assets/img/challenge/{filename}.{extension}'
             # image_receive.save(save_to)
             full_file_name = f'{filename}.{extension}'
@@ -236,6 +277,7 @@ def save_challenge():
             'challenge_address': address_receive,
             'challenge_host': challenge_host,
             'challenge_categories': categories,
+            'challenge_ing': 0,
             'challenge_pause': 0
         }
 
@@ -270,7 +312,8 @@ def delete_challenge():
     # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
     # 챌린지 이미지 삭제
-    s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
+    if challenge_img != 'default-challenge-img.jfif':
+        s3.Object(os.environ["BUCKET_NAME"], challenge_img).delete()
     # 챌린지 인증 이미지 삭제
     for join in join_list:
         s3.Object(os.environ["BUCKET_NAME"], join['join_img']).delete()
@@ -318,7 +361,7 @@ def challenge_check():
         mytime = today.strftime("%Y-%m-%d-%H-%M-%S")
         uploadtime = today.strftime("%Y-%m-%d")
 
-        filename = f'file-{mytime}'
+        filename = f'join-file-{mytime}'
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'
@@ -363,6 +406,21 @@ def objectIdDecoder(list):
         results.append(document)
     return results
 
+
+# scheduler start
+scheduler = BackgroundScheduler()
+
+
+@scheduler.scheduled_job('cron', hour='00', minute='00', id='schedule-job', timezone='Asia/Seoul')
+def challenge_scheduler():
+    today = datetime.now()
+    yesterday = today - timedelta(1)
+    date = yesterday.strftime("%Y-%m-%d")
+    db.challenge.update_many({'challenge_endTime': date}, {'$set': {'challenge_ing': 1}})
+
+
+scheduler.start()
+# scheduler end
 
 # 현규님 code end
 
