@@ -227,6 +227,23 @@ def change_pwd():
     return jsonify({'result': 'success'})
 
 
+
+@application.route('/unregister', methods=['POST'])  # 회원탈퇴
+def unregister():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        db.users.delete_one({'user_email': user_id})
+
+
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="회원 정보가 존재하지 않습니다."))
+    return jsonify({"result": '회원탈퇴 되었습니다.'})
+
+  
 @application.route('/oauth/callback', methods=['GET'])
 def oauth():
     # code는 index.html에 카카오 버튼 url을 보면 알 수 있습니다. 버튼 url에 만든사람 인증id, return uri이 명시되어 있습니다.
@@ -296,6 +313,7 @@ def kakaoSignUp(kakao_id, kakao_name):
     response = make_response(redirect(url_for("main_page")))  # 쿠키를 저장해줄 페이지 지정(?)
     response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
     return response
+
 
 
 # 준호님 code end

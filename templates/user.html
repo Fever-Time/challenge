@@ -146,6 +146,25 @@
                 });
             }
         }
+
+        function unregister() {
+            let check = confirm("회원탈퇴하시겠습니까?")
+            if (check) {
+                $.ajax({
+                    type: "POST",
+                    url: "/unregister",
+                    data: {},
+                    success: function (response) {
+                        delete_cookie('fever-time')
+                        alert(response['result'])
+                        window.location.href = "/login";
+                    }
+                })
+            } else {
+                alert("취소되었습니다 !!")
+            }
+
+        }
     </script>
 </head>
 <body>
@@ -255,7 +274,7 @@
                         <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
                         <a href="#" class="boxed-btn" data-toggle="modal" data-target="#myModal">비밀번호
                             수정</a>
-                        <a href="#" id="delete-user-btn" class="boxed-btn black">회원탈퇴</a>
+                        <a href="#" id="delete-user-btn" class="boxed-btn black" onclick="unregister()">회원탈퇴</a>
                     </div>
                 </div>
             </div>
