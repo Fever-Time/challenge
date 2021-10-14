@@ -233,7 +233,7 @@ def oauth():
 
     # 그 코드를 이용해 서버에 토큰을 요청해야 합니다. 아래는 POST 요청을 위한 header와 body입니다.
     client_id = '568f2b791efeffd312f12ece9bb5faea'
-    redirect_uri = 'http://localhost:5000/oauth/callback'
+    redirect_uri = 'https://fevertime.shop/oauth/callback'
     token_url = "https://kauth.kakao.com/oauth/token"
     token_headers = {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
