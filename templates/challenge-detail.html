@@ -125,6 +125,11 @@
         h5.join_title, p.join_name {
             margin: 0 0 5px 0;
         }
+
+        a.btnp {
+            background-color: #4e555b;
+        }
+
     </style>
 
     <script>
@@ -134,7 +139,7 @@
 
         function onClickJoinBtnHandler() {
             let cookie = document.cookie.match("fever-time");
-            let pause = {{ challenge.challenge_pause }};
+            let pause = {{ challenge.challenge_status }};
             if (cookie == null) {
                 alert("로그인후 챌린지에 도전해주세요 !!")
                 window.location.replace("/login")
@@ -160,7 +165,7 @@
                     url: `/challenge`,
                     data: {
                         challengeId_give: '{{ challenge._id }}',
-                        pause_give: '{{ challenge.challenge_pause }}'
+                        pause_give: '{{ challenge.challenge_status }}'
                     },
                     success: function (response) {
                         alert(response["msg"])
@@ -178,7 +183,7 @@
                     url: `/challenge`,
                     data: {
                         challengeId_give: '{{ challenge._id }}',
-                        pause_give: '{{ challenge.challenge_pause }}'
+                        pause_give: '{{ challenge.challenge_status }}'
                     },
                     success: function (response) {
                         alert(response["msg"])
@@ -329,7 +334,7 @@
                             Challenge
                         </a>
                         <div class="dropdown-menu">
-                            {% if challenge.challenge_pause==0 %}
+                            {% if challenge.challenge_status==0 %}
                                 <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>
                             {% else %}
                                 <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>
@@ -400,6 +405,17 @@
                             </a>
                         </div>
                         <h3>{{ challenge.challenge_title }}</h3>
+                        {% if challenge.challenge_status==1 %}
+                                <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                    {{ challenge.people }}명 참가
+                                </p>
+                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> Go to Challenge
+                                </a>
+                            {% else %}
                         <p class="product-price">
                         <span>
                             <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
@@ -409,6 +425,7 @@
                         <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
                             <i class="fas fa-bolt"></i> Go to Challenge
                         </a>
+                    {% endif %}
                     </div>
                 </div>
             {% endfor %}
