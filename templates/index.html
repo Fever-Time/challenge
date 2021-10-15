@@ -120,6 +120,16 @@
                                 <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
+                            {% elif (challenge.people==challenge.challenge_max) and (status_join==False) %}
+                                <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i>{{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
+                                </span>
+                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
+                                </p>
+                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> 모집 종료
+                                </a>
                             {% else %}
                                 <p class="product-price">
                                 <span>

@@ -25,9 +25,21 @@ TOKEN_NAME = "fever-time"
 @application.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+
+    token_receive = request.cookies.get('fever-time')
+
     for challenge in challenges:
         challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
-    return render_template('index.html', challenges=challenges)
+
+    status_join = False
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        for challenge in challenges:
+            join = list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]}))
+            status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
+    finally:
+        return render_template('index.html', challenges=challenges, status_join=status_join)
 
 
 @application.route('/error', methods=['GET'])
@@ -251,7 +263,7 @@ def oauth():
 
     # 그 코드를 이용해 서버에 토큰을 요청해야 합니다. 아래는 POST 요청을 위한 header와 body입니다.
     client_id = '568f2b791efeffd312f12ece9bb5faea'
-    redirect_uri = 'https://fevertime.shop/oauth/callback'
+    redirect_uri = 'http://localhost:5000/oauth/callback'
     token_url = "https://kauth.kakao.com/oauth/token"
     token_headers = {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -464,7 +476,7 @@ def challenge_check():
         joins = list(db.join.find({'join_challenge': challenge_receive, 'join_user': user_id}, {"_id": False}))
 
         for join in joins:
-            if join['join_date']==uploadtime:
+            if join['join_date'] == uploadtime:
                 return jsonify({'msg': "하루에 한번만 인증 가능 합니다."})
 
         # s3 지정한 버킷에 파일 업로드
