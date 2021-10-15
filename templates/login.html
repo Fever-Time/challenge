@@ -62,7 +62,7 @@
                     </a>
                 #}
 
-                {% set redirect_uri = 'http://localhost:5000/oauth/callback' %}
+                {% set redirect_uri = 'https://fevertime.shop/oauth/callback' %}
                 <a href="https://kauth.kakao.com/oauth/authorize?client_id=568f2b791efeffd312f12ece9bb5faea&redirect_uri={{ redirect_uri }}&response_type=code"
                    class="login100-social-item">
                     <img src="{{ url_for("static", filename="assets/img/kakao-talk.png") }}" alt="kakao login">

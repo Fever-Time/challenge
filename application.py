@@ -74,7 +74,6 @@ def user():
         if '@' in user_id:
             kakaoLogin = False
 
-        print(f"카카오 로그인 = {kakaoLogin}")
         join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
 
         challenge_cnt = dict()
@@ -95,7 +94,8 @@ def user():
 
         user_info = db.users.find_one({"user_email": user_id}, {"_id": False})
 
-        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt, kakaoLogin=kakaoLogin)
+        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt,
+                               kakaoLogin=kakaoLogin)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -225,10 +225,8 @@ def check_dup():
 
 @application.route('/check_pwd', methods=['POST'])  # 현재 비밀번호가 맞는지 확인
 def check_pwd():
-    print("진입=============================")
     token_receive = request.cookies.get(TOKEN_NAME)
     password_receive = request.form['pwd']
-    print(password_receive)
 
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
 
@@ -269,7 +267,7 @@ def unregister():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
-        
+
         db.join.delete_many({'join_user': user_id})  # 참여한 챌린지 기록 삭제
         db.challenge.delete_many({'challenge_host': user_id})  # 생성한 챌린지 기록 삭제
         db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
@@ -288,7 +286,7 @@ def oauth():
 
     # 그 코드를 이용해 서버에 토큰을 요청해야 합니다. 아래는 POST 요청을 위한 header와 body입니다.
     client_id = '568f2b791efeffd312f12ece9bb5faea'
-    redirect_uri = 'http://localhost:5000/oauth/callback'
+    redirect_uri = 'https://fevertime.shop/oauth/callback'
     token_url = "https://kauth.kakao.com/oauth/token"
     token_headers = {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -302,7 +300,6 @@ def oauth():
     response = requests.post(url=token_url, headers=token_headers, data=data)
     token = response.json()
 
-    print(f'토큰 = {token}')
     # POST 요청에 성공하면 return value를 JSON 형식으로 파싱해서 담아줍니다.
 
     info_url = "https://kapi.kakao.com/v2/user/me"
@@ -312,17 +309,12 @@ def oauth():
     }
     info_response = requests.post(url=info_url, headers=info_headers)
     infos = info_response.json()
-    print(f'유저 정보 = {infos}')
 
     kakao_id = str(infos['id'])
     kakao_name = infos['properties']['nickname']
 
     exist = bool(db.users.find_one({'user_email': kakao_id}))
-    print(exist)
     if exist:  # 이미 가입한 유저라면
-        print('기존유저')
-        print("타입확인==============")
-        print(type(kakao_id))
         payload = {
             'id': kakao_id,
             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
@@ -333,13 +325,10 @@ def oauth():
 
         return response
     else:
-        print("신규유저")
         doc = {
             "user_email": kakao_id,
             "user_name": kakao_name
         }
-        print("타입확인==============")
-        print(type(kakao_id))
         db.users.insert_one(doc)
         payload = {
             'id': kakao_id,
