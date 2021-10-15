@@ -71,9 +71,9 @@
         function check_pwd() { // 현재 비밀번호 확인
             let pwd = $('#nowPwd').val();
             $.ajax({
-                type: "GET",
-                url: `/check_pwd?pwd=${pwd}`,
-                data: {},
+                type: "POST",
+                url: '/check_pwd',
+                data: {'pwd': pwd},
                 success: function (response) {
                     if (response['result']) {
                         $('#pwdHelp').text('비밀번호가 일치합니다 ✔')
@@ -148,6 +148,25 @@
                 });
             }
         }
+
+        function unregister() {
+            let check = confirm("회원탈퇴하시겠습니까?")
+            if (check) {
+                $.ajax({
+                    type: "POST",
+                    url: "/unregister",
+                    data: {},
+                    success: function (response) {
+                        delete_cookie('fever-time')
+                        alert(response['result'])
+                        window.location.href = "/login";
+                    }
+                })
+            } else {
+                alert("취소되었습니다 !!")
+            }
+
+        }
     </script>
 </head>
 <body>
@@ -198,17 +217,24 @@
                             {#                            <th class="product-total">Challenge Day</th>#}
                         </tr>
                         </thead>
+
                         <tbody>
                         {% for challenge in challenges %}
                             <tr class="table-body-row" onclick="onClickChallenge('{{ challenge._id }}')">
 
                                 <td class="product-image">
-                                    <img src="{{ url_for('static', filename='assets/img/challenge/'+challenge.challenge_img) }}"
+                                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
                                          alt="">
                                 </td>
                                 <td class="product-name">{{ challenge.challenge_title }}</td>
                                 <td class="product-price">
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                    {% if challenge.challenge_status==1 %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }} (중단)
+                                    {% else %}
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ challenge.challenge_startTime +' ~ '+ challenge.challenge_endTime }}
+                                    {% endif %}
                                 </td>
                                 {#                                <td class="product-total">50%</td>#}
                             </tr>
@@ -230,11 +256,15 @@
                         <tbody>
                         <tr class="total-data">
                             <td><strong>진행 챌린지</strong></td>
-                            <td>{{ challenges|length }}</td>
+                            <td>{{ challenge_cnt.ing }}</td>
                         </tr>
                         <tr class="total-data">
-                            <td><strong>종료 챌린지</strong></td>
-                            <td>0</td>
+                            <td><strong>중단 챌린지</strong></td>
+                            <td>{{ challenge_cnt.pause }}</td>
+                        </tr>
+                        <tr class="total-data">
+                            <td><strong>중료 챌린지</strong></td>
+                            <td>{{ challenge_cnt.end }}</td>
                         </tr>
                         {#                        <tr class="total-data">#}
                         {#                            <td><strong>전체 달성률</strong></td>#}
@@ -246,8 +276,7 @@
                         <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
                         <a href="#" class="boxed-btn" data-toggle="modal" data-target="#myModal">비밀번호
                             수정</a>
-                        <a href="#" id="delete-user-btn" class="boxed-btn black">회원탈퇴</a>
-
+                        <a href="#" id="delete-user-btn" class="boxed-btn black" onclick="unregister()">회원탈퇴</a>
                     </div>
                 </div>
             </div>
