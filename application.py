@@ -25,9 +25,21 @@ TOKEN_NAME = "fever-time"
 @application.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+
+    token_receive = request.cookies.get('fever-time')
+
     for challenge in challenges:
         challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
-    return render_template('index.html', challenges=challenges)
+
+    status_join = False
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        for challenge in challenges:
+            join = list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]}))
+            status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
+    finally:
+        return render_template('index.html', challenges=challenges, status_join=status_join)
 
 
 @application.route('/error', methods=['GET'])
@@ -55,9 +67,12 @@ def search_challenge():
 @application.route('/user', methods=['GET'])
 def user():
     token_receive = request.cookies.get(TOKEN_NAME)
+    kakaoLogin = True
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
+        if '@' in user_id:
+            kakaoLogin = False
 
         join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
 
@@ -77,7 +92,10 @@ def user():
         for challenge_id in join_challenge_id_list:
             challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
 
-        return render_template('user.html', challenges=challenges, challenge_cnt=challenge_cnt)
+        user_info = db.users.find_one({"user_email": user_id}, {"_id": False})
+
+        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt,
+                               kakaoLogin=kakaoLogin)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -87,6 +105,22 @@ def user():
 @application.route('/challenge', methods=['GET'])
 def challenge_create_page():
     return render_template('challenge-create.html')
+
+
+@application.route('/user/name', methods=['POST'])
+def update_user_name():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    name_receive = request.form['name_give']
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        db.users.update_one({'user_email': user_id}, {'$set': {'user_name': name_receive}})
+        return {'msg': "이름 변경 성공!"}
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
 @application.route('/challenge/<challengeId>', methods=['GET'])
@@ -193,6 +227,7 @@ def check_dup():
 def check_pwd():
     token_receive = request.cookies.get(TOKEN_NAME)
     password_receive = request.form['pwd']
+
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
 
     try:
@@ -219,7 +254,6 @@ def change_pwd():
         pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
         user_id = payload['id']
         db.users.update_one({'user_email': user_id}, {'$set': {'user_pw': pw_hash}})
-
     except jwt.ExpiredSignatureError:
         return jsonify({'result': '쿠키 만료'})
     except jwt.exceptions.DecodeError:
@@ -233,9 +267,10 @@ def unregister():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
-        db.users.delete_one({'user_email': user_id})
 
-
+        db.join.delete_many({'join_user': user_id})  # 참여한 챌린지 기록 삭제
+        db.challenge.delete_many({'challenge_host': user_id})  # 생성한 챌린지 기록 삭제
+        db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -265,7 +300,6 @@ def oauth():
     response = requests.post(url=token_url, headers=token_headers, data=data)
     token = response.json()
 
-    print(f'토큰 = {token}')
     # POST 요청에 성공하면 return value를 JSON 형식으로 파싱해서 담아줍니다.
 
     info_url = "https://kapi.kakao.com/v2/user/me"
@@ -275,13 +309,11 @@ def oauth():
     }
     info_response = requests.post(url=info_url, headers=info_headers)
     infos = info_response.json()
-    print(f'유저 정보 = {infos}')
 
-    kakao_id = infos['id']
+    kakao_id = str(infos['id'])
     kakao_name = infos['properties']['nickname']
 
-    exist = bool(db.users.find_one({'user_email': infos['id']}))
-    print(exist)
+    exist = bool(db.users.find_one({'user_email': kakao_id}))
     if exist:  # 이미 가입한 유저라면
         payload = {
             'id': kakao_id,
@@ -326,6 +358,7 @@ def save_challenge():
         decs_receive = request.form["desc_give"]
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
+        max_receive = int(request.form["max_give"])
 
         categories_receive = request.form["categories_give"]
         categories = categories_receive.split(',')
@@ -372,6 +405,7 @@ def save_challenge():
             'challenge_host': challenge_host,
             'challenge_categories': categories,
             'challenge_status': 0,
+            'challenge_max': max_receive
         }
 
         db.challenge.insert_one(doc)
@@ -458,6 +492,12 @@ def challenge_check():
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'
+
+        joins = list(db.join.find({'join_challenge': challenge_receive, 'join_user': user_id}, {"_id": False}))
+
+        for join in joins:
+            if join['join_date'] == uploadtime:
+                return jsonify({'msg': "하루에 한번만 인증 가능 합니다."})
 
         # s3 지정한 버킷에 파일 업로드
         s3 = boto3.client('s3',
