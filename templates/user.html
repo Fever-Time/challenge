@@ -51,6 +51,15 @@
         .canChange, .canEdit {
             color: green !important;
         }
+
+        a.read-more-btn {
+            margin-top: 0;
+        }
+
+        .shipping-address-form {
+            display: flex;
+            justify-content: space-around;
+        }
     </style>
 
     <script>
@@ -163,7 +172,22 @@
             } else {
                 alert("취소되었습니다 !!")
             }
+        }
 
+        function updateUserName() {
+            let name = prompt("변경할 이름을 입력하세요.")
+
+            if (name != null) {
+                $.ajax({
+                    type: "POST",
+                    url: "/user/name",
+                    data: {"name_give": name},
+                    success: function (response) {
+                        let result = response['msg']
+                        window.location.reload();
+                    }
+                })
+            }
         }
     </script>
 </head>
@@ -205,6 +229,33 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-12">
+
+                <div class="checkout-accordion-wrap" style="padding-bottom: 10px">
+                    <div class="accordion" id="accordionExample">
+                        <div class="card single-accordion">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                                            data-target="#collapseTwo" aria-expanded="false"
+                                            aria-controls="collapseTwo">
+                                        My Profile
+                                    </button>
+                                </h5>
+                            </div>
+                            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo"
+                                 data-parent="#accordionExample">
+                                <div class="card-body">
+                                    <div class="shipping-address-form">
+                                        <p>{{ user.user_name+'('+user.user_email+')' }}</p>
+                                        <a onclick="updateUserName()" class="read-more-btn">이름 변경 <i
+                                                class="fas fa-angle-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="cart-table-wrap">
                     <table class="cart-table">
                         <thead class="cart-table-head">
@@ -240,6 +291,7 @@
                         </tbody>
                     </table>
                 </div>
+
             </div>
 
             <div class="col-lg-4">
