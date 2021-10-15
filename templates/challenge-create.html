@@ -80,6 +80,7 @@
             let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
             let image = $('#formFile')[0].files[0]
             let address = $('#sample5_address').val()
+            let max = $("#max-people").val()
             if (address == "") {
                 address = "online";
             }
@@ -95,19 +96,23 @@
             form_data.append("period_give", period)
             form_data.append("address_give", address)
             form_data.append("categories_give", categories)
-            console.log(form_data)
+            form_data.append("max_give", max)
 
-            if (title == "" || desc == "" || period[0] == "" || period[1] == "") {
+             if (title == "" || desc == "" || period[0] == "" || period[1] == "" || max == "") {
                 if (title == "") {
                     alert('챌린지 이름을 입력하세요')
                     return $('#title').focus();
                 } else if (desc == "") {
                     alert('상세 내용을 입력하세요')
                     return $('#desc').focus();
-                } else (period[0] == "" || period[1] == "")
+                } else if (period[0] == "" || period[1] == "")
                 {
                     alert('진행 기간을 입력하세요')
                     return $('#desc').focus();
+                } else (max == "")
+                {
+                    alert('제한 인원을 입력하세요')
+                    return $('#max-people').focus();
                 }
             }
 
@@ -223,6 +228,11 @@
                             <input class="form-control" type="date" id="start-period">
                             <input class="form-control" type="date" id="end-period">
                         </div>
+                        <div class="input-group mb-3 create-form" style="width: 200px" >
+                            <span class="input-group-text">제한 인원</span>
+                            <input class="form-control" type="number" id="max-people"  min="1" max="100" ><p style="margin: auto">명</p>
+                        </div>
+
 
                         <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
                             <input type="checkbox" name="category" value="category1" class="btn-check" id="category1"

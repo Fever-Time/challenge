@@ -326,6 +326,7 @@ def save_challenge():
         decs_receive = request.form["desc_give"]
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
+        max_receive = int(request.form["max_give"])
 
         categories_receive = request.form["categories_give"]
         categories = categories_receive.split(',')
@@ -372,6 +373,7 @@ def save_challenge():
             'challenge_host': challenge_host,
             'challenge_categories': categories,
             'challenge_status': 0,
+            'challenge_max': max_receive
         }
 
         db.challenge.insert_one(doc)
