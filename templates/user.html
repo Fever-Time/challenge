@@ -45,7 +45,14 @@
         .change {
             pointer-events: none;
             background-color: gray;
+        }
 
+        .unregister {
+            background-color: red;
+        }
+
+        #unregister_edit:hover {
+            background-color: red;
         }
 
         .canChange, .canEdit {
@@ -60,6 +67,7 @@
             display: flex;
             justify-content: space-around;
         }
+
     </style>
 
     <script>
@@ -77,8 +85,45 @@
             location.href = `/challenge/${challengeId}`
         }
 
+        function unregister_check_pwd() { // 회원탈퇴 비밀번호 확인
+            {% if kakaoLogin %}
+                let kakao_pwd = $('#unregister_kakaoPwd').val()
+                if (kakao_pwd === '회원탈퇴') {
+                    $('#unregister_edit').removeClass('change')
+                    $('#unregister_edit').addClass('unregister')
+                } else {
+                    $('#unregister_edit').addClass('change')
+                    $('#unregister_edit').removeClass('unregister')
+                }
+
+            {% else %}
+                let pwd = $('#unregister_nowPwd').val();
+                console.log(pwd)
+                $.ajax({
+                    type: "POST",
+                    url: '/check_pwd',
+                    data: {'pwd': pwd},
+                    success: function (response) {
+                        if (response['result']) {
+                            $('#unregister_pwdHelp').text('비밀번호가 일치합니다 ✔')
+                            $('#unregister_pwdHelp').addClass('canChange');
+                            $('#unregister_edit').removeClass('change');
+                            $('#unregister_edit').addClass('unregister');
+                        } else {
+                            $('#unregister_pwdHelp').text('비밀번호가 일치하지 않습니다.');
+                            $('#unregister_edit').addClass('change');
+                            $('#unregister_pwdHelp').removeClass('canChange');
+                            $('#unregister_edit').removeClass('unregister');
+                        }
+                    }
+                });
+            {% endif %}
+        }
+
+
         function check_pwd() { // 현재 비밀번호 확인
             let pwd = $('#nowPwd').val();
+            console.log(pwd)
             $.ajax({
                 type: "POST",
                 url: '/check_pwd',
@@ -106,7 +151,9 @@
 
         function change_pwd() { // 비밀번호 변경
             let pwd = $('#changePwd').val(); // 변경할 비밀번호
-            doubleCheck_pwd()
+            let samePwd = $('#doubleCheckPwd').val(); // 한번 더 입력한 비밀번호
+            if (samePwd !== "") doubleCheck_pwd();
+
             if (!is_password(pwd)) {
                 $('#regHelp').text('비밀번호의 형식을 확인해주세요. 영문과 숫자 필수 포함, 특수문자(!@#$%^&*) 사용가능 8-20자"')
                 $('#regHelp').removeClass('canChange');
@@ -157,7 +204,7 @@
         }
 
         function unregister() {
-            let check = confirm("회원탈퇴하시겠습니까?")
+            let check = confirm("챌린저의 모든 기록이 삭제되는 것에 동의하십니까?")
             if (check) {
                 $.ajax({
                     type: "POST",
@@ -171,6 +218,7 @@
                 })
             } else {
                 alert("취소되었습니다 !!")
+                window.location.href= "/user"
             }
         }
 
@@ -324,9 +372,14 @@
                     </table>
                     <div class="cart-buttons">
                         <a href="#" id="logout-user-btn" class="boxed-btn" onclick="sign_out()">로그아웃</a>
-                        <a href="#" class="boxed-btn" data-toggle="modal" data-target="#myModal">비밀번호
-                            수정</a>
-                        <a href="#" id="delete-user-btn" class="boxed-btn black" onclick="unregister()">회원탈퇴</a>
+                        <a href="#" class="boxed-btn" data-toggle="modal" data-target="#editModal">비밀번호 수정</a>
+                        {% if kakaoLogin %}
+                            <a href="#" id="delete-user-btn" class="boxed-btn black" data-toggle="modal"
+                               data-target="#unregister_kakao">회원탈퇴</a>
+                        {% else %}
+                            <a href="#" id="delete-user-btn" class="boxed-btn black" data-toggle="modal"
+                               data-target="#unregister">회원탈퇴</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -335,8 +388,8 @@
 </div>
 <!-- end cart -->
 
-<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- 비밀번호 수정 모달-->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -372,6 +425,68 @@
         </div>
     </div>
 </div>
+<!-- end Modal-->
+
+<!-- 카카오 회원탈퇴 모달-->
+{% if kakaoLogin %}
+    <div class="modal fade" id="unregister_kakao" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">회원탈퇴</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">'회원탈퇴'를 적어주세요</label>
+                            <input type="text" class="form-control" id="unregister_kakaoPwd"
+                                   aria-describedby="emailHelp" onkeyup="unregister_check_pwd()"
+                                   placeholder="회원탈퇴">
+                            <small id="unregister_pwdHelp" class="form-text text-muted"></small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary change" id="unregister_edit" onclick="unregister()">
+                        회원탈퇴
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <!-- 이메일 회원탈퇴 모달-->
+    <div class="modal fade" id="unregister" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">본인인증</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">비밀번호</label>
+                            <input type="password" class="form-control" id="unregister_nowPwd"
+                                   onkeyup="unregister_check_pwd()"
+                                   aria-describedby="emailHelp"
+                                   placeholder="Now your Password">
+                            <small id="unregister_pwdHelp" class="form-text text-muted"></small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary change" id="unregister_edit" onclick="unregister()">
+                        회원탈퇴
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <!-- end Modal-->
 
 <!-- copyright start -->

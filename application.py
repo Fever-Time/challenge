@@ -25,9 +25,21 @@ TOKEN_NAME = "fever-time"
 @application.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+
+    token_receive = request.cookies.get('fever-time')
+
     for challenge in challenges:
         challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
-    return render_template('index.html', challenges=challenges)
+
+    status_join = False
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        for challenge in challenges:
+            join = list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]}))
+            status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
+    finally:
+        return render_template('index.html', challenges=challenges, status_join=status_join)
 
 
 @application.route('/error', methods=['GET'])
@@ -55,10 +67,14 @@ def search_challenge():
 @application.route('/user', methods=['GET'])
 def user():
     token_receive = request.cookies.get(TOKEN_NAME)
+    kakaoLogin = True
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
+        if '@' in user_id:
+            kakaoLogin = False
 
+        print(f"카카오 로그인 = {kakaoLogin}")
         join_challenge_id_list = list(db.join.distinct("join_challenge", {'join_user': user_id}))
 
         challenge_cnt = dict()
@@ -79,7 +95,7 @@ def user():
 
         user_info = db.users.find_one({"user_email": user_id}, {"_id": False})
 
-        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt)
+        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt, kakaoLogin=kakaoLogin)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -209,8 +225,11 @@ def check_dup():
 
 @application.route('/check_pwd', methods=['POST'])  # 현재 비밀번호가 맞는지 확인
 def check_pwd():
+    print("진입=============================")
     token_receive = request.cookies.get(TOKEN_NAME)
     password_receive = request.form['pwd']
+    print(password_receive)
+
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
 
     try:
@@ -237,7 +256,6 @@ def change_pwd():
         pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
         user_id = payload['id']
         db.users.update_one({'user_email': user_id}, {'$set': {'user_pw': pw_hash}})
-
     except jwt.ExpiredSignatureError:
         return jsonify({'result': '쿠키 만료'})
     except jwt.exceptions.DecodeError:
@@ -251,8 +269,10 @@ def unregister():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
-        db.users.delete_one({'user_email': user_id})
-
+        
+        db.join.delete_many({'join_user': user_id})  # 참여한 챌린지 기록 삭제
+        db.challenge.delete_many({'challenge_host': user_id})  # 생성한 챌린지 기록 삭제
+        db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -268,7 +288,7 @@ def oauth():
 
     # 그 코드를 이용해 서버에 토큰을 요청해야 합니다. 아래는 POST 요청을 위한 header와 body입니다.
     client_id = '568f2b791efeffd312f12ece9bb5faea'
-    redirect_uri = 'https://fevertime.shop/oauth/callback'
+    redirect_uri = 'http://localhost:5000/oauth/callback'
     token_url = "https://kauth.kakao.com/oauth/token"
     token_headers = {
         'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -294,12 +314,15 @@ def oauth():
     infos = info_response.json()
     print(f'유저 정보 = {infos}')
 
-    kakao_id = infos['id']
+    kakao_id = str(infos['id'])
     kakao_name = infos['properties']['nickname']
 
-    exist = bool(db.users.find_one({'user_email': infos['id']}))
+    exist = bool(db.users.find_one({'user_email': kakao_id}))
     print(exist)
     if exist:  # 이미 가입한 유저라면
+        print('기존유저')
+        print("타입확인==============")
+        print(type(kakao_id))
         payload = {
             'id': kakao_id,
             'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
@@ -310,10 +333,13 @@ def oauth():
 
         return response
     else:
+        print("신규유저")
         doc = {
             "user_email": kakao_id,
             "user_name": kakao_name
         }
+        print("타입확인==============")
+        print(type(kakao_id))
         db.users.insert_one(doc)
         payload = {
             'id': kakao_id,
@@ -343,6 +369,7 @@ def save_challenge():
         decs_receive = request.form["desc_give"]
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
+        max_receive = int(request.form["max_give"])
 
         categories_receive = request.form["categories_give"]
         categories = categories_receive.split(',')
@@ -389,6 +416,7 @@ def save_challenge():
             'challenge_host': challenge_host,
             'challenge_categories': categories,
             'challenge_status': 0,
+            'challenge_max': max_receive
         }
 
         db.challenge.insert_one(doc)
@@ -475,6 +503,12 @@ def challenge_check():
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'
+
+        joins = list(db.join.find({'join_challenge': challenge_receive, 'join_user': user_id}, {"_id": False}))
+
+        for join in joins:
+            if join['join_date'] == uploadtime:
+                return jsonify({'msg': "하루에 한번만 인증 가능 합니다."})
 
         # s3 지정한 버킷에 파일 업로드
         s3 = boto3.client('s3',
