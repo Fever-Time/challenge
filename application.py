@@ -461,6 +461,12 @@ def challenge_check():
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'
 
+        joins = list(db.join.find({'join_challenge': challenge_receive, 'join_user': user_id}, {"_id": False}))
+
+        for join in joins:
+            if join['join_date']==uploadtime:
+                return jsonify({'msg': "하루에 한번만 인증 가능 합니다."})
+
         # s3 지정한 버킷에 파일 업로드
         s3 = boto3.client('s3',
                           aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
