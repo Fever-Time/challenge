@@ -25,9 +25,21 @@ TOKEN_NAME = "fever-time"
 @application.route('/', methods=['GET'])
 def main_page():
     challenges = objectIdDecoder(list(db.challenge.find({})))
+
+    token_receive = request.cookies.get('fever-time')
+
     for challenge in challenges:
         challenge['people'] = len(list(db.join.distinct("join_user", {"join_challenge": challenge['_id']})))
-    return render_template('index.html', challenges=challenges)
+
+    status_join = False
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        for challenge in challenges:
+            join = list(db.join.distinct("join_user", {"join_challenge": challenge["_id"]}))
+            status_join = (payload["id"] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
+    finally:
+        return render_template('index.html', challenges=challenges, status_join=status_join)
 
 
 @application.route('/error', methods=['GET'])
@@ -338,6 +350,7 @@ def save_challenge():
         decs_receive = request.form["desc_give"]
         period_receive = request.form["period_give"]
         address_receive = request.form["address_give"]
+        max_receive = int(request.form["max_give"])
 
         categories_receive = request.form["categories_give"]
         categories = categories_receive.split(',')
@@ -384,6 +397,7 @@ def save_challenge():
             'challenge_host': challenge_host,
             'challenge_categories': categories,
             'challenge_status': 0,
+            'challenge_max': max_receive
         }
 
         db.challenge.insert_one(doc)
@@ -470,6 +484,12 @@ def challenge_check():
         # save_to = f'static/assets/img/join/{filename}.{extension}'
         # file.save(save_to)
         full_file_name = f'{filename}.{extension}'
+
+        joins = list(db.join.find({'join_challenge': challenge_receive, 'join_user': user_id}, {"_id": False}))
+
+        for join in joins:
+            if join['join_date'] == uploadtime:
+                return jsonify({'msg': "하루에 한번만 인증 가능 합니다."})
 
         # s3 지정한 버킷에 파일 업로드
         s3 = boto3.client('s3',
