@@ -93,7 +93,9 @@ def user():
         for challenge_id in join_challenge_id_list:
             challenges.append(db.challenge.find_one({'_id': ObjectId(challenge_id)}))
 
-        return render_template('user.html', challenges=challenges, challenge_cnt=challenge_cnt, kakaoLogin=kakaoLogin)
+        user_info = db.users.find_one({"user_email": user_id}, {"_id": False})
+
+        return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt, kakaoLogin=kakaoLogin)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
     except jwt.exceptions.DecodeError:
@@ -103,6 +105,22 @@ def user():
 @application.route('/challenge', methods=['GET'])
 def challenge_create_page():
     return render_template('challenge-create.html')
+
+
+@application.route('/user/name', methods=['POST'])
+def update_user_name():
+    token_receive = request.cookies.get(TOKEN_NAME)
+    name_receive = request.form['name_give']
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_id = payload['id']
+        db.users.update_one({'user_email': user_id}, {'$set': {'user_name': name_receive}})
+        return {'msg': "이름 변경 성공!"}
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for("login", msg="로그인 시간이 만료되었습니다."))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for("login", msg="로그인 정보가 존재하지 않습니다."))
 
 
 @application.route('/challenge/<challengeId>', methods=['GET'])
@@ -251,6 +269,7 @@ def unregister():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
+        
         db.join.delete_many({'join_user': user_id})  # 참여한 챌린지 기록 삭제
         db.challenge.delete_many({'challenge_host': user_id})  # 생성한 챌린지 기록 삭제
         db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
