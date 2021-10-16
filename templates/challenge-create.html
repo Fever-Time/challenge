@@ -98,7 +98,7 @@
             form_data.append("categories_give", categories)
             form_data.append("max_give", max)
 
-            if (title == "" || desc == "" || period[0] == "" || period[1] == "" || max == "") {
+            if (title == "" || desc == "" || period[0] == "" || period[1] == "" || max <= 1 || max >= 100) {
                 if (title == "") {
                     alert('챌린지 이름을 입력하세요')
                     return $('#title').focus();
@@ -108,9 +108,9 @@
                 } else if (period[0] == "" || period[1] == "") {
                     alert('진행 기간을 입력하세요')
                     return $('#desc').focus();
-                } else (max == "")
+                } else (max <= 1 || max >= 100)
                 {
-                    alert('제한 인원을 입력하세요')
+                    alert("1~100명 범위로 입력해 주십시오.");
                     return $('#max-people').focus();
                 }
             }
@@ -230,7 +230,7 @@
                         <div class="input-group mb-3 create-form" style="width: 200px">
                             <span class="input-group-text">제한 인원</span>
                             <input class="form-control" type="number" id="max-people" min="1" max="100"
-                                   style="border-radius: 3px">
+                                   style="border-radius: 3px" value="10">
                             <p style="margin: auto">명</p>
                         </div>
 
