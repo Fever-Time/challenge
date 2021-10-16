@@ -268,8 +268,12 @@ def unregister():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
 
-        db.join.delete_many({'join_user': user_id})  # 참여한 챌린지 기록 삭제
-        db.challenge.delete_many({'challenge_host': user_id})  # 생성한 챌린지 기록 삭제
+        challenge_list = list(db.challenge.find({'challenge_host': user_id}))
+        for challenge in challenge_list:
+            challenge_id = str(challenge['_id'])
+            delete_join_data(challenge_id)
+            delete_challenge_date(challenge_id)
+
         db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
     except jwt.ExpiredSignatureError:
         return redirect(url_for('login', msg='로그인 시간이 만료되었습니다.'))
@@ -432,22 +436,29 @@ def pause_challenge():
 @application.route('/challenge', methods=['DELETE'])
 def delete_challenge():
     challengeId_receive = request.form['challengeId_give']
+    delete_join_data(challengeId_receive)
+    delete_challenge_date(challengeId_receive)
+    return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
 
+
+def delete_challenge_date(challengeId_receive):
     challenge_img = db.challenge.find_one({'_id': ObjectId(challengeId_receive)})['challenge_img']
-    join_list = list(db.join.find({'join_challenge': challengeId_receive}))
-
-    # s3 버킷에서도 사진 삭제
     s3 = boto3.resource('s3')
-    # 챌린지 이미지 삭제
+    # 챌린지 S3 이미지 삭제
     if challenge_img != 'default-challenge-img.jfif':
         s3.Object(os.environ['BUCKET_NAME'], challenge_img).delete()
-    # 챌린지 인증 이미지 삭제
+    # 챌린지 DB 데이터 삭제
+    db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
+
+
+def delete_join_data(challenge_id):
+    join_list = list(db.join.find({'join_challenge': challenge_id}))
+    s3 = boto3.resource('s3')
+    # 챌린지 인증 S3 이미지 삭제
     for join in join_list:
         s3.Object(os.environ['BUCKET_NAME'], join['join_img']).delete()
-
-    db.challenge.delete_one({'_id': ObjectId(challengeId_receive)})
-    db.join.delete_many({'join_challenge': challengeId_receive})
-    return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
+    # 챌린지 인증 DB 데이터 삭제
+    db.join.delete_many({'join_challenge': challenge_id})
 
 
 @application.route('/challenge/cancel', methods=['DELETE'])
