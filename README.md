@@ -26,7 +26,8 @@
 
 ### 📌 주요 기능 (<a href="https://github.com/Fever-Time/challenge/wiki/2.-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5">상세보기 - WIKI 이동</a>)
 ### User
-- JWT 기반 로그인/로그아웃/회원가입 
+- JWT 기반 로그인
+- OAuth 2.0 기반 카카오 로그인
 ### Challenge
 - 로그인 유저만 챌린지 생성/참여
 - 챌린지 생성한 유저만 챌린지 삭제
