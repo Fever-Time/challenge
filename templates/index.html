@@ -5,7 +5,7 @@
     {% include "include/header-meta.html" %}
 
     <!-- title -->
-    <title>Main</title>
+    <title>피버타임</title>
 
     <!-- bootstrap css-->
     {% include "include/header-css.html" %}
@@ -120,7 +120,7 @@
                                 <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
-                            {% elif (challenge.people==challenge.challenge_max) and (status_join==False) %}
+                            {% elif (challenge.people==challenge.challenge_max) %}
                                 <p class="product-price">
                                 <span>
                                     <i class="far fa-calendar-alt"></i>{{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}

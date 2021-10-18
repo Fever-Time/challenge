@@ -5,7 +5,7 @@
     {% include "include/header-meta.html" %}
 
     <!-- title -->
-    <title>Challenge Create</title>
+    <title>피버타임</title>
 
     <!-- bootstrap css-->
     {% include "include/header-css.html" %}
@@ -80,16 +80,12 @@
             let period = [document.querySelector('#start-period').value, document.querySelector('#end-period').value]
             let image = $('#formFile')[0].files[0]
             let address = $('#sample5_address').val()
-            let max = $("#max-people").val()
+            let max = $("#max-people").val();
             if (address == "") {
                 address = "online";
             }
-            console.log(period[0] == "")
-
-            console.log(image)
 
             let form_data = new FormData()
-
             form_data.append("image_give", image)
             form_data.append("title_give", title)
             form_data.append("desc_give", desc)
@@ -98,24 +94,20 @@
             form_data.append("categories_give", categories)
             form_data.append("max_give", max)
 
-             if (title == "" || desc == "" || period[0] == "" || period[1] == "" || max == "") {
-                if (title == "") {
-                    alert('챌린지 이름을 입력하세요')
-                    return $('#title').focus();
-                } else if (desc == "") {
-                    alert('상세 내용을 입력하세요')
-                    return $('#desc').focus();
-                } else if (period[0] == "" || period[1] == "")
-                {
-                    alert('진행 기간을 입력하세요')
-                    return $('#desc').focus();
-                } else (max == "")
-                {
-                    alert('제한 인원을 입력하세요')
-                    return $('#max-people').focus();
-                }
+            if (title == "") {
+                alert('챌린지 이름을 입력하세요')
+                return $('#title').focus();
+            } else if (desc == "") {
+                alert('상세 내용을 입력하세요')
+                return $('#desc').focus();
+            } else if (period[0] == "" || period[1] == "") {
+                alert('진행 기간을 입력하세요')
+                return $('#desc').focus();
+            } else if (max < 1 || max > 100) {
+                alert("1~100명 범위로 입력해 주십시오.");
+                return $('#max-people').focus();
             }
-
+            
             $.ajax({
                 type: "POST",
                 url: "/challenge",
@@ -228,9 +220,11 @@
                             <input class="form-control" type="date" id="start-period">
                             <input class="form-control" type="date" id="end-period">
                         </div>
-                        <div class="input-group mb-3 create-form" style="width: 200px" >
+                        <div class="input-group mb-3 create-form" style="width: 200px">
                             <span class="input-group-text">제한 인원</span>
-                            <input class="form-control" type="number" id="max-people"  min="1" max="100" style="border-radius: 3px" ><p style="margin: auto">명</p>
+                            <input class="form-control" type="number" id="max-people" min="1" max="100"
+                                   style="border-radius: 3px" value="10">
+                            <p style="margin: auto">명</p>
                         </div>
 
 
