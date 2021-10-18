@@ -225,11 +225,11 @@ def change_pwd():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
         db.users.update_one({'user_email': payload['id']}, {'$set': {'user_pw': pw_hash}})
+        return jsonify({'result': 'success'})
     except jwt.ExpiredSignatureError:
         return jsonify({'result': '쿠키 만료'})
     except jwt.exceptions.DecodeError:
         return jsonify({'result': '쿠키값 디코드 실패'})
-    return jsonify({'result': 'success'})
 
 
 @application.route('/unregister', methods=['POST'])  # 회원탈퇴
