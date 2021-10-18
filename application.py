@@ -28,17 +28,18 @@ def main_page():
 
     token_receive = request.cookies.get('fever-time')
 
-    for challenge in challenges:
-        challenge['people'] = len(list(db.join.distinct('join_user', {'join_challenge': challenge['_id']})))
-
     status_join = False
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
         for challenge in challenges:
             join = list(db.join.distinct('join_user', {'join_challenge': challenge['_id']}))
             status_join = (payload['id'] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
+        for challenge in challenges:
+            challenge['people'] = len(list(db.join.distinct('join_user', {'join_challenge': challenge['_id']})))
+
         return render_template('index.html', challenges=challenges, status_join=status_join)
 
 
@@ -77,9 +78,8 @@ def user():
         join_challenge_id_list = list(db.join.distinct('join_challenge', {'join_user': user_id}))
 
         challenge_cnt = dict()
-        challenge_cnt['ing'] = 0
-        challenge_cnt['pause'] = 0
-        challenge_cnt['end'] = 0
+        challenge_cnt['ing'] = challenge_cnt['pause'] = challenge_cnt['end'] = 0
+
         for challenge_id in join_challenge_id_list:
             if db.challenge.find_one({'_id': ObjectId(challenge_id)})['challenge_status'] == 1:
                 challenge_cnt['pause'] += 1
