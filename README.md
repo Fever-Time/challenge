@@ -24,7 +24,7 @@
 - Git - 형상관리
 - AWS - 서버 인프라
 
-### 📌 주요 기능 (<a href="https://github.com/Fever-Time/challenge/wiki/%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5">상세보기 - WIKI 이동</a>)
+### 📌 주요 기능 (<a href="https://github.com/Fever-Time/challenge/wiki/2.-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5">상세보기 - WIKI 이동</a>)
 ### User
 - JWT 기반 로그인/로그아웃/회원가입 
 ### Challenge
@@ -33,4 +33,4 @@
 - 오프라인 챌린지 장소 Kakao Map 키워드 검색 및 위치 설정
 - 챌린지 카테고리/제목 검색
 
-### 📌 <a href="https://github.com/Fever-Time/challenge/wiki/%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 문제를 이렇게 해결했어요! - WIKI 이동</a>
+### 📌 <a href="https://github.com/Fever-Time/challenge/wiki/3.-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%EC%9D%B4%EB%A0%87%EA%B2%8C-%ED%95%B4%EA%B2%B0%ED%96%88%EC%96%B4%EC%9A%94!"> 문제를 이렇게 해결했어요! - WIKI 이동</a>
