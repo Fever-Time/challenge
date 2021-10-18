@@ -116,6 +116,7 @@ def update_user_name():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
         db.users.update_one({'user_email': user_id}, {'$set': {'user_name': name_receive}})
+        db.join.update_many({'join_user': user_id}, {'$set': {'join_user_name': name_receive}})
         return {'msg': '이름 변경 성공!'}
     except jwt.ExpiredSignatureError:
         return redirect(url_for('login', msg='로그인 시간이 만료되었습니다.'))
