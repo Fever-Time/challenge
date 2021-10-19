@@ -65,12 +65,12 @@ def search_challenge():
 @application.route('/user', methods=['GET'])
 def user_page():
     token_receive = request.cookies.get(TOKEN_NAME)
-    kakaoLogin = True
+    kakao_login = True
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_id = payload['id']
         if '@' in user_id:
-            kakaoLogin = False
+            kakao_login = False
 
         join_challenge_id_list = list(db.join.distinct('join_challenge', {'join_user': user_id}))
 
@@ -94,7 +94,7 @@ def user_page():
         user_info = db.users.find_one({'user_email': user_id}, {'_id': False})
 
         return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt,
-                               kakaoLogin=kakaoLogin)
+                               kakaoLogin=kakao_login)
     except jwt.ExpiredSignatureError:
         return redirect(url_for('login', msg='로그인 시간이 만료되었습니다.'))
     except jwt.exceptions.DecodeError:
