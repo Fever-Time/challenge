@@ -372,9 +372,21 @@ def pause_challenge():
 
 @application.route('/challenge', methods=['DELETE'])
 def delete_challenge():
+    token_receive = request.cookies.get(TOKEN_NAME)
     challenge_id = request.form['challengeId_give']
-    delete_join_data(challenge_id)
-    delete_challenge_date(challenge_id)
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        result = bool(db.challenge.find_one({"_id": challenge_id, "challenge_host": payload['id']}))
+        if result:
+            delete_join_data(challenge_id)
+            delete_challenge_date(challenge_id)
+        else:
+            return jsonify({'result': 'Fail', 'msg': '권한이 없습니다..'})
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('login', msg='로그인 시간이 만료되었습니다.'))
+    except jwt.exceptions.DecodeError:
+        return redirect(url_for('login', msg='로그인 정보가 존재하지 않습니다.'))
+
     return jsonify({'result': 'success', 'msg': '챌린지 삭제 되었습니다.'})
 
 
