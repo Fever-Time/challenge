@@ -22,7 +22,8 @@
 - Python - 개발 언어
 - MongoDB - 데이터베이스
 - Git - 형상관리
-- AWS - 서버 인프라
+- Github Actions - CI/CD
+- AWS S3, CloudFront, EBS - 서버 인프라
 
 ### 📌 주요 기능 (<a href="https://github.com/Fever-Time/challenge/wiki/2.-%EC%A3%BC%EC%9A%94-%EA%B8%B0%EB%8A%A5">상세보기 - WIKI 이동</a>)
 ### User
