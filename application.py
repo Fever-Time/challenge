@@ -55,12 +55,13 @@ def sign_up():
 
 @application.route('/search', methods=['GET'])
 def search_challenge():
-    search_receive = request.args.get('search')
+    search_receive = request.args['search']
+    print(search_receive)
 
     search_challenges = object_id_decoder(list(db.challenge.find({'challenge_title': {'$regex': search_receive}})))
     set_challenges_people(search_challenges)
 
-    return render_template('index.html', challenges=search_challenges)
+    return jsonify({"challenges": search_challenges})
 
 
 @application.route('/user', methods=['GET'])

@@ -39,6 +39,7 @@
     <script>
         $(document).ready(function ($) {
             bsCustomFileInput.init()
+            getChallenges()
         });
 
         function onClickCreateChallenge() {
@@ -48,6 +49,25 @@
                 alert("로그인 후 생성해주세요 !!")
                 window.location.href = '/login';
             }
+        }
+
+        function getSearchChallenges() {
+            let search = $("#search-input").val()
+            console.log(search)
+
+            if (search == "") {
+                alert("검색어를 입력해주세요.")
+                return
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "/search",
+                data: {"search": search},
+                success: function (response) { // 성공하면
+                    $(".search-area").toggleClass("search-active")
+                }
+            })
         }
     </script>
 </head>
