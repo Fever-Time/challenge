@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- meta -->
-    {% include "include/header-meta.html" %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="도전하고 싶으신가요? 피버타임과 함께하세요 !!">
 
     <!-- title -->
     <title>피버타임</title>
@@ -39,7 +41,7 @@
     <script>
         $(document).ready(function ($) {
             bsCustomFileInput.init()
-            getChallenges()
+            {#getChallenges()#}
         });
 
         function onClickCreateChallenge() {
@@ -73,19 +75,86 @@
 </head>
 <body>
 <!--PreLoader start -->
-{% include 'include/preloader.html' %}
+<div class="loader">
+    <div class="loader-inner">
+        <div class="circle"></div>
+    </div>
+</div>
 <!--PreLoader end-->
 
 <!-- header start -->
-{% include 'include/body-header.html' %}
+<div class="top-header-area" id="sticker">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 text-center">
+                <div class="main-menu-wrap">
+                    <!-- logo -->
+                    <div class="site-logo">
+                        <a href="{{ '/' }}">
+                            <img src="{{ url_for('static', filename='assets/img/logo.png') }}" alt="">
+                        </a>
+                    </div>
+                    <!-- logo -->
+
+                    <!-- menu start -->
+                    <nav class="main-menu">
+                        <ul>
+                            <li>
+                                <div class="header-icons">
+                                    <a class="mobile-hide search-bar-icon" href="#"><i
+                                            class="fas fa-search"></i></a>
+                                    <a class="shopping-cart" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <div class="nav-mobile-show-container">
+                        <a class="mobile-show search-bar-icon" style="right: 100px;" href="#"><i
+                                class="fas fa-search"></i></a>
+                        <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
+                    </div>
+                    <!-- menu end -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- header end -->
 
 <!-- search area start-->
-{% include 'include/search.html' %}
+<div class="search-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <span class="close-btn"><i class="fas fa-window-close"></i></span>
+                <div class="search-bar">
+                    <div class="search-bar-tablecell">
+                        <h3>Search For:</h3>
+                        <input type="text" id="search-input" placeholder="Keywords" name="search">
+                        <button type="submit" onclick="getSearchChallenges()">Search <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- search area end -->
 
 <!-- breadcrumb-section start -->
-{% include 'include/breadcrumb-section.html' %}
+<div class="breadcrumb-section breadcrumb-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div style="cursor: pointer;" onclick="location.href='/'" class="breadcrumb-text">
+                    <p>불타오르는 열정</p>
+                    <h1>피버타임</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- breadcrumb section end -->
 
 <!-- products -->
@@ -195,7 +264,29 @@
 <!-- end products -->
 
 <!-- copyright start -->
-{% include 'include/copyright.html' %}
+<div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <p>Copyrights &copy; 2021 - 피버타임, All Rights
+                    Reserved.
+                </p>
+                {#                <a href="https://imransdesign.com/">Imran Hossain</a>#}
+            </div>
+            <div class="col-lg-6 text-right col-md-12">
+                <div class="social-icons">
+                    <!-- <ul>
+                        <li><a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a href="#" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                        <li><a href="#" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                        <li><a href="#" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+                        <li><a href="#" target="_blank"><i class="fab fa-dribbble"></i></a></li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- copyright end -->
 
 <!-- bootstrap js start -->
