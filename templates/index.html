@@ -35,7 +35,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
     <!-- jquery -->
-    <script src="{{ url_for('static', filename='assets/js/jquery-1.11.3.min.js') }}"></script>
+    <script src="https://d2h6pqq3g1hhiy.cloudfront.net/static/assets/js/jquery-1.11.3.min.js"></script>
 
     <style>
         #add-btn {
@@ -111,8 +111,8 @@
                 <div class="main-menu-wrap">
                     <!-- logo -->
                     <div class="site-logo">
-                        <a href="{{ '/' }}">
-                            <img src="{{ url_for('static', filename='assets/img/logo.png') }}" alt="">
+                        <a href="/">
+                            <img src="https://d2h6pqq3g1hhiy.cloudfront.net/static/assets/img/logo.png" alt="">
                         </a>
                     </div>
                     <!-- logo -->
@@ -124,7 +124,7 @@
                                 <div class="header-icons">
                                     <a class="mobile-hide search-bar-icon" href="#"><i
                                             class="fas fa-search"></i></a>
-                                    <a class="shopping-cart" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
+                                    <a class="shopping-cart" href="/user"><i class="fas fa-user"></i></a>
                                 </div>
                             </li>
                         </ul>
@@ -133,7 +133,7 @@
                     <div class="nav-mobile-show-container">
                         <a class="mobile-show search-bar-icon" style="right: 100px;" href="#"><i
                                 class="fas fa-search"></i></a>
-                        <a class="mobile-show search-bar-icon" href="{{ '/user' }}"><i class="fas fa-user"></i></a>
+                        <a class="mobile-show search-bar-icon" href="/user"><i class="fas fa-user"></i></a>
                     </div>
                     <!-- menu end -->
                 </div>
@@ -182,7 +182,8 @@
 <div class="product-section mt-150 mb-150">
     <div class="container" style="text-align: center">
         {% if challenges ==[] %}
-            <img src="{{ url_for("static", filename="assets/img/error.svg") }}" width="300" height="300">
+            <img src="https://d2h6pqq3g1hhiy.cloudfront.net/static/assets/img/error.svg" width="300" height="300"
+                 alt="">
             <h4 style="margin-top: 30px">챌린지가 없습니다😥</h4>
         {% else %}
 
