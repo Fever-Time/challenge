@@ -111,7 +111,7 @@ def update_user_name():
 
 @application.route('/challenge/<challenge_id>', methods=['GET'])
 def challenge_detail_page(challenge_id):
-    print('hello')
+
     challenge = db.challenge.find_one({'_id': ObjectId(challenge_id)})
     challenge['_id'] = str(challenge['_id'])
 
@@ -142,10 +142,8 @@ def challenge_detail_page(challenge_id):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload['id'])  # 내가 만든 챌리지이면 True
         status_join = (payload['id'] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
+
     finally:
-        # return render_template('challenge-detail.html',
-        #                        , , joins=joins,
-        #                        status_join=status_join)
         return jsonify({'challenge': challenge, 'status': status, 'categories': categories,
                         'related_challenge': related_challenge, 'status_join': status_join, 'joins': joins})
 

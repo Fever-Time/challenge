@@ -80,7 +80,6 @@
                 data: {},
                 success: function (response) {
                     let challenges = response['challenges']
-                    console.log(challenges)
                     for (let i = 0; i < challenges.length; i++) {
                         let id = challenges[i]['_id'];
                         let title = challenges[i]['challenge_title'];
@@ -152,7 +151,7 @@
                                 </span>
                                     ${people}/${max}명
                                 </p>
-                                <a href="/challenge/${id}" class="cart-btn">
+                                <a class="cart-btn" onclick="DetailChallenge()">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                         </div>
@@ -160,6 +159,24 @@
                      $('#challenge-list').append(temp_html)
                         }
 
+
+                    }
+                }
+            })
+            DetailChallenge()
+        }
+
+        function DetailChallenge(){
+
+            console.log("hi")
+            $.ajax({
+                type: "GET",
+                url: `/challenge/`,
+                data: {},
+                success: function (response) {
+                    let challenges = response['challenges']
+                    for (let i = 0; i < challenges.length; i++) {
+                        let id = challenges[i]['_id'];
 
                     }
                 }

@@ -276,17 +276,7 @@
             }
         }
 
-        function DetailChallenge(){
-            let id = window.location.pathname.substring(11);
 
-            $.ajax({
-                type: "GET",
-                url: `/challenges/${id}`,
-                data: {},
-                success: function (response) {
-                }
-            })
-        }
     </script>
 </head>
 <body>
