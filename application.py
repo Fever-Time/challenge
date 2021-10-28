@@ -322,6 +322,16 @@ def save_challenge():
     return jsonify({'msg': '챌린지 등록 되었습니다.'})
 
 
+@application.route('/challenges', methods=['GET'])
+def show_challenge():
+    challenges = object_id_decoder(list(db.challenge.find({})))
+
+    set_challenges_people(challenges)
+    print(challenges)
+
+    return jsonify({'challenges': challenges})
+
+
 @application.route('/challenge', methods=['PUT'])
 def pause_challenge():
     challenge_id = request.form['challengeId_give']
