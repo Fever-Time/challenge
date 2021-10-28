@@ -62,6 +62,9 @@
         .product-lists{
             height: auto !important;
         }
+        .single-product-item{
+            position: relative !important;
+        }
 
     </style>
     <script>
@@ -89,16 +92,61 @@
                         let status = challenges[i]['challenge_status'];
                         let max = challenges[i]['challenge_max'];
                         let people = challenges[i]['people']
-                        let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        if (status==2){
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
                         <div class="single-product-item">
                             <div class="product-image">
-                                <a href="'/challenge/'+${id}">
+                                <a href="/challenge/${id}">
                                     <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
                                          alt="">
                                 </a>
                             </div>
                             <h3>${title}</h3>
-                                <p class="product-price">
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지
+                                </span>
+                                    ${people}/${max}명
+                                </p>
+                                <a href="/challenge/${id}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                        </div>
+                    </div>`
+                     $('#challenge-list').append(temp_html)
+                        }else if (status==1){
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="/challenge/${id}">
+                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>${title}</h3>
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                    ${people}/${max}명
+                                </p>
+                                <a href="/challenge/${id}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                        </div>
+                    </div>`
+                     $('#challenge-list').append(temp_html)
+                        }else {
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="/challenge/${id}">
+                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>${title}</h3>
+                            <p class="product-price">
                                 <span>
                                     <i class="far fa-calendar-alt"></i> ${start} ~ ${end}
                                 </span>
@@ -109,7 +157,10 @@
                                 </a>
                         </div>
                     </div>`
-                        $('#challenge-list').append(temp_html)
+                     $('#challenge-list').append(temp_html)
+                        }
+
+
                     }
                 }
             })
