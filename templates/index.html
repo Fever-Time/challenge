@@ -151,7 +151,7 @@
                                 </span>
                                     ${people}/${max}명
                                 </p>
-                                <a class="cart-btn" onclick="DetailChallenge()">
+                                <a href="/challenge/${id}" class="cart-btn">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                         </div>
@@ -163,25 +163,8 @@
                     }
                 }
             })
-            DetailChallenge()
         }
 
-        function DetailChallenge(){
-
-            console.log("hi")
-            $.ajax({
-                type: "GET",
-                url: `/challenge/`,
-                data: {},
-                success: function (response) {
-                    let challenges = response['challenges']
-                    for (let i = 0; i < challenges.length; i++) {
-                        let id = challenges[i]['_id'];
-
-                    }
-                }
-            })
-        }
 
         function onClickCreateChallenge() {
             if (document.cookie.match("fever-time") != null) {
