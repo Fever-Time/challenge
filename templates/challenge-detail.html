@@ -13,8 +13,7 @@
 
     <!-- bootstrap css-->
     <!-- favicon -->
-    <link rel="shortcut icon" type="image/png"
-          href="/static/assets/img/favicon.svg">
+    <link rel="shortcut icon" type="image/png" href="/static/assets/img/favicon.svg">
     <!-- google font -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
@@ -38,9 +37,13 @@
     <!-- jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
+    {#    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"#}
+    {#            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"#}
+    {#            crossorigin="anonymous"></script>#}
+
+    <!-- file upload -->
+    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
+
     <style>
         #join-form-container {
             padding-top: 20px;
@@ -162,7 +165,7 @@
         console.log(CHALLENGE_ID)
 
         $(document).ready(function () {
-            bsCustomFileInput.init()
+            bsCustomFileInput.init();
             getChallenge();
         })
 
@@ -286,9 +289,10 @@
 
             $.ajax({
                 type: "GET",
-                url: `/challenges/${CHALLENGE_ID}`,
+                url: `/challenge/${CHALLENGE_ID}`,
                 data: {},
                 success: function (response) {
+                    console.log(response)
                 }
             })
         }
@@ -604,22 +608,22 @@
     let geocoder = new kakao.maps.services.Geocoder();
 
     // 주소로 좌표를 검색합니다
-    {#geocoder.addressSearch('{{ challenge.challenge_address }}', function (result, status) {#}
+    geocoder.addressSearch(' ', function (result, status) {
 
-    // 정상적으로 검색이 완료됐으면
-    if (status === kakao.maps.services.Status.OK) {
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
 
-        let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
 
-        // 결과값으로 받은 위치를 마커로 표시합니다
-        let marker = new kakao.maps.Marker({
-            map: map,
-            position: coords
-        });
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            let marker = new kakao.maps.Marker({
+                map: map,
+                position: coords
+            });
 
-        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-        map.setCenter(coords);
-    }
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+        }
     })
     ;
 </script>
