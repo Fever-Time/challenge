@@ -28,9 +28,7 @@ TOKEN_NAME = 'fever-time'
 
 @application.route('/', methods=['GET'])
 def main_page():
-    challenges = object_id_decoder(list(db.challenge.find({})))
-    set_challenges_people(challenges)
-    return render_template('index.html', challenges=challenges)
+    return render_template('index.html')
 
 
 @application.route('/error', methods=['GET'])
