@@ -51,6 +51,11 @@ def sign_up():
     return render_template('sign-up.html')
 
 
+@application.route('/challenge/detail', methods=['GET'])
+def challenge_detail_page():
+    return render_template('challenge-detail.html')
+
+
 @application.route('/search', methods=['GET'])
 def search_challenge():
     search_receive = request.args['search']
@@ -108,7 +113,7 @@ def update_user_name():
 
 
 @application.route('/challenge/<challenge_id>', methods=['GET'])
-def challenge_detail_page(challenge_id):
+def get_challenge(challenge_id):
     print('hello')
     challenge = db.challenge.find_one({'_id': ObjectId(challenge_id)})
     challenge['_id'] = str(challenge['_id'])
