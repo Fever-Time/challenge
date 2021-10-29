@@ -51,6 +51,11 @@ def sign_up():
     return render_template('sign-up.html')
 
 
+@application.route('/challenge/detail', methods=['GET'])
+def challenge_detail_page():
+    return render_template('challenge-detail.html')
+
+
 @application.route('/search', methods=['GET'])
 def search_challenge():
     search_receive = request.args['search']
@@ -140,8 +145,10 @@ def challenge_detail_page(challenge_id):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         status = (challenge['challenge_host'] == payload['id'])  # 내가 만든 챌리지이면 True
         status_join = (payload['id'] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
-
     finally:
+        # return render_template('challenge-detail.html',
+        #                        , , joins=joins,
+        #                        status_join=status_join)
         return jsonify({'challenge': challenge, 'status': status, 'categories': categories,
                         'related_challenge': related_challenge, 'status_join': status_join, 'joins': joins})
 

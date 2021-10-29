@@ -59,10 +59,11 @@
             background-color: #4e555b;
         }
 
-        .product-lists{
+        .product-lists {
             height: auto !important;
         }
-        .single-product-item{
+
+        .single-product-item {
             position: relative !important;
         }
 
@@ -73,7 +74,7 @@
             getChallenges()
         });
 
-        function getChallenges(){
+        function getChallenges() {
             $.ajax({
                 type: "GET",
                 url: "/challenges",
@@ -91,7 +92,7 @@
                         let status = challenges[i]['challenge_status'];
                         let max = challenges[i]['challenge_max'];
                         let people = challenges[i]['people']
-                        if (status==2){
+                        if (status == 2) {
                             let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
                         <div class="single-product-item">
                             <div class="product-image">
@@ -107,17 +108,17 @@
                                 </span>
                                     ${people}/${max}명
                                 </p>
-                                <a href="/challenge/${id}" class="cart-btn btnp">
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                         </div>
                     </div>`
-                     $('#challenge-list').append(temp_html)
-                        }else if (status==1){
+                            $('#challenge-list').append(temp_html)
+                        } else if (status == 1) {
                             let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
                         <div class="single-product-item">
                             <div class="product-image">
-                                <a href="/challenge/${id}">
+                                <a href="/challenge/detail?challenge_id=${id}">
                                     <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
                                          alt="">
                                 </a>
@@ -129,17 +130,17 @@
                                 </span>
                                     ${people}/${max}명
                                 </p>
-                                <a href="/challenge/${id}" class="cart-btn btnp">
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                         </div>
                     </div>`
-                     $('#challenge-list').append(temp_html)
-                        }else {
+                            $('#challenge-list').append(temp_html)
+                        } else {
                             let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
                         <div class="single-product-item">
                             <div class="product-image">
-                                <a href="/challenge/${id}">
+                                <a href="/challenge/detail?challenge_id=${id}">
                                     <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
                                          alt="">
                                 </a>
@@ -151,12 +152,12 @@
                                 </span>
                                     ${people}/${max}명
                                 </p>
-                                <a href="/challenge/${id}" class="cart-btn">
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn">
                                     <i class="fas fa-bolt"></i> View Details
                                 </a>
                         </div>
                     </div>`
-                     $('#challenge-list').append(temp_html)
+                            $('#challenge-list').append(temp_html)
                         }
 
 
@@ -301,7 +302,7 @@
                 </div>
             </div>
 
-            <div class="row product-lists" id="challenge-list" >
+            <div class="row product-lists" id="challenge-list">
             </div>
             {# 페이지 이동 주석#}
             {#        <div class="row">#}
@@ -319,16 +320,16 @@
             {#        </div>#}
         {% endif %}
 
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <div class="pagination-wrap">
-                        <a id="add-btn" class="cart-btn" onclick="onClickCreateChallenge()">
-                            <i class="fas fa-plus"></i> Add new Challenge
-                        </a>
-                    </div>
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="pagination-wrap">
+                    <a id="add-btn" class="cart-btn" onclick="onClickCreateChallenge()">
+                        <i class="fas fa-plus"></i> Add new Challenge
+                    </a>
                 </div>
             </div>
         </div>
+    </div>
 </div>
 <!-- end products -->
 
