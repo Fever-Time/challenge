@@ -291,6 +291,11 @@
                 data: {},
                 success: function (response) {
                     console.log(response)
+                    let challenge = response['challenge'];
+                    let categories = response['category'];
+                    let joins = response['joins'];
+                    let related_challenge = response['related_challenge'];
+                    console.log(challenge['challenge_title']);
                 }
             })
         }
@@ -383,86 +388,86 @@
 <!-- single product -->
 <div class="single-product mt-150 mb-150">
     <div class="container">
-        {#        <div class="row">#}
-        {#            <div class="col-md-5">#}
-        {#                <div class="single-product-img">#}
-        {#                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}" alt="">#}
-        {#                </div>#}
-        {#            </div>#}
-        {#            <div class="col-md-7">#}
-        {#                <div class="single-product-content">#}
-        {#                    <h3>{{ challenge.challenge_title }}</h3>#}
-        {#                    <p class="single-product-pricing">#}
-        {#                        <span>#}
-        {#                            <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}#}
-        {#                        </span>#}
-        {#                        {{ people }} / {{ challenge.challenge_max }}명#}
-        {#                    </p>#}
-        {#                    <p>{{ challenge.challenge_desc }}</p>#}
-        {#                    <div class="single-product-form btn-container">#}
-        {#                        {% if (people==challenge.challenge_max) and (status_join==False) %}#}
-        {#                            <a class="cart-btn btnp">#}
-        {#                                <i class="fas fa-bolt"></i>모집 종료#}
-        {#                            </a>#}
-        {#                        {% else %}#}
-        {#                            <a onclick="onClickJoinBtnHandler()" class="cart-btn">#}
-        {#                                <i class="fas fa-bolt"></i>Go to Challenge#}
-        {#                            </a>#}
-        {#                        {% endif %}#}
-        {#                        {% if status_join %}#}
-        {#                            <a onclick="CancelChallenge()" class="cart-btn-x">#}
-        {#                                <i class="fa fa-times" aria-hidden="true"></i> 참가 취소#}
-        {#                            </a>#}
-        {#                        {% endif %}#}
-        {##}
-        {#                        <a onclick="location.href='/'" class="cart-btn-h">#}
-        {#                            <i class="fas fa-home"></i> Go to Main#}
-        {#                        </a>#}
-        {##}
-        {#                        {% if categories!='' %}#}
-        {#                            <p><strong>Categories: </strong>{{ categories }}</p>#}
-        {#                        {% endif %}#}
-        {#                    </div>#}
-        {##}
-        {#                    <div id="join-form-container" style="display: none;">#}
-        {#                        <div class="input-group mb-3 join-form">#}
-        {#                            <span for="formFile" class="input-group-text">챌린지 이미지</span>#}
-        {#                            <input class="form-control" type="file" id="formFile">#}
-        {#                        </div>#}
-        {##}
-        {#                        <div class="input-group mb-3 join-form">#}
-        {#                            <span for="formText" class="input-group-text">챌린지 후기</span>#}
-        {#                            <input class="form-control" type="text" id="formText">#}
-        {#                        </div>#}
-        {##}
-        {#                        <a onclick="onClickCheck()" class="cart-btn-c">#}
-        {#                            <i class="fa fa-check"></i>챌린지 인증#}
-        {#                        </a>#}
-        {#                    </div>#}
-        {#                </div>#}
-        {#            </div>#}
-        {#            <div class="col-md-12 deleteBtn-container">#}
-        {#                {% if status %}#}
-        {#                    <div class="btn-group dropleft">#}
-        {#                        <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"#}
-        {#                           aria-haspopup="true" aria-expanded="false">#}
-        {#                            Challenge#}
-        {#                        </a>#}
-        {#                        <div class="dropdown-menu">#}
-        {#                            {% if challenge.challenge_status==0 %}#}
-        {#                                <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>#}
-        {#                                <div class="dropdown-divider"></div>#}
-        {#                            {% elif challenge.challenge_status==1 %}#}
-        {#                                <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>#}
-        {#                                <div class="dropdown-divider"></div>#}
-        {#                            {% endif %}#}
-        {##}
-        {#                            <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>#}
-        {#                        </div>#}
-        {#                    </div>#}
-        {#                {% endif %}#}
-        {#            </div>#}
-        {#        </div>#}
+                <div class="row">
+                    <div class="col-md-5">
+{#                        <div class="single-product-img">#}
+{#                            <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}" alt="">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-7">#}
+{#                        <div class="single-product-content">#}
+{#                            <h3>{{ challenge.challenge_title }}</h3>#}
+{#                            <p class="single-product-pricing">#}
+{#                                <span>#}
+{#                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}#}
+{#                                </span>#}
+{#                                {{ people }} / {{ challenge.challenge_max }}명#}
+{#                            </p>#}
+{#                            <p>{{ challenge.challenge_desc }}</p>#}
+{#                            <div class="single-product-form btn-container">#}
+{#                                {% if (people==challenge.challenge_max) and (status_join==False) %}#}
+{#                                    <a class="cart-btn btnp">#}
+{#                                        <i class="fas fa-bolt"></i>모집 종료#}
+{#                                    </a>#}
+{#                                {% else %}#}
+{#                                    <a onclick="onClickJoinBtnHandler()" class="cart-btn">#}
+{#                                        <i class="fas fa-bolt"></i>Go to Challenge#}
+{#                                    </a>#}
+{#                                {% endif %}#}
+{#                                {% if status_join %}#}
+{#                                    <a onclick="CancelChallenge()" class="cart-btn-x">#}
+{#                                        <i class="fa fa-times" aria-hidden="true"></i> 참가 취소#}
+{#                                    </a>#}
+{#                                {% endif %}#}
+{##}
+{#                                <a onclick="location.href='/'" class="cart-btn-h">#}
+{#                                    <i class="fas fa-home"></i> Go to Main#}
+{#                                </a>#}
+{##}
+{#                                {% if categories!='' %}#}
+{#                                    <p><strong>Categories: </strong>{{ categories }}</p>#}
+{#                                {% endif %}#}
+{#                            </div>#}
+{##}
+{#                            <div id="join-form-container" style="display: none;">#}
+{#                                <div class="input-group mb-3 join-form">#}
+{#                                    <span for="formFile" class="input-group-text">챌린지 이미지</span>#}
+{#                                    <input class="form-control" type="file" id="formFile">#}
+{#                                </div>#}
+{##}
+{#                                <div class="input-group mb-3 join-form">#}
+{#                                    <span for="formText" class="input-group-text">챌린지 후기</span>#}
+{#                                    <input class="form-control" type="text" id="formText">#}
+{#                                </div>#}
+{##}
+{#                                <a onclick="onClickCheck()" class="cart-btn-c">#}
+{#                                    <i class="fa fa-check"></i>챌린지 인증#}
+{#                                </a>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-12 deleteBtn-container">#}
+{#                        {% if status %}#}
+{#                            <div class="btn-group dropleft">#}
+{#                                <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"#}
+{#                                   aria-haspopup="true" aria-expanded="false">#}
+{#                                    Challenge#}
+{#                                </a>#}
+{#                                <div class="dropdown-menu">#}
+{#                                    {% if challenge.challenge_status==0 %}#}
+{#                                        <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>#}
+{#                                        <div class="dropdown-divider"></div>#}
+{#                                    {% elif challenge.challenge_status==1 %}#}
+{#                                        <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>#}
+{#                                        <div class="dropdown-divider"></div>#}
+{#                                    {% endif %}#}
+{##}
+{#                                    <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        {% endif %}#}
+                    </div>
+                </div>
     </div>
 </div>
 <!-- end single product -->
