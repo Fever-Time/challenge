@@ -113,7 +113,7 @@ def update_user_name():
 
 
 @application.route('/challenge/<challenge_id>', methods=['GET'])
-def challenge_detail_page(challenge_id):
+def get_challenge(challenge_id):
 
     challenge = db.challenge.find_one({'_id': ObjectId(challenge_id)})
     challenge['_id'] = str(challenge['_id'])
