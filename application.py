@@ -109,12 +109,11 @@ def update_user_name():
     db.users.update_one({'user_email': user_id}, {'$set': {'user_name': name_receive}})
     db.join.update_many({'join_user': user_id}, {'$set': {'join_user_name': name_receive}})
 
-    return {'msg': '이름 변경 성공!'}
+    return jsonify({'msg': '이름 변경 성공!'})
 
 
 @application.route('/challenge/<challenge_id>', methods=['GET'])
 def get_challenge(challenge_id):
-
     challenge = db.challenge.find_one({'_id': ObjectId(challenge_id)})
     challenge['_id'] = str(challenge['_id'])
 
