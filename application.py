@@ -227,6 +227,7 @@ def unregister():
         delete_challenge_date(challenge_id)
 
     db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
+    return jsonify({'result': 'success'})
 
 
 @application.route('/oauth/callback', methods=['GET'])
