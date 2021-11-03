@@ -56,6 +56,11 @@ def challenge_detail_page():
     return render_template('challenge-detail.html')
 
 
+@application.route('/login', methods=['GET'])
+def login():
+    return render_template('login.html')
+
+
 @application.route('/search', methods=['GET'])
 def search_challenge():
     search_receive = request.args['search']
@@ -152,12 +157,6 @@ def get_challenge(challenge_id):
                         'related_challenge': related_challenge, 'status_join': status_join, 'joins': joins})
 
 
-@application.route('/login', methods=['GET'])
-def login():
-    msg = request.args.get('msg')
-    return render_template('login.html', msg=msg)
-
-
 @application.route('/sign_in', methods=['POST'])
 def sign_in():
     # 로그인
@@ -167,9 +166,9 @@ def sign_in():
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
     result = db.users.find_one({'user_email': email_receive, 'user_pw': pw_hash})
     if result is not None:
-        return get_response_with_jwt_token(email_receive)
+        return jsonify({'result': 'success', 'token': get_jwt_token(email_receive)})
     else:  # 찾지 못하면
-        return redirect(url_for('login', msg='아이디/비밀번호가 일치하지 않습니다.'))
+        return jsonify({'result': 'success', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
 @application.route('/sign_up', methods=['POST'])
@@ -187,7 +186,7 @@ def sign_up_save():
 
     db.users.insert_one(doc)
 
-    return redirect(url_for('login', msg='회원가입 하셨습니다.'))
+    return jsonify({'result': 'success', 'msg': '회원가입 하셨습니다.'})
 
 
 @application.route('/sign_up/check_dup', methods=['POST'])
@@ -264,15 +263,14 @@ def oauth():
     kakao_name = infos['properties']['nickname']
 
     exist = bool(db.users.find_one({'user_email': kakao_id}))
-    if exist:  # 이미 가입한 유저라면
-        return get_response_with_jwt_token(kakao_id)
-    else:
+    if exist is False:
         doc = {
             'user_email': kakao_id,
             'user_name': kakao_name
         }
         db.users.insert_one(doc)
-        return get_response_with_jwt_token(kakao_id)
+
+    return jsonify({'result': 'success', 'token': get_jwt_token(kakao_id)})
 
 
 @application.route('/challenge', methods=['POST'])
@@ -438,16 +436,16 @@ def set_challenges_people(challenges):
 
 
 # jwt 토큰 발행
-def get_response_with_jwt_token(user_id):
+def get_jwt_token(user_id):
     payload = {
         'id': user_id,
         'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 24)  # 로그인 24시간 유지
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # 토큰을 발급하고
 
-    response = make_response(redirect(url_for('main_page')))  # 쿠키를 저장해줄 페이지 지정(?)
-    response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
-    return response
+    # response = make_response(redirect(url_for('main_page')))  # 쿠키를 저장해줄 페이지 지정(?)
+    # response.set_cookie(TOKEN_NAME, token)  # 메인페이지 기준으로 쿠키 설정(?)
+    return token
 
 
 # DB, S3에서 챌린지 데이터 삭제
