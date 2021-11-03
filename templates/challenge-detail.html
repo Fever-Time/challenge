@@ -308,6 +308,7 @@
                     pauseDelete(challenge, status_join, status);
                     showCheck(joins);
                     showMap(challenge);
+                    showRelated(related_challenge);
                 }
             })
         }
@@ -470,6 +471,39 @@
                 $("#map").append(temp_html)
             }
         }
+        //카테고리 같은 연관 챌린지 보여주기
+        function showRelated(related){
+            for (let i = 0; i < related.length; i++){
+                if(related[i]['challenge_status']===0 && related[i]['challenge_max'] !== related[i]['people'] ){
+                 let temp_html=`
+                <div class="col-lg-4 col-md-6 text-center">
+                 <div class="single-product-item">
+                     <div class="product-image">
+                        <a href="/challenge/detail?challenge_id=${related[i]['_id']}">
+                        <img src="https://dybzsbdm9g4zq.cloudfront.net/${related[i]['challenge_img']}"
+                           alt=""
+                           class="related-challenge-img">
+                        </a>
+                     </div>
+                     <h3>${related[i]['challenge_title']}</h3>
+                      <p class="product-price">
+                         <span>
+                            <i class="far fa-calendar-alt"></i> ${related[i]['challenge_startTime']} ~ ${related[i]['challenge_endTime']}
+                         </span>
+                         ${related[i]['people']}명 참가
+                      </p>
+                      <a href="/challenge/detail?challenge_id=${related[i]['_id']}" class="cart-btn">
+                         <i class="fas fa-bolt"></i> Go to Challenge
+                      </a>
+                 </div>
+                </div>
+                 `
+                    $("#related").append(temp_html);
+                }
+            }
+
+
+        }
     </script>
 </head>
 <body>
@@ -560,85 +594,7 @@
 <div class="single-product mt-150 mb-150">
     <div class="container">
         <div class="row" id="single-challenge">
-            {#                    <div class="col-md-5">#}
-            {#                        <div class="single-product-img">#}
-            {#                            <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}" alt="">#}
-            {#                        </div>#}
-            {#                    </div>#}
-            {#                    ------------------------#}
-            {#                    <div class="col-md-7">#}
-            {#                        <div class="single-product-content">#}
-            {#                            <h3>{{ challenge.challenge_title }}</h3>#}
-            {#                            <p class="single-product-pricing">#}
-            {#                                <span>#}
-            {#                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}#}
-            {#                                </span>#}
-            {#                                {{ people }} / {{ challenge.challenge_max }}명#}
-            {#                            </p>#}
-            {#                            <p>{{ challenge.challenge_desc }}</p>#}
-            {#                            <div class="single-product-form btn-container">#}
-            {#                                {% if (people==challenge.challenge_max) and (status_join==False) %}#}
-            {#                                    <a class="cart-btn btnp">#}
-            {#                                        <i class="fas fa-bolt"></i>모집 종료#}
-            {#                                    </a>#}
-            {#                                {% else %}#}
-            {#                                    <a onclick="onClickJoinBtnHandler()" class="cart-btn">#}
-            {#                                        <i class="fas fa-bolt"></i>Go to Challenge#}
-            {#                                    </a>#}
-            {#                                {% endif %}#}
-            {#                                {% if status_join %}#}
-            {#                                    <a onclick="CancelChallenge()" class="cart-btn-x">#}
-            {#                                        <i class="fa fa-times" aria-hidden="true"></i> 참가 취소#}
-            {#                                    </a>#}
-            {#                                {% endif %}#}
-            {##}
-            {#                                <a onclick="location.href='/'" class="cart-btn-h">#}
-            {#                                    <i class="fas fa-home"></i> Go to Main#}
-            {#                                </a>#}
-            {##}
-            {#                                {% if categories!='' %}#}
-            {#                                    <p><strong>Categories: </strong>{{ categories }}</p>#}
-            {#                                {% endif %}#}
-            {#                            </div>#}
-            {##}
-            {#                            <div id="join-form-container" style="display: none;">#}
-            {#                                <div class="input-group mb-3 join-form">#}
-            {#                                    <span for="formFile" class="input-group-text">챌린지 이미지</span>#}
-            {#                                    <input class="form-control" type="file" id="formFile">#}
-            {#                                </div>#}
-            {##}
-            {#                                <div class="input-group mb-3 join-form">#}
-            {#                                    <span for="formText" class="input-group-text">챌린지 후기</span>#}
-            {#                                    <input class="form-control" type="text" id="formText">#}
-            {#                                </div>#}
-            {##}
-            {#                                <a onclick="onClickCheck()" class="cart-btn-c">#}
-            {#                                    <i class="fa fa-check"></i>챌린지 인증#}
-            {#                                </a>#}
-            {#                            </div>#}
-            {#                        </div>#}
-            {#                    </div>#}
-            {#                    //만든사람이 중단,삭제#}
             <div class="col-md-12 deleteBtn-container">
-                {#                        {% if status %}#}
-                {#                            <div class="btn-group dropleft">#}
-                {#                                <a type="button" class="btn cart-btn-p dropdown-toggle" data-toggle="dropdown"#}
-                {#                                   aria-haspopup="true" aria-expanded="false">#}
-                {#                                    Challenge#}
-                {#                                </a>#}
-                {#                                <div class="dropdown-menu">#}
-                {#                                    {% if challenge.challenge_status==0 %}#}
-                {#                                        <a class="dropdown-item" href="#" onclick="onClickPauseChallenge()">챌린지 중단</a>#}
-                {#                                        <div class="dropdown-divider"></div>#}
-                {#                                    {% elif challenge.challenge_status==1 %}#}
-                {#                                        <a class="dropdown-item" href="#" onclick="onClickStartChallenge()">챌린지 중단 해제</a>#}
-                {#                                        <div class="dropdown-divider"></div>#}
-                {#                                    {% endif %}#}
-                {##}
-                {#                                    <a class="dropdown-item" href="#" onclick="onClickDeleteChallenge()">챌린지 삭제</a>#}
-                {#                                </div>#}
-                {#                            </div>#}
-                {#                        {% endif %}#}
             </div>
         </div>
     </div>
@@ -646,39 +602,11 @@
 <!-- end single product -->
 
 <div class="card-group" id="card-group">
-    {#    {% for join in joins %}#}
-    {#        <div class="card-check">#}
-    {#            <div class="card-header">#}
-    {#                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+ join.join_img }}" alt=""/>#}
-    {#            </div>#}
-    {#            <div class="card-mid">#}
-    {#                <h5 class="join_title">{{ join.join_cont }}</h5>#}
-    {#                <p class="join_name">#}
-    {#                    <span class="badge badge-pill badge-dark" style="text-align: right">#}
-    {#                        {{ join.join_user_name }}#}
-    {#                    </span>#}
-    {#                </p>#}
-    {#                <p>{{ join.join_date }}</p>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    {% endfor %}#}
 </div>
 
-{#{% if challenge.challenge_address != 'online' %}#}
+
 <div class="more-products mb-150" id="map">
-    {#        <div class="container">#}
-    {#            <div class="row">#}
-    {#                <div class="col-lg-8 offset-lg-2 text-center">#}
-    {#                    <div class="section-title">#}
-    {#                        <h3><span class="orange-text"></span> 장소</h3>#}
-    {##}
-    {#                        <div id="map" style="width:100%;height:350px;"></div>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
 </div>
-{#{% endif %}#}
 
 <!-- more products -->
 <div class="more-products mb-150">
@@ -691,52 +619,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            {#            {% for challenge in related_challenge %}#}
-            {#                <div class="col-lg-4 col-md-6 text-center">#}
-            {#                    <div class="single-product-item">#}
-            {#                        <div class="product-image">#}
-            {#                            <a href="{{ '/challenge/'+challenge._id }}">#}
-            {#                                <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"#}
-            {#                                     alt=""#}
-            {#                                     class="related-challenge-img">#}
-            {#                            </a>#}
-            {#                        </div>#}
-            {#                        <h3>{{ challenge.challenge_title }}</h3>#}
-            {#                        {% if challenge.challenge_status==2 %}#}
-            {#                            <p class="product-price">#}
-            {#                                <span>#}
-            {#                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지#}
-            {#                                </span>#}
-            {#                                {{ challenge.people }}명 참가#}
-            {#                            </p>#}
-            {#                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">#}
-            {#                                <i class="fas fa-bolt"></i> Go to Challenge#}
-            {#                            </a>#}
-            {#                        {% elif challenge.challenge_status==1 %}#}
-            {#                            <p class="product-price">#}
-            {#                                <span>#}
-            {#                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지#}
-            {#                                </span>#}
-            {#                                {{ challenge.people }}명 참가#}
-            {#                            </p>#}
-            {#                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">#}
-            {#                                <i class="fas fa-bolt"></i> Go to Challenge#}
-            {#                            </a>#}
-            {#                        {% else %}#}
-            {#                            <p class="product-price">#}
-            {#                                <span>#}
-            {#                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}#}
-            {#                                </span>#}
-            {#                                {{ challenge.people }}명 참가#}
-            {#                            </p>#}
-            {#                            <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">#}
-            {#                                <i class="fas fa-bolt"></i> Go to Challenge#}
-            {#                            </a>#}
-            {#                        {% endif %}#}
-            {#                    </div>#}
-            {#                </div>#}
-            {#            {% endfor %}#}
+        <div class="row" id="related">
         </div>
     </div>
 </div>
