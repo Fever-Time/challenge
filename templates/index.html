@@ -33,7 +33,6 @@
     <!-- responsive -->
     <link rel="stylesheet" href="/static/assets/css/responsive.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.js"></script>
     <!-- jquery -->
     <script src="/static/assets/js/jquery-1.11.3.min.js"></script>
 
@@ -58,12 +57,113 @@
         a.btnp {
             background-color: #4e555b;
         }
+
+        .product-lists {
+            height: auto !important;
+        }
+
+        .single-product-item {
+            position: relative !important;
+        }
+
     </style>
     <script>
         $(document).ready(function ($) {
-            bsCustomFileInput.init()
-            {#getChallenges()#}
+            getChallenges()
         });
+
+        function getChallenges() {
+            $.ajax({
+                type: "GET",
+                url: "/challenges",
+                data: {},
+                success: function (response) {
+                    let challenges = response['challenges']
+                    for (let i = 0; i < challenges.length; i++) {
+                        let id = challenges[i]['_id'];
+                        let title = challenges[i]['challenge_title'];
+                        let desc = challenges[i]['challenge_desc'];
+                        let img = challenges[i]['challenge_img'];
+                        let start = challenges[i]['challenge_startTime'];
+                        let end = challenges[i]['challenge_endTime'];
+                        let category = challenges[i]['challenge_category'];
+                        let status = challenges[i]['challenge_status'];
+                        let max = challenges[i]['challenge_max'];
+                        let people = challenges[i]['people']
+                        if (status == 2) {
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="/challenge/${id}">
+                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>${title}</h3>
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지
+                                </span>
+                                    ${people}/${max}명
+                                </p>
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                        </div>
+                    </div>`
+                            $('#challenge-list').append(temp_html)
+                        } else if (status == 1) {
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="/challenge/detail?challenge_id=${id}">
+                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>${title}</h3>
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                </span>
+                                    ${people}/${max}명
+                                </p>
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                        </div>
+                    </div>`
+                            $('#challenge-list').append(temp_html)
+                        } else {
+                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                        <div class="single-product-item">
+                            <div class="product-image">
+                                <a href="/challenge/detail?challenge_id=${id}">
+                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <h3>${title}</h3>
+                            <p class="product-price">
+                                <span>
+                                    <i class="far fa-calendar-alt"></i> ${start} ~ ${end}
+                                </span>
+                                    ${people}/${max}명
+                                </p>
+                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn">
+                                    <i class="fas fa-bolt"></i> View Details
+                                </a>
+                        </div>
+                    </div>`
+                            $('#challenge-list').append(temp_html)
+                        }
+
+
+                    }
+                }
+            })
+        }
+
 
         function onClickCreateChallenge() {
             if (document.cookie.match("fever-time") != null) {
@@ -200,61 +300,7 @@
                 </div>
             </div>
 
-            <div class="row product-lists">
-                {% for challenge in challenges %}
-                    <div class="col-lg-4 col-md-6 text-center {{ challenge.challenge_categories|join(" ") }}">
-                        <div class="single-product-item">
-                            <div class="product-image">
-                                <a href="{{ '/challenge/'+challenge._id }}">
-                                    <img src="{{ 'https://dybzsbdm9g4zq.cloudfront.net/'+challenge.challenge_img }}"
-                                         alt="">
-                                </a>
-                            </div>
-                            <h3>{{ challenge.challenge_title }}</h3>
-                            {% if challenge.challenge_status==2 %}
-                                <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지
-                                </span>
-                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
-                                </p>
-                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                            {% elif challenge.challenge_status==1 %}
-                                <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
-                                </span>
-                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
-                                </p>
-                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                            {% elif (challenge.people==challenge.challenge_max) %}
-                                <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i>{{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
-                                </span>
-                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
-                                </p>
-                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> 모집 종료
-                                </a>
-                            {% else %}
-                                <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> {{ challenge.challenge_startTime +' ~ '+challenge.challenge_endTime }}
-                                </span>
-                                    {{ challenge.people }} / {{ challenge.challenge_max }}명
-                                </p>
-                                <a href="{{ '/challenge/'+challenge._id }}" class="cart-btn">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="row product-lists" id="challenge-list">
             </div>
             {# 페이지 이동 주석#}
             {#        <div class="row">#}

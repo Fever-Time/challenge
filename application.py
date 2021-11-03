@@ -28,9 +28,7 @@ TOKEN_NAME = 'fever-time'
 
 @application.route('/', methods=['GET'])
 def main_page():
-    challenges = object_id_decoder(list(db.challenge.find({})))
-    set_challenges_people(challenges)
-    return render_template('index.html', challenges=challenges)
+    return render_template('index.html')
 
 
 @application.route('/error', methods=['GET'])
@@ -51,6 +49,11 @@ def challenge_create_page():
 @application.route('/sign_up', methods=['GET'])
 def sign_up():
     return render_template('sign-up.html')
+
+
+@application.route('/challenge/detail', methods=['GET'])
+def challenge_detail_page():
+    return render_template('challenge-detail.html')
 
 
 @application.route('/search', methods=['GET'])
@@ -106,11 +109,11 @@ def update_user_name():
     db.users.update_one({'user_email': user_id}, {'$set': {'user_name': name_receive}})
     db.join.update_many({'join_user': user_id}, {'$set': {'join_user_name': name_receive}})
 
-    return {'msg': '이름 변경 성공!'}
+    return jsonify({'msg': '이름 변경 성공!'})
 
 
 @application.route('/challenge/<challenge_id>', methods=['GET'])
-def challenge_detail_page(challenge_id):
+def get_challenge(challenge_id):
     challenge = db.challenge.find_one({'_id': ObjectId(challenge_id)})
     challenge['_id'] = str(challenge['_id'])
 
@@ -130,7 +133,7 @@ def challenge_detail_page(challenge_id):
     related_challenge = object_id_decoder(list(db.challenge.find({'_id': {'$ne': ObjectId(challenge_id)}}).limit(3)))
     set_challenges_people(related_challenge)
 
-    people = len(list(db.join.distinct('join_user', {'join_challenge': challenge_id})))
+    challenge['people'] = len(list(db.join.distinct('join_user', {'join_challenge': challenge_id})))
     join = list(db.join.distinct('join_user', {'join_challenge': challenge_id}))
     token_receive = request.cookies.get(TOKEN_NAME)
 
@@ -142,9 +145,11 @@ def challenge_detail_page(challenge_id):
         status = (challenge['challenge_host'] == payload['id'])  # 내가 만든 챌리지이면 True
         status_join = (payload['id'] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
-        return render_template('challenge-detail.html', challenge=challenge, people=people, status=status,
-                               categories=categories, related_challenge=related_challenge, joins=joins,
-                               status_join=status_join)
+        # return render_template('challenge-detail.html',
+        #                        , , joins=joins,
+        #                        status_join=status_join)
+        return jsonify({'challenge': challenge, 'status': status, 'categories': categories,
+                        'related_challenge': related_challenge, 'status_join': status_join, 'joins': joins})
 
 
 @application.route('/login', methods=['GET'])
@@ -222,6 +227,7 @@ def unregister():
         delete_challenge_date(challenge_id)
 
     db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
+    return jsonify({'result': 'success'})
 
 
 @application.route('/oauth/callback', methods=['GET'])
@@ -320,6 +326,15 @@ def save_challenge():
     db.challenge.insert_one(doc)
 
     return jsonify({'msg': '챌린지 등록 되었습니다.'})
+
+
+@application.route('/challenges', methods=['GET'])
+def show_challenge():
+    challenges = object_id_decoder(list(db.challenge.find({})))
+
+    set_challenges_people(challenges)
+
+    return jsonify({'challenges': challenges})
 
 
 @application.route('/challenge', methods=['PUT'])
