@@ -351,7 +351,8 @@ def pause_challenge():
 @login_required
 def delete_challenge():
     challenge_id = request.form['challengeId_give']
-    result = bool(db.challenge.find_one({"_id": challenge_id, "challenge_host": request.user_id}))
+    result = bool(db.challenge.find_one({"_id": ObjectId(challenge_id), "challenge_host": request.user_id}))
+    print(result)
     if result:
         delete_join_data(challenge_id)
         delete_challenge_date(challenge_id)
