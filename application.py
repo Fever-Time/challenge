@@ -168,7 +168,7 @@ def sign_in():
     if result is not None:
         return jsonify({'result': 'success', 'token': get_jwt_token(email_receive)})
     else:  # 찾지 못하면
-        return jsonify({'result': 'success', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
 @application.route('/sign_up', methods=['POST'])

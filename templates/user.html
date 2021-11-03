@@ -94,6 +94,15 @@
     </style>
 
     <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const CHALLENGE_ID = urlParams.get('challenge_id')
+        console.log("========")
+        console.log(CHALLENGE_ID);
+        console.log("========")
+
+
+
         let delete_cookie = function (name) {
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         };
