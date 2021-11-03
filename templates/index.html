@@ -79,91 +79,99 @@
                 data: {},
                 success: function (response) {
                     let challenges = response['challenges']
-                    for (let i = 0; i < challenges.length; i++) {
-                        let id = challenges[i]['_id'];
-                        let title = challenges[i]['challenge_title'];
-                        let desc = challenges[i]['challenge_desc'];
-                        let img = challenges[i]['challenge_img'];
-                        let start = challenges[i]['challenge_startTime'];
-                        let end = challenges[i]['challenge_endTime'];
-                        let category = challenges[i]['challenge_category'];
-                        let status = challenges[i]['challenge_status'];
-                        let max = challenges[i]['challenge_max'];
-                        let people = challenges[i]['people']
-                        if (status == 2) {
-                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
-                        <div class="single-product-item">
-                            <div class="product-image">
-                                <a href="/challenge/${id}">
-                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
-                                         alt="">
-                                </a>
-                            </div>
-                            <h3>${title}</h3>
-                            <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> 종료된 챌린지
-                                </span>
-                                    ${people}/${max}명
-                                </p>
-                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                        </div>
-                    </div>`
-                            $('#challenge-list').append(temp_html)
-                        } else if (status == 1) {
-                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
-                        <div class="single-product-item">
-                            <div class="product-image">
-                                <a href="/challenge/detail?challenge_id=${id}">
-                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
-                                         alt="">
-                                </a>
-                            </div>
-                            <h3>${title}</h3>
-                            <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> 중단된 챌린지
-                                </span>
-                                    ${people}/${max}명
-                                </p>
-                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                        </div>
-                    </div>`
-                            $('#challenge-list').append(temp_html)
-                        } else {
-                            let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
-                        <div class="single-product-item">
-                            <div class="product-image">
-                                <a href="/challenge/detail?challenge_id=${id}">
-                                    <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
-                                         alt="">
-                                </a>
-                            </div>
-                            <h3>${title}</h3>
-                            <p class="product-price">
-                                <span>
-                                    <i class="far fa-calendar-alt"></i> ${start} ~ ${end}
-                                </span>
-                                    ${people}/${max}명
-                                </p>
-                                <a href="/challenge/detail?challenge_id=${id}" class="cart-btn">
-                                    <i class="fas fa-bolt"></i> View Details
-                                </a>
-                        </div>
-                    </div>`
-                            $('#challenge-list').append(temp_html)
-                        }
-
-
-                    }
+                    showChallenges(challenges)
                 }
             })
         }
 
+        function showChallenges(challenges) {
+            if (challenges.length == 0) {
+                $('#container__category').hide()
+                $('#no_challenge').show()
+                return
+            }
+
+            for (let i = 0; i < challenges.length; i++) {
+                let id = challenges[i]['_id'];
+                let title = challenges[i]['challenge_title'];
+                let desc = challenges[i]['challenge_desc'];
+                let img = challenges[i]['challenge_img'];
+                let start = challenges[i]['challenge_startTime'];
+                let end = challenges[i]['challenge_endTime'];
+                let category = challenges[i]['challenge_category'];
+                let status = challenges[i]['challenge_status'];
+                let max = challenges[i]['challenge_max'];
+                let people = challenges[i]['people']
+
+                if (status == 2) {
+                    let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                                                <div class="single-product-item">
+                                                    <div class="product-image">
+                                                        <a href="/challenge/${id}">
+                                                            <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                                                 alt="">
+                                                        </a>
+                                                    </div>
+                                                    <h3>${title}</h3>
+                                                    <p class="product-price">
+                                                        <span>
+                                                            <i class="far fa-calendar-alt"></i> 종료된 챌린지
+                                                        </span>
+                                                            ${people}/${max}명
+                                                        </p>
+                                                        <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
+                                                            <i class="fas fa-bolt"></i> View Details
+                                                        </a>
+                                                </div>
+                                             </div>`
+                    $('#challenge-list').append(temp_html)
+                } else if (status == 1) {
+                    let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                                                <div class="single-product-item">
+                                                    <div class="product-image">
+                                                        <a href="/challenge/detail?challenge_id=${id}">
+                                                            <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                                                 alt="">
+                                                        </a>
+                                                    </div>
+                                                    <h3>${title}</h3>
+                                                    <p class="product-price">
+                                                        <span>
+                                                            <i class="far fa-calendar-alt"></i> 중단된 챌린지
+                                                        </span>
+                                                            ${people}/${max}명
+                                                        </p>
+                                                        <a href="/challenge/detail?challenge_id=${id}" class="cart-btn btnp">
+                                                            <i class="fas fa-bolt"></i> View Details
+                                                        </a>
+                                                </div>
+                                             </div>`
+                    $('#challenge-list').append(temp_html)
+                } else {
+                    let temp_html = `<div class="col-lg-4 col-md-6 text-center product-lists ${category}">
+                                                <div class="single-product-item">
+                                                    <div class="product-image">
+                                                        <a href="/challenge/detail?challenge_id=${id}">
+                                                            <img src="https://dybzsbdm9g4zq.cloudfront.net/${img}"
+                                                                 alt="">
+                                                        </a>
+                                                    </div>
+                                                    <h3>${title}</h3>
+                                                    <p class="product-price">
+                                                        <span>
+                                                            <i class="far fa-calendar-alt"></i> ${start} ~ ${end}
+                                                        </span>
+                                                            ${people}/${max}명
+                                                        </p>
+                                                        <a href="/challenge/detail?challenge_id=${id}" class="cart-btn">
+                                                            <i class="fas fa-bolt"></i> View Details
+                                                        </a>
+                                                </div>
+                                            </div>`
+                    $('#challenge-list').append(temp_html)
+                }
+            }
+        }
 
         function onClickCreateChallenge() {
             if (document.cookie.match("fever-time") != null) {
@@ -189,6 +197,10 @@
                 data: {"search": search},
                 success: function (response) { // 성공하면
                     $(".search-area").toggleClass("search-active")
+                    $('#challenge-list').empty();
+                    let challenges = response['challenges']
+                    console.log(challenges)
+                    showChallenges(challenges)
                 }
             })
         }
@@ -281,42 +293,41 @@
 <!-- products -->
 <div class="product-section mt-150 mb-150">
     <div class="container" style="text-align: center">
-        {% if challenges ==[] %}
+        <div id="no_challenge" style="display: none">
             <img src="/static/assets/img/error.svg" width="300" height="300"
                  alt="">
             <h4 style="margin-top: 30px">챌린지가 없습니다😥</h4>
-        {% else %}
+        </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="product-filters">
-                        <ul>
-                            <li class="active" data-filter="*">All</li>
-                            <li data-filter=".category1">운동</li>
-                            <li data-filter=".category2">공부</li>
-                            <li data-filter=".category3">취미</li>
-                        </ul>
-                    </div>
+        <div class="row" id="container__category">
+            <div class="col-md-12">
+                <div class="product-filters">
+                    <ul>
+                        <li class="active" data-filter="*">All</li>
+                        <li data-filter=".category1">운동</li>
+                        <li data-filter=".category2">공부</li>
+                        <li data-filter=".category3">취미</li>
+                    </ul>
                 </div>
             </div>
+        </div>
 
-            <div class="row product-lists" id="challenge-list">
-            </div>
-            {# 페이지 이동 주석#}
-            {#        <div class="row">#}
-            {#            <div class="col-lg-12 text-center">#}
-            {#                <div class="pagination-wrap">#}
-            {#                    <ul>#}
-            {#                        <li><a href="#">Prev</a></li>#}
-            {#                        <li><a href="#">1</a></li>#}
-            {#                        <li><a class="active" href="#">2</a></li>#}
-            {#                        <li><a href="#">3</a></li>#}
-            {#                        <li><a href="#">Next</a></li>#}
-            {#                    </ul>#}
-            {#                </div>#}
-            {#            </div>#}
-            {#        </div>#}
-        {% endif %}
+        <div class="row product-lists" id="challenge-list">
+        </div>
+        {# 페이지 이동 주석#}
+        {#        <div class="row">#}
+        {#            <div class="col-lg-12 text-center">#}
+        {#                <div class="pagination-wrap">#}
+        {#                    <ul>#}
+        {#                        <li><a href="#">Prev</a></li>#}
+        {#                        <li><a href="#">1</a></li>#}
+        {#                        <li><a class="active" href="#">2</a></li>#}
+        {#                        <li><a href="#">3</a></li>#}
+        {#                        <li><a href="#">Next</a></li>#}
+        {#                    </ul>#}
+        {#                </div>#}
+        {#            </div>#}
+        {#        </div>#}
 
         <div class="row">
             <div class="col-md-12 text-center">
