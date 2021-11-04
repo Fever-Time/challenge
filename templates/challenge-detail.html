@@ -334,10 +334,8 @@
             }
         }
 
-
         //만든 사람이 챌린지 중단, 삭제 & 참가취소
         function pauseDelete(challenge, join, status) {
-
             if (status === true && challenge['challenge_status'] === 0) {
                 let temp_html = `
                         ${join ?
@@ -471,11 +469,12 @@
                 $("#map").append(temp_html)
             }
         }
+
         //카테고리 같은 연관 챌린지 보여주기
-        function showRelated(related){
-            for (let i = 0; i < related.length; i++){
-                if(related[i]['challenge_status']===0 && related[i]['challenge_max'] !== related[i]['people'] ){
-                 let temp_html=`
+        function showRelated(related) {
+            for (let i = 0; i < related.length; i++) {
+                if (related[i]['challenge_status'] === 0 && related[i]['challenge_max'] !== related[i]['people']) {
+                    let temp_html = `
                 <div class="col-lg-4 col-md-6 text-center">
                  <div class="single-product-item">
                      <div class="product-image">
@@ -633,7 +632,7 @@
                 <p>Copyrights &copy; 2021 - 피버타임, All Rights
                     Reserved.
                 </p>
-                {#                <a href="https://imransdesign.com/">Imran Hossain</a>#}
+                <!--                <a href="https://imransdesign.com/">Imran Hossain</a> -->
             </div>
             <div class="col-lg-6 text-right col-md-12">
                 <div class="social-icons">
