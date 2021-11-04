@@ -101,8 +101,9 @@ def user_page():
 
     user_info = db.users.find_one({'user_email': user_id}, {'_id': False})
 
-    return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt,
-                           kakaoLogin=kakao_login)
+    # return render_template('user.html', user=user_info, challenges=challenges, challenge_cnt=challenge_cnt,
+    #                        kakaoLogin=kakao_login)
+    return jsonify({"kakao_login": kakao_login})
 
 
 @application.route('/user/name', methods=['POST'])
