@@ -64,7 +64,6 @@ def login():
 @application.route('/search', methods=['GET'])
 def search_challenge():
     search_receive = request.args['search']
-    print(search_receive)
 
     search_challenges = object_id_decoder(list(db.challenge.find({'challenge_title': {'$regex': search_receive}})))
     set_challenges_people(search_challenges)
@@ -150,9 +149,6 @@ def get_challenge(challenge_id):
         status = (challenge['challenge_host'] == payload['id'])  # 내가 만든 챌리지이면 True
         status_join = (payload['id'] in join)  # 인증한 유저 중에 내 아이디가 있으면 TRUE
     finally:
-        # return render_template('challenge-detail.html',
-        #                        , , joins=joins,
-        #                        status_join=status_join)
         return jsonify({'challenge': challenge, 'status': status, 'categories': categories,
                         'related_challenge': related_challenge, 'status_join': status_join, 'joins': joins})
 
@@ -168,7 +164,7 @@ def sign_in():
     if result is not None:
         return jsonify({'result': 'success', 'token': get_jwt_token(email_receive)})
     else:  # 찾지 못하면
-        return jsonify({'result': 'success', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
+        return jsonify({'result': 'fail', 'msg': '아이디/비밀번호가 일치하지 않습니다.'})
 
 
 @application.route('/sign_up', methods=['POST'])
@@ -192,7 +188,9 @@ def sign_up_save():
 @application.route('/sign_up/check_dup', methods=['POST'])
 def check_dup():
     email_receive = request.form['user_email']
+
     exists = bool(db.users.find_one({'user_email': email_receive}))
+
     return jsonify({'result': 'success', 'exists': exists})
 
 
@@ -201,7 +199,9 @@ def check_dup():
 def check_pwd():
     password_receive = request.form['pwd']
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
     exists = bool(db.users.find_one({'user_email': request.user_id, 'user_pw': pw_hash}))
+
     return jsonify({'result': exists})
 
 
@@ -210,7 +210,9 @@ def check_pwd():
 def change_pwd():
     password_receive = request.args.get('pwd')
     pw_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+
     db.users.update_one({'user_email': request.user_id}, {'$set': {'user_pw': pw_hash}})
+
     return jsonify({'result': 'success'})
 
 
@@ -226,6 +228,7 @@ def unregister():
         delete_challenge_date(challenge_id)
 
     db.users.delete_one({'user_email': user_id})  # 사용자 정보 삭제
+
     return jsonify({'result': 'success'})
 
 
@@ -329,9 +332,7 @@ def save_challenge():
 @application.route('/challenges', methods=['GET'])
 def show_challenge():
     challenges = object_id_decoder(list(db.challenge.find({})))
-
     set_challenges_people(challenges)
-
     return jsonify({'challenges': challenges})
 
 
@@ -351,7 +352,8 @@ def pause_challenge():
 @login_required
 def delete_challenge():
     challenge_id = request.form['challengeId_give']
-    result = bool(db.challenge.find_one({"_id": challenge_id, "challenge_host": request.user_id}))
+    result = bool(db.challenge.find_one({"_id": ObjectId(challenge_id), "challenge_host": request.user_id}))
+    print(result)
     if result:
         delete_join_data(challenge_id)
         delete_challenge_date(challenge_id)
@@ -418,6 +420,7 @@ def challenge_check():
     }
 
     db.join.insert_one(doc)
+
     return jsonify({'msg': '챌린지 인증 되었습니다.'})
 
 
