@@ -1,4 +1,4 @@
-## 스파르타 내일배움캠프 프로젝트 - 피버타임
+## 스파르타 내일배움캠프 1차, 2차 프로젝트 with Python/Flask - 피버타임
 
 ### 🔗 링크
 - <a href="https://faint-clef-9ea.notion.site/5b174114b93b4eb0ad70c27fd0853910">개발문서</a> (API 설계, DB 설계, 화면 설계, Convention)
