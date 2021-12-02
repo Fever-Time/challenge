@@ -16,7 +16,6 @@
 - <a href="https://github.com/suubinkim">김수빈</a>
 
 ### 📌 기술 스택 - <a href="https://github.com/fever-time/challenge-with-flask/wiki/1.-%EA%B8%B0%EC%88%A0-%EC%84%A0%ED%83%9D-%EC%9D%B4%EC%9C%A0!">WIKI 이동</a>
-- PyCharm - IDE
 - Flask - 웹 프레임워크
 - Python - 개발 언어
 - MongoDB - 데이터베이스
